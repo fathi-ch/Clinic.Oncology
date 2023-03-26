@@ -9,9 +9,8 @@ namespace Clinic.Core.Models
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public DateTime BirthDate { get; set; }
-        
         public DateTime NextAppointment { get; set; }
         
-        public string GetPatientFullName() => string.Concat(FirstName," " , LastName);
+      
     }
 }

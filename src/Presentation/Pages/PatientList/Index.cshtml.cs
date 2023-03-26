@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Clinic.Core.Contracts;
 using Clinic.Core.Data;
 using Clinic.Core.Models;
 using Dapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+
 
 namespace Presentation.Pages.PatientList
 {
@@ -38,7 +38,7 @@ namespace Presentation.Pages.PatientList
                 Id = x.Id,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
-                Age = (int)(DateTime.UtcNow.Subtract(x.BirthDate).TotalDays / 365.25),
+                BirthDate = x.BirthDate,
                 TotalDocuments = await GetTotalDocumentAsync(x),
                 NextAppointment = x.NextAppointment
             });
@@ -46,9 +46,6 @@ namespace Presentation.Pages.PatientList
             var patientResponses = await Task.WhenAll(tasks);
 
             return await Task.FromResult(patientResponses.AsQueryable());
-
-
-
         }
 
         private async Task<int> GetTotalDocumentAsync(Patient patient)
@@ -64,7 +61,7 @@ namespace Presentation.Pages.PatientList
 
 
              return await Task.FromResult(totalDocument);
-            //return totalDocument;
+            
 
         }
     }
