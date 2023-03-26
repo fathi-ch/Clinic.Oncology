@@ -10,5 +10,6 @@ namespace Clinic.Core.Models
         public string? LastName { get; set; }
         public DateTime BirthDate { get; set; }
         
+        public string GetPatientFullName() => string.Concat(FirstName," " , LastName);
     }
 }

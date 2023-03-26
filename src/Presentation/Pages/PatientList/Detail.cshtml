@@ -1,0 +1,36 @@
+﻿@page
+@model Presentation.Pages.PatientList.DetailModel
+@{
+      
+}
+
+
+
+<div class="card">
+    <div class="card-header">
+    @Model.PatientDetails.Patient.GetPatientFullName()
+    </div>
+    <div class="card-body">
+    <h5 class="card-title"> @Model.PatientDetails.Patient.FirstName </h5>
+    <p class="card-text">@Model.PatientDetails.Patient.BirthDate.ToShortDateString()</p>    
+     <a asp-page="Index" class="btn btn-primary form-control text-white">List Patient</a>
+    </div>
+    </div>
+
+@{
+    @if (@Model.base64Images.Count() == 0)
+    {
+        <div>No documents attached to the @Model.PatientDetails.Patient.FirstName</div>
+    }   
+   
+        <div class="image-gallery">
+            @foreach (var image in Model.base64Images)
+            {
+                <a href="@image" target="_blank">
+                    <img src="data:image/jpeg;base64,@image" alt="Image" class="thumbnail" height="300" width="300">
+                </a>
+            }
+        </div>
+   
+}
+

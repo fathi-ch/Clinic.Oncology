@@ -12,7 +12,7 @@
         <h2 class="text-info"> Patient List</h2>
     </div>
     <div class="col-3">
-        <a asp-page="Edit" class="btn btn-info form-control text-white">Add Patient</a>
+        <a asp-page="Create" class="btn btn-info form-control text-white">Add Patient</a>
     </div>
 </div>
 
@@ -68,7 +68,7 @@
                             class="btn btn-danger btn-sm ">
                                     <i class="far fa-trash-alt"></i>
                                 </button>
-                                 <a asp-page="Edit"
+                                 <a asp-page="Detail"
                        asp-route-id="@patient.Id"
                        class="btn btn-success btn-sm text-white">
                                     <i class="far fa-edit"></i>
