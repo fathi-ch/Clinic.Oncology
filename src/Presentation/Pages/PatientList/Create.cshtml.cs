@@ -36,13 +36,15 @@ namespace Presentation.Pages.PatientList
             try
             {
 
-                const string query = "INSERT INTO Patients (Id, FirstName, LastName, BirthDate)" +
-                    " VALUES (@Id, @FirstName, @LastName, @BirthDate);";
+                const string query = "INSERT INTO Patients (Id, FirstName, LastName, BirthDate, NextAppointment)" +
+                    " VALUES (@Id, @FirstName, @LastName, @BirthDate, @NextAppointment);";
                 Patient.Id = Guid.NewGuid();
+             
+                //Possible to ovrride ToString to contain this logic
                 Patient.FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Patient.FirstName);
                 Patient.LastName = Patient.LastName.ToUpper();
                 var result = await connection.ExecuteAsync(query,
-                   new { Patient.Id, Patient.FirstName, Patient.LastName, Patient.BirthDate });
+                   new { Patient.Id, Patient.FirstName, Patient.LastName, Patient.BirthDate, Patient.NextAppointment });
 
                 if (files.Any())
                 {

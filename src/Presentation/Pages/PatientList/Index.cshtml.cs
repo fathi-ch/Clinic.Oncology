@@ -39,8 +39,8 @@ namespace Presentation.Pages.PatientList
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 Age = (int)(DateTime.UtcNow.Subtract(x.BirthDate).TotalDays / 365.25),
-                TotalDocuments = await GetTotalDocumentAsync(x)
-
+                TotalDocuments = await GetTotalDocumentAsync(x),
+                NextAppointment = x.NextAppointment
             });
 
             var patientResponses = await Task.WhenAll(tasks);

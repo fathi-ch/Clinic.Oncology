@@ -12,7 +12,7 @@ namespace Clinic.Core.Contracts
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public int Age { get; set; }
-
+        public  DateTime NextAppointment { get; set; }
         public int TotalDocuments { get; set; }
 
     }
