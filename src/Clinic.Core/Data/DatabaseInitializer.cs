@@ -26,6 +26,7 @@ namespace Clinic.Core.Data
                 "Id TEXT PRIMARY KEY," +
                 " FirstName TEXT NOT NULL," +
                 " LastName TEXT NOT NULL," +
+                " NextAppointment DATE DEFAULT CURRENT_DATE NOT NULL," +
                 " BirthDate DATE DEFAULT CURRENT_DATE NOT NULL);" +
                 "CREATE TABLE IF NOT EXISTS Documents (" +
                 "Id TEXT PRIMARY KEY," +

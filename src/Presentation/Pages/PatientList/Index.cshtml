@@ -4,7 +4,7 @@
 }
 
 
-<br />
+<br/>
 
 
 <div class="container row p-0 m-0">
@@ -23,61 +23,63 @@
         <form method="post">
             <table id="test" class="table p-4 m-4">
                 <thead>
-                    <tr>
-                        <th scope="col">#</th>                       
-                        <th scope="col">
-                            <label asp-for="Patients.FirstOrDefault().FirstName"></label>
-                        </th>
-                        <th scope="col">
-                            <label asp-for="Patients.FirstOrDefault().LastName"></label>
-                        </th>
-                         <th scope="col">
-                            <label asp-for="Patients.FirstOrDefault().Age"></label>
-                        </th>
-                         <th scope="col">
-                            <label asp-for="Patients.FirstOrDefault().TotalDocuments"></label>
-                        </th>
-                        <th></th>
-                    </tr>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">
+                        <label asp-for="Patients.FirstOrDefault().FirstName"></label>
+                    </th>
+                    <th scope="col">
+                        <label asp-for="Patients.FirstOrDefault().LastName"></label>
+                    </th>
+                    <th scope="col">
+                        <label asp-for="Patients.FirstOrDefault().Age"></label>
+                    </th>
+                    <th scope="col">
+                        <label asp-for="Patients.FirstOrDefault().NextAppointment"></label>
+                    </th>
+                    <th scope="col">
+                        <label asp-for="Patients.FirstOrDefault().TotalDocuments"></label>
+                    </th>
+                    <th></th>
+                </tr>
                 </thead>
                 <tbody>
 
-                    @{
-                        int index = 1;
-                    }
-                    @foreach (var patient in Model.Patients)
-                    {
+                @{
+                    int index = 1;
+                }
+                @foreach (var patient in Model.Patients)
+                {
+                    <tr>
+                        <th scope="row">
+                            <div>
+                                @(index++)
+                            </div>
+
+                        </th>
+                        <td>@patient.FirstName</td>
+                        <td>@patient.LastName</td>
+                        <td>@patient.Age</td>
+                        <td>@patient.NextAppointment.ToShortDateString()</td>
+                        <td>@patient.TotalDocuments</td>
+                        <td>
+                            <button asp-page-handler="Delete"
+                                    asp-route-id="@patient.Id"
+                                    onclick="return confirm('Are you sure?')"
+                                    type="submit"
+                                    class="btn btn-danger btn-sm ">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                            <a asp-page="Detail"
+                               asp-route-id="@patient.Id"
+                               class="btn btn-success btn-sm text-white">
+                                <i class="far fa-edit"></i>
+                            </a>
 
 
-                        <tr>
-                            <th scope="row">
-                                <div>
-                                    @(index++)
-                                </div>
-
-                            </th>                           
-                            <td>@patient.FirstName</td>
-                            <td>@patient.LastName</td>
-                            <td>@patient.Age</td>
-                             <td>@patient.TotalDocuments</td>
-                            <td>
-                                <button asp-page-handler="Delete"
-                            asp-route-id="@patient.Id"
-                            onclick="return confirm('Are you sure?')"
-                            type="submit"
-                            class="btn btn-danger btn-sm ">
-                                    <i class="far fa-trash-alt"></i>
-                                </button>
-                                 <a asp-page="Detail"
-                       asp-route-id="@patient.Id"
-                       class="btn btn-success btn-sm text-white">
-                                    <i class="far fa-edit"></i>
-                                </a>
-
-                               
-                            </td>
-                        </tr>
-                    }
+                        </td>
+                    </tr>
+                }
 
 
 
@@ -85,15 +87,12 @@
             </table>
 
 
-
-
-
         </form>
-         }
+    }
     else
     {
         <div>
             <p class="alert-info border-primary p-2 rounded"> No Patients to display.</p>
         </div>
     }
-    }
+}
