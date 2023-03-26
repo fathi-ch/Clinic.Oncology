@@ -1,6 +1,6 @@
+using Clinic.Core.Contracts;
 using Clinic.Core.Data;
 using Clinic.Core.Models;
-using Clinic.Core.ViewModels;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,7 +15,7 @@ namespace Presentation.Pages.PatientList
         public List<string> base64Images { get; set; }
 
         [BindProperty]
-        public PatientViewModel PatientDetails { get; set; }
+        public PatientResponse PatientDetails { get; set; }
 
         public DetailModel(ISqliteDbConnectionFactory connectionFactory)
         {
@@ -25,18 +25,9 @@ namespace Presentation.Pages.PatientList
         public async Task OnGet(string id)
         {
             PatientDetails = await GetPatientByIdAsync(id);
-
-           
-            foreach (var image in PatientDetails.Documents)
-            {
-                byte[] imageByte = System.IO.File.ReadAllBytes(image.Path);
-                base64Images.Add(Convert.ToBase64String(imageByte));
-
-            }
-
         }
 
-        private async Task<PatientViewModel> GetPatientByIdAsync(string id)
+        private async Task<PatientResponse> GetPatientByIdAsync(string id)
         {
             using var connection = await _connectionFactory.CreateDbConnectionAsync();
 
@@ -53,14 +44,23 @@ namespace Presentation.Pages.PatientList
                 "WHERE PatientId = @PatientId;",
                  new { PatientId = Guid.Parse(id) });
 
-            var patientViewModel = new PatientViewModel
+            var patientResponse = new PatientResponse
             {
-                Patient = patient,
+                Id = patient.Id,
+                FirstName = patient.FirstName,
+                LastName = patient.LastName,
+                BirthDate = patient.BirthDate,
+                NextAppointment = patient.NextAppointment,
                 Documents = documents.ToList()
             };
+            
+            foreach (var image in patientResponse.Documents)
+            {
+                byte[] imageByte = System.IO.File.ReadAllBytes(image.Path);
+                base64Images.Add(Convert.ToBase64String(imageByte));
 
-
-            return await Task.FromResult(patientViewModel);
+            }
+            return await Task.FromResult(patientResponse);
         }
     }
 }
