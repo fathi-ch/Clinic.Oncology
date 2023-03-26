@@ -1,4 +1,6 @@
+using Clinic.Core.Contracts;
 using Clinic.Core.Data;
+using Clinic.Core.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<ISqliteDbConnectionFactory, SqliteDbConnectionFactory>();
 builder.Services.AddSingleton<DatabaseInitializer>();
-
+builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 
 var app = builder.Build();
 

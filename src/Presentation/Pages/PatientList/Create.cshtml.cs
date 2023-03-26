@@ -35,9 +35,8 @@ namespace Presentation.Pages.PatientList
 
             try
             {
-
                 const string query = "INSERT INTO Patients (Id, FirstName, LastName, BirthDate, NextAppointment)" +
-                    " VALUES (@Id, @FirstName, @LastName, @BirthDate, @NextAppointment);";
+                                     " VALUES (@Id, @FirstName, @LastName, @BirthDate, @NextAppointment);";
                 Patient.Id = Guid.NewGuid();
              
                 //Possible to ovrride ToString to contain this logic

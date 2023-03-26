@@ -15,7 +15,7 @@ namespace Presentation.Pages.PatientList
         public List<string> base64Images { get; set; }
 
         [BindProperty]
-        public PatientResponse PatientDetails { get; set; }
+        public PatientResponse PatientResponseDetails { get; set; }
 
         public DetailModel(ISqliteDbConnectionFactory connectionFactory)
         {
@@ -24,7 +24,7 @@ namespace Presentation.Pages.PatientList
         }
         public async Task OnGet(string id)
         {
-            PatientDetails = await GetPatientByIdAsync(id);
+            PatientResponseDetails = await GetPatientByIdAsync(id);
         }
 
         private async Task<PatientResponse> GetPatientByIdAsync(string id)
@@ -32,7 +32,7 @@ namespace Presentation.Pages.PatientList
             using var connection = await _connectionFactory.CreateDbConnectionAsync();
 
             //Maybe join both table to One query in the future
-            var patient = await connection.QueryFirstOrDefaultAsync<Patient>(
+            var patient = await connection.QueryFirstOrDefaultAsync<Clinic.Core.Models.Patient>(
                "SELECT * " +
                "FROM Patients p " +
                "WHERE p.Id = @PatientId;",

@@ -8,11 +8,11 @@
 
 <div class="card">
     <div class="card-header">
-    @Model.PatientDetails.GetPatientFullName()
+    @Model.PatientResponseDetails.GetPatientFullName()
     </div>
     <div class="card-body">
-    <h5 class="card-title"> @Model.PatientDetails.FirstName </h5>
-    <p class="card-text">@Model.PatientDetails.Age</p>    
+    <h5 class="card-title"> @Model.PatientResponseDetails.FirstName </h5>
+    <p class="card-text">@Model.PatientResponseDetails.Age</p>    
      <a asp-page="Index" class="btn btn-primary form-control text-white">List Patient</a>
     </div>
     </div>
@@ -20,7 +20,7 @@
 @{
     @if (@Model.base64Images.Count() == 0)
     {
-        <div>No documents attached to the @Model.PatientDetails.FirstName</div>
+        <div>No documents attached to the @Model.PatientResponseDetails.FirstName</div>
     }   
    
         <div class="image-gallery">
