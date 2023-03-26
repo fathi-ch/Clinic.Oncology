@@ -5,6 +5,7 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text;
+using System.Globalization;
 
 namespace Presentation.Pages.PatientList
 {
@@ -38,6 +39,8 @@ namespace Presentation.Pages.PatientList
                 const string query = "INSERT INTO Patients (Id, FirstName, LastName, BirthDate)" +
                     " VALUES (@Id, @FirstName, @LastName, @BirthDate);";
                 Patient.Id = Guid.NewGuid();
+                Patient.FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Patient.FirstName);
+                Patient.LastName = Patient.LastName.ToUpper();
                 var result = await connection.ExecuteAsync(query,
                    new { Patient.Id, Patient.FirstName, Patient.LastName, Patient.BirthDate });
 
