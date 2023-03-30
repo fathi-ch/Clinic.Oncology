@@ -1,4 +1,5 @@
 ﻿using Clinic.Core.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Clinic.Core.Repositories;
 
@@ -10,6 +11,6 @@ public interface IPatientRepository
     
     Task<Patient?> GetByIdWithDocumentsAsync(Guid id);
     Task<Patient?> GetByIdAsync(Guid id);
-    Task<bool> CreateAsync(Patient patient);
+    Task<bool> CreateWithDocumentsAsync(Patient patient, IEnumerable<IFormFile> files);
     Task<bool> DeleteByIdAsync(Guid id);
 }

@@ -32,7 +32,7 @@ namespace Presentation.Pages.PatientList
             using var connection = await _connectionFactory.CreateDbConnectionAsync();
 
             //Maybe join both table to One query in the future
-            var patient = await connection.QueryFirstOrDefaultAsync<Clinic.Core.Models.Patient>(
+            var patient = await connection.QueryFirstOrDefaultAsync<Patient>(
                "SELECT * " +
                "FROM Patients p " +
                "WHERE p.Id = @PatientId;",
