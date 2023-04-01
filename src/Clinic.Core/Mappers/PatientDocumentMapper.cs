@@ -5,7 +5,7 @@ namespace Clinic.Core.Mappers;
 
 public static class PatientDocumentMapper
 {
-    public static PatientDocumentResponse ToDocumentResponse(this PatientDocument patientDocument)
+    public static PatientDocumentResponse ToDocumentResponse(this PatientDocument? patientDocument)
     {
         List<string> convertedList = new List<string>();
         byte[] imageByte = System.IO.File.ReadAllBytes(patientDocument.Path);
