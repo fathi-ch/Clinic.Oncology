@@ -8,7 +8,7 @@ namespace Presentation.Pages.PatientList
         private readonly HttpClient _httpClient = new()
         {
             //This will be refactored FrontEnd to not hardcode the api url
-            BaseAddress = new Uri("https://localhost:7017/Patient")
+            BaseAddress = new Uri("https://localhost:7017/v1/Patient")
         };
         public IEnumerable<PatientResponse>? Patients { get; set; }
         public async Task OnGet()
