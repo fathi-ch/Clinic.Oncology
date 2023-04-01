@@ -18,16 +18,16 @@
     </div>
 
 @{
-    @if (@Model.base64Images.Count() == 0)
+    @if (@Model.DocumentResponses.Count() == 0)
     {
         <div>No documents attached to the @Model.PatientResponseDetails.FirstName</div>
     }   
    
         <div class="image-gallery">
-            @foreach (var image in Model.base64Images)
+            @foreach (var image in Model.DocumentResponses)
             {
-                <a href="@image" target="_blank">
-                    <img src="data:image/jpeg;base64,@image" alt="Image" class="thumbnail" height="300" width="300">
+                <a href="@image.PatientDocumentbase64" target="_blank">
+                    <img src="data:image/jpeg;base64,@image.PatientDocumentbase64" alt="Image" class="thumbnail" height="300" width="300">
                 </a>
             }
         </div>

@@ -9,6 +9,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddSingleton<ISqliteDbConnectionFactory, SqliteDbConnectionFactory>();
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
+builder.Services.AddSingleton<IPatientDocumentRepository, PatientDocumentRepository>();
 builder.Services.AddSingleton<IFileRepository, FileRepository>();
 
 var app = builder.Build();

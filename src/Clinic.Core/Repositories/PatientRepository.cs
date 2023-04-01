@@ -38,7 +38,7 @@ public class PatientRepository : IPatientRepository
             //Possible to ovrride ToString to contain this logic
             patient.FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(patient.FirstName);
             patient.LastName = patient.LastName.ToUpper();
-            
+
             var result = await connection.ExecuteAsync(query,
                 new { patient.Id, patient.FirstName, patient.LastName, patient.BirthDate, patient.NextAppointment });
 
@@ -52,23 +52,15 @@ public class PatientRepository : IPatientRepository
             throw;
         }
     }
-
-
-    public Task<IEnumerable<Patient>> GetAllWithDocumentsAsync()
+    public async Task<Patient?> GetByIdAsync(string id)
     {
-        throw new NotImplementedException();
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+        return await connection.QueryFirstOrDefaultAsync<Patient>(
+            "SELECT * " +
+            "FROM Patients p " +
+            "WHERE p.Id = @PatientId;",
+            new { PatientId = Guid.Parse(id) });
     }
-
-    public Task<Patient?> GetByIdWithDocumentsAsync(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Patient?> GetByIdAsync(Guid id)
-    {
-        throw new NotImplementedException();
-    }
-
 
     public Task<bool> DeleteByIdAsync(Guid id)
     {

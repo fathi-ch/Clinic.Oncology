@@ -37,9 +37,6 @@
                     <th scope="col">
                         <label asp-for="Patientlist.FirstOrDefault().NextAppointment"></label>
                     </th>
-                    <th scope="col">
-                        <label asp-for="Patientlist.FirstOrDefault().TotalDocuments"></label>
-                    </th>
                     <th></th>
                 </tr>
                 </thead>
@@ -61,7 +58,6 @@
                         <td>@patient.LastName</td>
                         <td>@patient.Age</td>
                         <td>@patient.NextAppointment.ToShortDateString()</td>
-                        <td>@patient.TotalDocuments</td>
                         <td>
                             <button asp-page-handler="Delete"
                                     asp-route-id="@patient.Id"
