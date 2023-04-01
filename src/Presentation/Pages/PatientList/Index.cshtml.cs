@@ -1,24 +1,19 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Clinic.Core.Contracts;
-using Clinic.Core.Mappers;
-using Clinic.Core.Repositories;
-
 
 namespace Presentation.Pages.PatientList
 {
     public class IndexModel : PageModel
     {
-        private readonly IPatientRepository _patient;
-
-        public IndexModel(IPatientRepository patient)
+        private readonly HttpClient _httpClient = new()
         {
-            _patient = patient;
-        }
-        public IEnumerable<PatientResponse> Patientlist { get; set; }
+            //This will be refactored FrontEnd to not hardcode the api url
+            BaseAddress = new Uri("https://localhost:7017/Patient")
+        };
+        public IEnumerable<PatientResponse>? Patients { get; set; }
         public async Task OnGet()
         {
-            var patients = await _patient.GetAllAsync();
-            Patientlist = patients.Select(x => x.ToPatientResponse());
+            Patients = await _httpClient.GetFromJsonAsync<List<PatientResponse>>("");
         }
     }
 }

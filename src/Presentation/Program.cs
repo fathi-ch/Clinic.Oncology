@@ -1,4 +1,3 @@
-using Clinic.Core.Contracts;
 using Clinic.Core.Data;
 using Clinic.Core.Repositories;
 
@@ -11,7 +10,7 @@ builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 builder.Services.AddSingleton<IPatientDocumentRepository, PatientDocumentRepository>();
 builder.Services.AddSingleton<IFileRepository, FileRepository>();
-
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

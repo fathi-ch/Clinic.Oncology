@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 using Clinic.Core.Models;
 
 namespace Clinic.Core.Contracts
