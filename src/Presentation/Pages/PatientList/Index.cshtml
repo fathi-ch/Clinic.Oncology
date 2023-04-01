@@ -1,12 +1,9 @@
 ﻿@page
 @model Presentation.Pages.PatientList.IndexModel
 @{
+    ViewData["Title"] = "Patients Index";
 }
-
-
 <br/>
-
-
 <div class="container row p-0 m-0">
     <div class="col-9">
         <h2 class="text-info"> Patient List</h2>
@@ -15,13 +12,11 @@
         <a asp-page="Create" class="btn btn-info form-control text-white">Add Patient</a>
     </div>
 </div>
-
-
 @{
     if (Model.Patientlist.Count() > 0)
     {
         <form method="post">
-            <table id="test" class="table p-4 m-4">
+            <table id="patients" class="table p-4 m-4 table-hover">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -41,7 +36,6 @@
                 </tr>
                 </thead>
                 <tbody>
-
                 @{
                     int index = 1;
                 }
@@ -52,7 +46,6 @@
                             <div>
                                 @(index++)
                             </div>
-
                         </th>
                         <td>@patient.FirstName</td>
                         <td>@patient.LastName</td>
@@ -71,18 +64,11 @@
                                class="btn btn-success btn-sm text-white">
                                 <i class="far fa-edit"></i>
                             </a>
-
-
                         </td>
                     </tr>
                 }
-
-
-
                 </tbody>
             </table>
-
-
         </form>
     }
     else

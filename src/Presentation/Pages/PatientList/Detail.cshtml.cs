@@ -1,5 +1,4 @@
 using Clinic.Core.Contracts;
-using Clinic.Core.Data;
 using Clinic.Core.Mappers;
 using Clinic.Core.Repositories;
 using Microsoft.AspNetCore.Mvc;
