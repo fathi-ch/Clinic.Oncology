@@ -10,5 +10,11 @@
 		<PackageReference Include="Dapper" Version="2.0.123" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.0" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Microsoft.AspNetCore.Http.Features">
+	    <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\6.0.1\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
 	
 </Project>
