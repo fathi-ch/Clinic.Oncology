@@ -1,32 +1,30 @@
+using System.Net;
 using Clinic.Core.Contracts;
-using Clinic.Core.Mappers;
-using Clinic.Core.Repositories;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Presentation.Pages.PatientList
 {
     public class DetailModel : PageModel
     {
-        private readonly IPatientRepository _patient;
-        private readonly IPatientDocumentRepository _patientDocument;
-        [BindProperty] public List<PatientDocumentResponse> DocumentResponses { get; set; }
-        [BindProperty] public PatientResponse PatientResponseDetails { get; set; }
-
-        public DetailModel(IPatientRepository patient,
-            IPatientDocumentRepository patientDocument)
+        private readonly HttpClient _httpClient = new()
         {
-            _patient = patient;
-            _patientDocument = patientDocument;
-        }
-
+            BaseAddress = new Uri("https://localhost:7017/v1/")
+        };
+        public IEnumerable<PatientDocumentResponse>? PatientDocsResponse { get; set; }
+        public PatientResponse? PatientResponse { get; set; }
         public async Task OnGet(string id)
         {
-            var patient = await _patient.GetByIdAsync(id);
-            PatientResponseDetails =  patient.ToPatientResponse();
-
-            var patientDocuments = await _patientDocument.GetPatientDocumentByPatientId(id);
-            DocumentResponses = patientDocuments.Select(x => x.ToDocumentResponse()).ToList();
+            try
+            {
+                PatientResponse = await _httpClient.GetFromJsonAsync<PatientResponse>($"/v1/Patient/{id}");
+                PatientDocsResponse =
+                    await _httpClient.GetFromJsonAsync<IEnumerable<PatientDocumentResponse>>(
+                        $"/v1/PatientDocument/{id}");
+            }
+            catch (HttpRequestException ex)
+            {
+                PatientDocsResponse = null;
+            }
         }
     }
 }

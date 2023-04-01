@@ -5,26 +5,30 @@
 }
 <div class="card">
     <div class="card-header">
-        @Model.PatientResponseDetails.GetPatientFullName()
+        @Model.PatientResponse.GetPatientFullName()
     </div>
     <div class="card-body">
-        <h5 class="card-title"> Patient Name: @Model.PatientResponseDetails.FirstName </h5>
-        <p class="card-text">   Patient Age: @Model.PatientResponseDetails.Age</p>
+        <h5 class="card-title"> Patient Name: @Model.PatientResponse.FirstName </h5>
+        <p class="card-text">   Patient Age: @Model.PatientResponse.Age</p>
         <a asp-page="Index" class="btn btn-primary form-control text-white"> Back to List Patient</a>
     </div>
 </div>
 
 @{
-    @if (@Model.DocumentResponses.Count() == 0)
+    @if (@Model.PatientDocsResponse != null)
     {
-        <div>No documents attached to the @Model.PatientResponseDetails.FirstName</div>
-    }
+    
     <div class="image-gallery">
-        @foreach (var image in Model.DocumentResponses)
+        @foreach (var image in Model.PatientDocsResponse)
         {
             <a href="@image.PatientDocumentbase64" target="_blank">
                 <img src="data:image/jpeg;base64,@image.PatientDocumentbase64" alt="Image" class="thumbnail" height="300" width="300">
             </a>
         }
     </div>
+    }
+    else
+    {
+        <div>No documents attached to the @Model.PatientResponse.FirstName</div>
+    }
 }
