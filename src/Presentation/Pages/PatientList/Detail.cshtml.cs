@@ -8,7 +8,7 @@ namespace Presentation.Pages.PatientList
     {
         private readonly HttpClient _httpClient = new()
         {
-            BaseAddress = new Uri("https://localhost:7017/v1/")
+            BaseAddress = new Uri("https://localhost:7017")
         };
         public IEnumerable<PatientDocumentResponse>? PatientDocsResponse { get; set; }
         public PatientResponse? PatientResponse { get; set; }
@@ -16,10 +16,10 @@ namespace Presentation.Pages.PatientList
         {
             try
             {
-                PatientResponse = await _httpClient.GetFromJsonAsync<PatientResponse>($"/v1/Patient/{id}");
+                PatientResponse = await _httpClient.GetFromJsonAsync<PatientResponse>($"/v1/api/Patients/{id}");
                 PatientDocsResponse =
                     await _httpClient.GetFromJsonAsync<IEnumerable<PatientDocumentResponse>>(
-                        $"/v1/PatientDocument/{id}");
+                        $"/v1/api/PatientDocuments/{id}");
             }
             catch (HttpRequestException ex)
             {

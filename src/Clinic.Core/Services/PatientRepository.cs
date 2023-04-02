@@ -39,9 +39,9 @@ public class PatientRepository : IPatientRepository
         try
         {
             var sb = new StringBuilder();
-            sb.Append("INSERT INTO");
-            sb.Append("Patients (Id, FirstName, LastName, BirthDate, NextAppointment)");
-            sb.Append("VALUES (@Id, @FirstName, @LastName, @BirthDate, @NextAppointment);");
+            sb.Append("INSERT INTO ");
+            sb.Append("Patients (Id, FirstName, LastName, BirthDate, NextAppointment) ");
+            sb.Append("VALUES (@Id, @FirstName, @LastName, @BirthDate, @NextAppointment); ");
 
             var query = sb.ToString();
 
