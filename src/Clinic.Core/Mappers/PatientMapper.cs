@@ -1,4 +1,5 @@
 ﻿using Clinic.Core.Contracts;
+using Clinic.Core.Helpers;
 using Clinic.Core.Models;
 
 namespace Clinic.Core.Mappers;
@@ -13,7 +14,8 @@ public static class PatientMapper
             FirstName = patient.FirstName,
             LastName = patient.LastName,
             BirthDate = patient.BirthDate,
-            NextAppointment = patient.NextAppointment
+            NextAppointment = patient.NextAppointment,
+            Age = patient.BirthDate.GetCurrentAge()
         };
     }
 }
