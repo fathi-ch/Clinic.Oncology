@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using Clinic.Core.Data;
 using Clinic.Core.Models;
 using Dapper;
@@ -20,7 +21,13 @@ public class PatientRepository : IPatientRepository
     public async Task<IEnumerable<Patient>> GetAllAsync()
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
-        return await connection.QueryAsync<Patient>("select * from Patients");
+        
+        var sb = new StringBuilder();
+        sb.Append("SELECT * ");
+        sb.Append("FROM Patients p ");
+        
+        var query = sb.ToString();
+        return await connection.QueryAsync<Patient>(query);
     }
 
     public async Task<bool> CreateWithDocumentsAsync(Patient patient, IEnumerable<IFormFile> files)
@@ -31,14 +38,18 @@ public class PatientRepository : IPatientRepository
 
         try
         {
-            const string query = "INSERT INTO Patients (Id, FirstName, LastName, BirthDate, NextAppointment)" +
-                                 " VALUES (@Id, @FirstName, @LastName, @BirthDate, @NextAppointment);";
+            var sb = new StringBuilder();
+            sb.Append("INSERT INTO ");
+            sb.Append("Patients (Id, FirstName, LastName, BirthDate, NextAppointment) ");
+            sb.Append("VALUES (@Id, @FirstName, @LastName, @BirthDate, @NextAppointment); ");
+
+            var query = sb.ToString();
+
+            //Possible to override ToString to contain this logic -Refactor-
+            patient.FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(patient.FirstName ?? string.Empty);
+            patient.LastName = patient.LastName?.ToUpper();
+
             patient.Id = Guid.NewGuid();
-
-            //Possible to ovrride ToString to contain this logic
-            patient.FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(patient.FirstName);
-            patient.LastName = patient.LastName.ToUpper();
-
             var result = await connection.ExecuteAsync(query,
                 new { patient.Id, patient.FirstName, patient.LastName, patient.BirthDate, patient.NextAppointment });
 
@@ -52,13 +63,18 @@ public class PatientRepository : IPatientRepository
             throw;
         }
     }
+
     public async Task<Patient?> GetByIdAsync(string id)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
+        var sb = new StringBuilder();
+        sb.Append("SELECT * ");
+        sb.Append("FROM Patients p ");
+        sb.Append("WHERE p.Id = @PatientId;");
+
+        var query = sb.ToString();
         return await connection.QueryFirstOrDefaultAsync<Patient>(
-            "SELECT * " +
-            "FROM Patients p " +
-            "WHERE p.Id = @PatientId;",
+            query,
             new { PatientId = Guid.Parse(id) });
     }
 

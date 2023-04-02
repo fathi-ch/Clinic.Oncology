@@ -13,7 +13,7 @@
     </div>
 </div>
 @{
-    if (Model.Patientlist.Count() > 0)
+    if (Model.Patients.Count() > 0)
     {
         <form method="post">
             <table id="patients" class="table p-4 m-4 table-hover">
@@ -21,16 +21,16 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">
-                        <label asp-for="Patientlist.FirstOrDefault().FirstName"></label>
+                        <label asp-for="Patients.FirstOrDefault().FirstName"></label>
                     </th>
                     <th scope="col">
-                        <label asp-for="Patientlist.FirstOrDefault().LastName"></label>
+                        <label asp-for="Patients.FirstOrDefault().LastName"></label>
                     </th>
                     <th scope="col">
-                        <label asp-for="Patientlist.FirstOrDefault().Age"></label>
+                        <label asp-for="Patients.FirstOrDefault().Age"></label>
                     </th>
                     <th scope="col">
-                        <label asp-for="Patientlist.FirstOrDefault().NextAppointment"></label>
+                        <label asp-for="Patients.FirstOrDefault().NextAppointment"></label>
                     </th>
                     <th></th>
                 </tr>
@@ -39,7 +39,7 @@
                 @{
                     int index = 1;
                 }
-                @foreach (var patient in Model.Patientlist)
+                @foreach (var patient in Model.Patients)
                 {
                     <tr>
                         <th scope="row">
