@@ -1,4 +1,3 @@
-using Clinic.Core.Contracts;
 using Clinic.Core.Data;
 using Clinic.Core.Repositories;
 

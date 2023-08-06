@@ -1,30 +1,30 @@
-using System.Net;
 using Clinic.Core.Contracts;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Presentation.Pages.PatientList
+namespace Presentation.Pages.PatientList;
+
+public class DetailModel : PageModel
 {
-    public class DetailModel : PageModel
+    private readonly HttpClient _httpClient = new()
     {
-        private readonly HttpClient _httpClient = new()
+        BaseAddress = new Uri("https://localhost:7017")
+    };
+
+    public IEnumerable<PatientDocumentResponse>? PatientDocsResponse { get; set; }
+    public PatientResponse? PatientResponse { get; set; }
+
+    public async Task OnGet(string id)
+    {
+        try
         {
-            BaseAddress = new Uri("https://localhost:7017")
-        };
-        public IEnumerable<PatientDocumentResponse>? PatientDocsResponse { get; set; }
-        public PatientResponse? PatientResponse { get; set; }
-        public async Task OnGet(string id)
+            PatientResponse = await _httpClient.GetFromJsonAsync<PatientResponse>($"/v1/api/Patients/{id}");
+            PatientDocsResponse =
+                await _httpClient.GetFromJsonAsync<IEnumerable<PatientDocumentResponse>>(
+                    $"/v1/api/PatientDocuments/{id}");
+        }
+        catch (HttpRequestException ex)
         {
-            try
-            {
-                PatientResponse = await _httpClient.GetFromJsonAsync<PatientResponse>($"/v1/api/Patients/{id}");
-                PatientDocsResponse =
-                    await _httpClient.GetFromJsonAsync<IEnumerable<PatientDocumentResponse>>(
-                        $"/v1/api/PatientDocuments/{id}");
-            }
-            catch (HttpRequestException ex)
-            {
-                PatientDocsResponse = null;
-            }
+            PatientDocsResponse = null;
         }
     }
 }

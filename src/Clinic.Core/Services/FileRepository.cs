@@ -19,10 +19,10 @@ public class FileRepository : IFileRepository
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
         using var transaction = connection.BeginTransaction();
-        
+
         try
         {
-            int result = 0;
+            var result = 0;
             if (files.Any())
             {
                 const string queryLastPatient = "SELECT * FROM Patients WHERE Id = @Id";
@@ -36,15 +36,15 @@ public class FileRepository : IFileRepository
                 {
                     var docId = Guid.NewGuid();
                     var originalFileExtension = Path.GetExtension(file.FileName);
-                    string currentTimeMs = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond).ToString();
+                    var currentTimeMs = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond).ToString();
                     string[] stringsToJoin =
                     {
                         lastPatient.FirstName, docId.ToString(), DateTime.Now.ToString("yyyyMMdd_HHmmss"), currentTimeMs
                     };
 
-                    string fileName = string.Join("_", stringsToJoin);
+                    var fileName = string.Join("_", stringsToJoin);
                     //Default path to move to appsettings later on
-                    var pathPic = Path.Combine(@"D:\Clinic\Documents\", fileName + originalFileExtension);
+                    var pathPic = Path.Combine(@"D:\Code\Data\Documents\", fileName + originalFileExtension);
 
                     await using (var fileStream = new FileStream(pathPic, FileMode.Create))
                     {

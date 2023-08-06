@@ -21,12 +21,8 @@ public class PatientDocumentsController : ControllerBase
     {
         var patientDocuments = await _patientDocument.GetPatientDocumentByPatientId(id);
         var documents = patientDocuments.ToList();
-        if (!documents.Any())
-        {
-            return NotFound();
-        }
-        
-        return Ok(documents.Select(d => d.ToDocumentResponse()));
+        if (!documents.Any()) return NotFound();
 
+        return Ok(documents.Select(d => d.ToDocumentResponse()));
     }
 }

@@ -1,23 +1,21 @@
 ﻿using System.Data;
 using Microsoft.Data.Sqlite;
 
+namespace Clinic.Core.Data;
 
-namespace Clinic.Core.Data
+public class SqliteDbConnectionFactory : ISqliteDbConnectionFactory
 {
-    public class SqliteDbConnectionFactory : ISqliteDbConnectionFactory
+    private readonly string _connectionString;
+
+    public SqliteDbConnectionFactory()
     {
-        private  readonly  string _connectionString;
+        _connectionString = @"Data Source=D:/Code/Data/database.db";
+    }
 
-        public SqliteDbConnectionFactory()
-        {
-            _connectionString = @"Data Source=D:/Clinic/database.db";
-        }
-
-        public async Task<IDbConnection> CreateDbConnectionAsync()
-        {
-           var connection = new SqliteConnection(_connectionString);
-            await connection.OpenAsync();
-            return connection;
-        }
+    public async Task<IDbConnection> CreateDbConnectionAsync()
+    {
+        var connection = new SqliteConnection(_connectionString);
+        await connection.OpenAsync();
+        return connection;
     }
 }
