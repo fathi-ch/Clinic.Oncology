@@ -1,17 +1,22 @@
-﻿using Clinic.Core.Data;
+﻿using Clinic.Core.Configurations;
+using Clinic.Core.Data;
+using Clinic.Core.Helpers;
 using Clinic.Core.Models;
 using Dapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Clinic.Core.Repositories;
 
 public class FileRepository : IFileRepository
 {
     private readonly ISqliteDbConnectionFactory _connectionFactory;
+    private readonly DatabaseConfigurations _dbSettings;
 
-    public FileRepository(ISqliteDbConnectionFactory connectionFactory)
+    public FileRepository(ISqliteDbConnectionFactory connectionFactory, DatabaseConfigurations dbConfigs)
     {
         _connectionFactory = connectionFactory;
+        _dbSettings = dbConfigs;
     }
 
 
@@ -43,16 +48,15 @@ public class FileRepository : IFileRepository
                     };
 
                     var fileName = string.Join("_", stringsToJoin);
-                    //Default path to move to appsettings later on
-                    var pathPic = Path.Combine(@"D:\Code\Data\Documents\", fileName + originalFileExtension);
+                    var documentsPath = Path.Combine(_dbSettings.GetFullDocumentsPath(), fileName + originalFileExtension);
 
-                    await using (var fileStream = new FileStream(pathPic, FileMode.Create))
+                    await using (var fileStream = new FileStream(documentsPath, FileMode.Create))
                     {
                         await file.CopyToAsync(fileStream);
                     }
 
                     result = await connection.ExecuteAsync(documentQuery,
-                        new { Id = docId, PatientId = lastPatient.Id, Path = pathPic });
+                        new { Id = docId, PatientId = lastPatient.Id, Path = documentsPath });
                 }
             }
 

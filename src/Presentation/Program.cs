@@ -1,15 +1,7 @@
-using Clinic.Core.Data;
-using Clinic.Core.Repositories;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddSingleton<ISqliteDbConnectionFactory, SqliteDbConnectionFactory>();
-builder.Services.AddSingleton<DatabaseInitializer>();
-builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
-builder.Services.AddSingleton<IPatientDocumentRepository, PatientDocumentRepository>();
-builder.Services.AddSingleton<IFileRepository, FileRepository>();
 builder.Services.AddHttpClient();
 var app = builder.Build();
 
@@ -29,8 +21,5 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
-var dbInitializer = app.Services.GetRequiredService<DatabaseInitializer>();
-await dbInitializer.InitializeAsync();
 
 app.Run();

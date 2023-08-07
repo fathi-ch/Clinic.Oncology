@@ -7,15 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Bootstrap" Version="5.2.3"/>
+        <PackageReference Include="Bootstrap" Version="5.2.3" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Clinic.Core\Clinic.Core.csproj"/>
+        <ProjectReference Include="..\Clinic.Core\Clinic.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="wwwroot\images\"/>
+        <Folder Include="wwwroot\images\" />
     </ItemGroup>
 
 </Project>

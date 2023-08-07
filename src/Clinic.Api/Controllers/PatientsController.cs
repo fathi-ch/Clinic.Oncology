@@ -3,6 +3,7 @@ using Clinic.Core.Mappers;
 using Clinic.Core.Models;
 using Clinic.Core.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Clinic.Api.Controllers;
 
@@ -36,15 +37,16 @@ public class PatientsController : ControllerBase
     }
 
     [HttpPost(Name = "CreateWithDocuments")]
-    public async Task<IActionResult> CreateWithDocumentsAsync([FromBody] Patient patient,
-        [FromForm] IEnumerable<IFormFile> files)
+    public async Task<IActionResult> CreateWithDocumentsAsync([FromForm] PatientDocumentsUploadModel model)
+  //  public async Task<IActionResult> CreateWithDocumentsAsync([FromBody] Patient patient, [FromForm] IEnumerable<IFormFile> files)
     {
         // if (!ModelState.IsValid)
         // {
         //     return BadRequest(ModelState);
         // }
 
-        var result = await _patientRepository.CreateWithDocumentsAsync(patient, files);
+        var patient = JsonConvert.DeserializeObject<Patient>(model.Patient);
+        var result = await _patientRepository.CreateWithDocumentsAsync(patient, model.Files);
 
         if (result) return Created("Created", result);
 

@@ -1,4 +1,7 @@
 ﻿#nullable enable
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
 namespace Clinic.Core.Models;
 
 public class Patient
