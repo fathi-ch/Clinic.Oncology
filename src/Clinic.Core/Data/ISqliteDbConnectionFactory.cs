@@ -1,9 +1,8 @@
 ﻿using System.Data;
 
-namespace Clinic.Core.Data
+namespace Clinic.Core.Data;
+
+public interface ISqliteDbConnectionFactory
 {
-    public interface ISqliteDbConnectionFactory
-    {
-        Task<IDbConnection> CreateDbConnectionAsync();
-    }
+    Task<IDbConnection> CreateDbConnectionAsync();
 }

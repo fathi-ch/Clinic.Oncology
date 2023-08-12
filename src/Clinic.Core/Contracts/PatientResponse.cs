@@ -1,18 +1,22 @@
-﻿using System.ComponentModel;
-using System.Text.Json.Serialization;
-using Clinic.Core.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Clinic.Core.Contracts
+namespace Clinic.Core.Contracts;
+
+public class PatientResponse
 {
-    public class PatientResponse
-    {
-        public Guid Id { get; set; }   
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public int Age { get; set; }
-        public  DateTime BirthDate { get; set; }
-        public  DateTime NextAppointment { get; set; }
-        public string GetPatientFullName() => string.Concat(FirstName," " , LastName);
+    public Guid Id { get; set; }
+    
+    [Display(Name = "First Name")]
+    public string? FirstName { get; set; }
+    [Display(Name = "Last Name")]
+    public string? LastName { get; set; }
+    public int Age { get; set; }
+    public DateTime BirthDate { get; set; }
+    [Display(Name = "Next Appointment")]
+    public DateTime NextAppointment { get; set; }
 
+    public string GetPatientFullName()
+    {
+        return string.Concat(FirstName, " ", LastName);
     }
 }

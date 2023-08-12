@@ -1,5 +1,5 @@
 ﻿@page
-@model Presentation.Pages.PatientList.IndexModel
+@model IndexModel
 @{
     ViewData["Title"] = "Patients Index";
 }
@@ -37,7 +37,7 @@
                 </thead>
                 <tbody>
                 @{
-                    int index = 1;
+                    var index = 1;
                 }
                 @foreach (var patient in Model.Patients)
                 {

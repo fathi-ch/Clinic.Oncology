@@ -21,11 +21,11 @@ public class PatientRepository : IPatientRepository
     public async Task<IEnumerable<Patient>> GetAllAsync()
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
-        
+
         var sb = new StringBuilder();
         sb.Append("SELECT * ");
         sb.Append("FROM Patients p ");
-        
+
         var query = sb.ToString();
         return await connection.QueryAsync<Patient>(query);
     }
