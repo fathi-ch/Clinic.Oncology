@@ -20,13 +20,16 @@ public class DocumentsController : ControllerBase
     [HttpGet(Name = "GetPatientDocumentById")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<PatientDocumentResponse>>> GetPatientDocumentById(string id)
+    public async Task<ActionResult<IEnumerable<PatientWithDocumentsResponse>>> GetPatientDocumentById(string id)
     {
         var patientDocuments = await _document.GetPatientDocumentByPatientIdAsync(id);
-        var documents = patientDocuments.ToList();
-        if (!documents.Any()) return NotFound();
+        // var documents = patientDocuments.ToList();
+        // if (!documents.Any()) return NotFound();
+        //
+        // return Ok(documents.Select(d => d.ToDocumentResponse()));
+        if (patientDocuments == null) return NotFound();
 
-        return Ok(documents.Select(d => d.ToDocumentResponse()));
+        return Ok(patientDocuments);
     }
     
     

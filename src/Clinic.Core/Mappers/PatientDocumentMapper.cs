@@ -5,12 +5,12 @@ namespace Clinic.Core.Mappers;
 
 public static class PatientDocumentMapper
 {
-    public static PatientDocumentResponse ToDocumentResponse(this PatientDocument? patientDocument)
+    public static PatientDocumentsResponse ToDocumentResponse(this PatientDocument? patientDocument)
     {
         var convertedList = new List<string>();
         var imageByte = File.ReadAllBytes(patientDocument.Path);
 
-        return new PatientDocumentResponse
+        return new PatientDocumentsResponse
         {
             Path = patientDocument.Path,
             PatientDocumentbase64 = Convert.ToBase64String(imageByte)
