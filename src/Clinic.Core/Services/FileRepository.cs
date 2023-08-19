@@ -1,12 +1,8 @@
-﻿using System.Net;
-using Clinic.Core.Configurations;
+﻿using Clinic.Core.Configurations;
 using Clinic.Core.Data;
-using Clinic.Core.Models;
-using Clinic.Core.Services;
-using Dapper;
 using Microsoft.AspNetCore.Http;
 
-namespace Clinic.Core.Repositories;
+namespace Clinic.Core.Services;
 
 public class FileRepository : IFileRepository
 {
@@ -18,7 +14,6 @@ public class FileRepository : IFileRepository
         _connectionFactory = connectionFactory;
         _dbConfigs = dbConfigs;
     }
-
 
     public async Task<bool> SaveFilesAsync(IFormFile file, string path, FileMode fileMode = FileMode.Create)
     {

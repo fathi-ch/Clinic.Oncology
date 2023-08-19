@@ -1,6 +1,5 @@
 ﻿using Clinic.Core.Contracts;
 using Clinic.Core.Mappers;
-using Clinic.Core.Repositories;
 using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,20 +16,15 @@ public class DocumentsController : ControllerBase
         _document = document;
     }
 
-    [HttpGet(Name = "GetPatientDocumentById")]
+    [HttpGet(Name = "GetPatientDocumentByIdAsync")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<PatientWithDocumentsResponse>>> GetPatientDocumentById(string id)
+    public async Task<ActionResult<IEnumerable<PatientWithDocumentsResponse>>> GetPatientDocumentByIdAsync(string id)
     {
         var patientDocuments = await _document.GetPatientDocumentByPatientIdAsync(id);
-        // var documents = patientDocuments.ToList();
-        // if (!documents.Any()) return NotFound();
-        //
-        // return Ok(documents.Select(d => d.ToDocumentResponse()));
+        
         if (patientDocuments == null) return NotFound();
 
         return Ok(patientDocuments);
     }
-    
-    
 }

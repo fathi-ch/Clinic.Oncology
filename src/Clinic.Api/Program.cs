@@ -1,6 +1,5 @@
 using Clinic.Core.Configurations;
 using Clinic.Core.Data;
-using Clinic.Core.Repositories;
 using Clinic.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);

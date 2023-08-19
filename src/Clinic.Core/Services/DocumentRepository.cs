@@ -1,11 +1,12 @@
-﻿using System.Reflection.Metadata;
-using System.Text;
+﻿using System.Text;
 using Clinic.Core.Configurations;
 using Clinic.Core.Contracts;
 using Clinic.Core.Data;
+using Clinic.Core.Mappers;
 using Clinic.Core.Models;
 using Dapper;
 using Microsoft.AspNetCore.Http;
+
 
 namespace Clinic.Core.Services;
 
@@ -62,79 +63,36 @@ public class DocumentRepository : IDocumentRepository
         }
     }
 
-    // public async Task<IEnumerable<PatientDocument?>> GetPatientDocumentByPatientIdAsync(string id)
-    // {
-    //     using var connection = await _connectionFactory.CreateDbConnectionAsync();
-    //
-    //     var sb = new StringBuilder();
-    //     sb.Append("SELECT * ");
-    //     sb.Append("FROM Documents d ");
-    //     sb.Append("WHERE PatientId = @PatientId;");
-    //
-    //     var query = sb.ToString();
-    //     return await connection.QueryAsync<PatientDocument>(
-    //         query,
-    //         new { PatientId = Guid.Parse(id) });
-    // }
-    
     public async Task<PatientWithDocumentsResponse> GetPatientDocumentByPatientIdAsync(string id)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
-
-        var query = @"SELECT p.*, d.* FROM Patients p LEFT JOIN Documents d ON p.Id = d.PatientId WHERE p.Id = @PatientId;";
-
         var patientDictionary = new Dictionary<Guid, PatientWithDocumentsResponse>();
 
-        var result = await connection.QueryAsync<Patient, PatientDocument, PatientWithDocumentsResponse>(
-            query,
-            (patient, document) =>
-            {
-                if (!patientDictionary.TryGetValue(patient.Id, out var patientEntry))
-                {
-                    patientEntry = new PatientWithDocumentsResponse
-                    {
-                        Patient = patient,
-                        Documents = new List<PatientDocument>()
-                    };
-                    patientDictionary.Add(patient.Id, patientEntry);
-                }
-        
-                if (document != null) 
-                {
-                    patientEntry.Documents.Add(document);
-                }
-                return patientEntry;
-            },
+        await connection.QueryAsync<Patient, PatientDocument, PatientWithDocumentsResponse>(
+            PatientWithDocumentsQuery,
+            MapPatientWithDocuments(patientDictionary),
             param: new { PatientId = Guid.Parse(id) },
-            splitOn: "Id"); // Ensure this is the correct column name to split on
+            splitOn: SplitOnIdColumnName
+        );
 
-        var patientWithDocuments = patientDictionary.Values.FirstOrDefault();
-
-        return patientWithDocuments;
+        return patientDictionary.Values.FirstOrDefault() ?? throw new InvalidOperationException();
     }
 
-    public Task<bool> DeletePatientDocumentsAsync(string id)
+    public async Task<bool> DeletePatientDocumentsAsync(string id)
     {
-        throw new NotImplementedException();
+        var patientDocuments = await GetPatientDocumentByPatientIdAsync(id);
+        if (patientDocuments?.Patient == null || !patientDocuments.Documents.Any())
+        {
+            return false;
+        }
+
+        var filesDeleted = await DeleteFilesFromDiskAsync(patientDocuments.Documents);
+        var dbDeleted = await DeletePatientDocumentsFromDbAsync(id);
+
+        return filesDeleted && dbDeleted;
     }
 
-    // public async Task<bool> DeletePatientDocumentsAsync(string id)
-    // {
-    //     
-    //
-    //     // var patientDocuments = await GetPatientDocumentByPatientIdAsync(id);
-    //     // if (patientDocuments == null || !patientDocuments.Any())
-    //     // {
-    //     //     return false;
-    //     // }
-    //     //
-    //     // // var filesDeleted = await DeleteFilesFromDiskAsync(patientDocuments);
-    //     // // var dbDeleted = await DeletePatientDocumentsFromDbAsync(id);
-    //     //
-    //     // return filesDeleted && dbDeleted;
-    // }
-    
-    private async Task<bool> DeleteFilesFromDiskAsync(IEnumerable<PatientDocument> patientDocuments)
+    private async Task<bool> DeleteFilesFromDiskAsync(IEnumerable<PatientDocumentResponse> patientDocuments)
     {
         var deleteFileTasks = patientDocuments
             .Where(document => document?.Path != null)
@@ -142,8 +100,8 @@ public class DocumentRepository : IDocumentRepository
             .ToList();
 
         await Task.WhenAll(deleteFileTasks);
-    
-        return true; 
+
+        return true;
     }
 
     private string GenerateDocumentPath(Patient lastPatient, Guid newDocumentId, string originalFileExtension)
@@ -154,7 +112,7 @@ public class DocumentRepository : IDocumentRepository
 
         return Path.Combine(_dbConfigs.GetFullDocumentsPath(), fileName + originalFileExtension);
     }
-    
+
     private async Task<bool> DeletePatientDocumentsFromDbAsync(string id)
     {
         try
@@ -164,7 +122,7 @@ public class DocumentRepository : IDocumentRepository
             sb.Append("DELETE ");
             sb.Append("FROM Documents ");
             sb.Append("WHERE PatientId = @PatientId;");
-            
+
             var deletePatientQuery = sb.ToString();
             var affectedRows = await connection.ExecuteAsync(deletePatientQuery, new { PatientId = Guid.Parse(id) });
             return affectedRows > 0;
@@ -175,4 +133,33 @@ public class DocumentRepository : IDocumentRepository
             return false;
         }
     }
+
+    private static Func<Patient, PatientDocument, PatientWithDocumentsResponse> MapPatientWithDocuments(
+        Dictionary<Guid, PatientWithDocumentsResponse> patientDocuments)
+    {
+        return (patient, document) =>
+        {
+            if (!patientDocuments.TryGetValue(patient.Id, out var patientEntry))
+            {
+                patientEntry = new PatientWithDocumentsResponse
+                {
+                    Patient = patient.ToPatientResponse(),
+                    Documents = new List<PatientDocumentResponse>()
+                };
+                patientDocuments.Add(patient.Id, patientEntry);
+            }
+
+            if (document != null)
+            {
+                patientEntry.Documents.Add(document.ToDocumentResponse());
+            }
+
+            return patientEntry;
+        };
+    }
+
+    private const string SplitOnIdColumnName = "Id";
+
+    private const string PatientWithDocumentsQuery =
+        @"SELECT p.*, d.* FROM Patients p LEFT JOIN Documents d ON p.Id = d.PatientId WHERE p.Id = @PatientId;";
 }

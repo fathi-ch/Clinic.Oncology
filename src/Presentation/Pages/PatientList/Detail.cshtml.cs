@@ -10,15 +10,14 @@ public class DetailModel : PageModel
         BaseAddress = new Uri("https://localhost:7017")
     };
 
-    public IEnumerable<PatientDocumentsResponse>? PatientDocsResponse { get; set; }
-    public PatientResponse? PatientResponse { get; set; }
+    public PatientWithDocumentsResponse PatientDocsResponse { get; set; }
 
     public async Task OnGet(string id)
     {
         try
         {
-            PatientResponse = await _httpClient.GetFromJsonAsync<PatientResponse>($"/v1/api/Patients/{id}");
-            PatientDocsResponse = await _httpClient.GetFromJsonAsync<IEnumerable<PatientDocumentsResponse>>($"/v1/api/patient/{id}/documents");
+            PatientDocsResponse =
+                await _httpClient.GetFromJsonAsync<PatientWithDocumentsResponse>($"/v1/api/patient/{id}/documents");
         }
         catch (HttpRequestException ex)
         {

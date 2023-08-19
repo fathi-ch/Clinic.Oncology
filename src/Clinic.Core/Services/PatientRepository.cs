@@ -12,7 +12,6 @@ public class PatientRepository : IPatientRepository
     private readonly ISqliteDbConnectionFactory _connectionFactory;
     private readonly IDocumentRepository _documentRepository;
 
-
     public PatientRepository(ISqliteDbConnectionFactory connectionFactory, IDocumentRepository documentRepository)
     {
         _connectionFactory = connectionFactory;
