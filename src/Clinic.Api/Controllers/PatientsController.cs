@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Clinic.Api.Controllers;
 
 [ApiController]
-[Route("/v1/api/[controller]")]
+[Route("/v1/api/patients")]
 public class PatientsController : ControllerBase
 {
     private readonly IPatientRepository _patientRepository;
