@@ -1,72 +1,75 @@
-﻿using Clinic.Core.Configurations;
+﻿using System.Net;
+using Clinic.Core.Configurations;
 using Clinic.Core.Data;
-using Clinic.Core.Helpers;
 using Clinic.Core.Models;
+using Clinic.Core.Services;
 using Dapper;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Clinic.Core.Repositories;
 
 public class FileRepository : IFileRepository
 {
     private readonly ISqliteDbConnectionFactory _connectionFactory;
-    private readonly DatabaseConfigurations _dbSettings;
+    private readonly DatabaseConfigurations _dbConfigs;
 
     public FileRepository(ISqliteDbConnectionFactory connectionFactory, DatabaseConfigurations dbConfigs)
     {
         _connectionFactory = connectionFactory;
-        _dbSettings = dbConfigs;
+        _dbConfigs = dbConfigs;
     }
 
 
-    public async Task<bool> SaveFilesAsync(IEnumerable<IFormFile> files, Guid id)
+    public async Task<bool> SaveFilesAsync(IFormFile file, string path, FileMode fileMode = FileMode.Create)
     {
-        using var connection = await _connectionFactory.CreateDbConnectionAsync();
-        using var transaction = connection.BeginTransaction();
-
         try
         {
-            var result = 0;
-            if (files.Any())
-            {
-                const string queryLastPatient = "SELECT * FROM Patients WHERE Id = @Id";
-                const string documentQuery =
-                    "INSERT INTO Documents (Id, PatientId, Path) VALUES (@Id, @PatientId, @Path)";
-
-                var lastPatient =
-                    await connection.QuerySingleOrDefaultAsync<Patient>(queryLastPatient, new { Id = id });
-
-                foreach (var file in files)
-                {
-                    var docId = Guid.NewGuid();
-                    var originalFileExtension = Path.GetExtension(file.FileName);
-                    var currentTimeMs = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond).ToString();
-                    string[] stringsToJoin =
-                    {
-                        lastPatient.FirstName, docId.ToString(), DateTime.Now.ToString("yyyyMMdd_HHmmss"), currentTimeMs
-                    };
-
-                    var fileName = string.Join("_", stringsToJoin);
-                    var documentsPath = Path.Combine(_dbSettings.GetFullDocumentsPath(), fileName + originalFileExtension);
-
-                    await using (var fileStream = new FileStream(documentsPath, FileMode.Create))
-                    {
-                        await file.CopyToAsync(fileStream);
-                    }
-
-                    result = await connection.ExecuteAsync(documentQuery,
-                        new { Id = docId, PatientId = lastPatient.Id, Path = documentsPath });
-                }
-            }
-
-            transaction.Commit();
-            return result > 0;
+            await using var fileStream = new FileStream(path, fileMode);
+            await file.CopyToAsync(fileStream);
         }
-        catch (Exception)
+        catch (IOException)
         {
-            transaction.Rollback();
-            throw;
+            return false;
         }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+        catch (Exception e)
+        {
+            //Logging to be added
+            return false;
+        }
+
+        return true;
+    }
+
+    public async Task<bool> DeleteFilesAsync(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                await Task.Run(() => File.Delete(path));
+            }
+        }
+        catch (FileNotFoundException)
+        {
+            return false;
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

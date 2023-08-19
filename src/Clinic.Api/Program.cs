@@ -1,6 +1,7 @@
 using Clinic.Core.Configurations;
 using Clinic.Core.Data;
 using Clinic.Core.Repositories;
+using Clinic.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ISqliteDbConnectionFactory, SqliteDbConnectionFactory>();
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
-builder.Services.AddSingleton<IPatientDocumentRepository, PatientDocumentRepository>();
+builder.Services.AddSingleton<IDocumentRepository, DocumentRepository>();
 builder.Services.AddSingleton<IFileRepository, FileRepository>();
 
 var app = builder.Build();

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Clinic.Core.Repositories;
+namespace Clinic.Core.Services;
 
 public interface IFileRepository
 {
-    Task<bool> SaveFilesAsync(IEnumerable<IFormFile> files, Guid id);
+    Task<bool> SaveFilesAsync(IFormFile file, string path, FileMode fileMode = FileMode.Create);
+    Task<bool> DeleteFilesAsync(string path);
 }
