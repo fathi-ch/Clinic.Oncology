@@ -61,7 +61,7 @@ public class PatientsController : ControllerBase
             {
                 return Created("Created", result);
             }
-
+            
             return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Failed to create patient" });
         }
         catch (Exception ex)
