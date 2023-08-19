@@ -20,7 +20,7 @@ public class DetailModel : PageModel
             PatientResponse = await _httpClient.GetFromJsonAsync<PatientResponse>($"/v1/api/Patients/{id}");
             PatientDocsResponse =
                 await _httpClient.GetFromJsonAsync<IEnumerable<PatientDocumentResponse>>(
-                    $"/v1/api/PatientDocuments/{id}");
+                    $"/v1/api/patient/{id}/documents");
         }
         catch (HttpRequestException ex)
         {

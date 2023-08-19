@@ -73,8 +73,8 @@ public class PatientsController : ControllerBase
                 new { Message = "An error occurred while creating the patient" });
         }
     }
-
-    [HttpDelete("id")]
+    
+    [HttpDelete("{id}", Name = "DeletePatient")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
