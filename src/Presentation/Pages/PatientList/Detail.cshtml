@@ -1,8 +1,6 @@
 ﻿@page
 @model DetailModel
-@{
-    ViewData["Title"] = "Patient Detail";
-}
+@{ ViewData["Title"] = "Patient Detail"; }
 <div class="card">
     <div class="card-header">
         @Model.PatientResponse.GetPatientFullName()
