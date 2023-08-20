@@ -1,0 +1,29 @@
+{
+    "items": [
+        {
+            "key": "@base-accent",
+            "value": "rgba(0, 102, 153, 1)"
+        },
+        {
+            "key": "@base-success",
+            "value": "rgba(51, 153, 0, 1)"
+        },
+        {
+            "key": "@base-danger",
+            "value": "rgba(153, 0, 0, 1)"
+        },
+        {
+            "key": "@list-group-color",
+            "value": "rgba(0, 0, 0, 1)"
+        },
+        {
+            "key": "@list-group-header-bg",
+            "value": "rgba(0, 102, 153, 0.3)"
+        }
+    ],
+    "baseTheme": "material.blue.light",
+    "outputColorScheme": "amorweb_custom-scheme",
+    "makeSwatch": false,
+    "version": "19.2.7",
+    "widgets": []
+}

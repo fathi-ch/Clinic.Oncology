@@ -1,0 +1,18 @@
+{
+    "env": {
+        "name": "string"
+    },
+    "apiServer": {
+        "clnqApi": "http://localhost:7017/v1/api"
+    },
+    "logging": {
+        "console": "string",
+        "appInsights": "string"
+    },
+    "auth": {
+        "requireAuth": "boolean",
+        "tenant": "boolean",
+        "clientId": "boolean"
+    }
+
+}

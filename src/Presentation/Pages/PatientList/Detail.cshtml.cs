@@ -7,7 +7,7 @@ public class DetailModel : PageModel
 {
     private readonly HttpClient _httpClient = new()
     {
-        BaseAddress = new Uri("https://localhost:7017")
+        BaseAddress = new Uri("http://localhost:7017")
     };
 
     public IEnumerable<PatientDocumentResponse>? PatientDocsResponse { get; set; }

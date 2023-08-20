@@ -11,9 +11,11 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^16.2.0",
+    "@angular/cdk": "^16.2.1",
     "@angular/common": "^16.2.0",
     "@angular/compiler": "^16.2.0",
     "@angular/core": "^16.2.0",
+    "@angular/flex-layout": "^15.0.0-beta.42",
     "@angular/forms": "^16.2.0",
     "@angular/platform-browser": "^16.2.0",
     "@angular/platform-browser-dynamic": "^16.2.0",
@@ -21,6 +23,7 @@
     "devextreme": "23.1.4",
     "devextreme-angular": "23.1.4",
     "rxjs": "~7.8.0",
+    "sass": "^1.66.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
   },
