@@ -54,7 +54,11 @@ public class PatientRepository : IPatientRepository
                 new { patient.Id, patient.FirstName, patient.LastName, patient.BirthDate, patient.NextAppointment });
 
             transaction.Commit();
-            await _documentRepository.CreatePatientDocumentsAsync(files, patient.Id.ToString());
+          
+            if (files != null && files.Any())
+            {
+                await _documentRepository.CreatePatientDocumentsAsync(files, patient.Id.ToString());
+            }
             return result > 0;
         }
         catch (Exception)
