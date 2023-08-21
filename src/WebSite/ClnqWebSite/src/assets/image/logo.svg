@@ -2,15 +2,15 @@
 <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
   <defs>
     <linearGradient gradientUnits="userSpaceOnUse" x1="612.656" y1="321" x2="612.656" y2="669" id="gradient-0">
-      <stop offset="0" style="stop-color: rgba(77, 161, 216, 1)"/>
-      <stop offset="1" style="stop-color: rgba(34, 108, 157, 1)"/>
+      <stop offset="0" style="stop-color: rgba(189, 40, 194, 1)"/>
+      <stop offset="1" style="stop-color: rgba(107, 23, 110, 1)"/>
     </linearGradient>
-    <linearGradient gradientUnits="userSpaceOnUse" x1="315.552" y1="65.059" x2="315.552" y2="431.232" id="gradient-1" gradientTransform="matrix(1, 0, 0, 1, -2.291572, 1)">
-      <stop offset="0" style="stop-color: rgba(77, 161, 216, 1)"/>
-      <stop offset="1" style="stop-color: rgba(34, 108, 157, 1)"/>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="313.26" y1="66.059" x2="313.26" y2="432.232" id="gradient-1">
+      <stop offset="0" style="stop-color: rgba(148, 32, 152, 1)"/>
+      <stop offset="1" style="stop-color: rgba(66, 14, 68, 1)"/>
     </linearGradient>
   </defs>
   <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 15.9px;" x="132.688" y="196.469"> </text>
   <path style="fill-rule: evenodd; paint-order: fill; fill: url(#gradient-0);" transform="matrix(-1.245826, 0, 0, 1.269867, 983.739563, -375.73645)" d="M 450.312 408 A 174 174 0 1 1 450.312 582 A 127.324 127.324 0 1 0 450.312 408 Z" bx:shape="crescent 601 495 174 300 0.7 1@df438be9"/>
-  <text style="fill: url(#gradient-1); font-family: Candara; font-size: 300px; white-space: pre;" x="216.872" y="351.936">D</text>
+  <text style="fill: url(#gradient-1); fill-opacity: 0.85; font-family: Candara; font-size: 300px; white-space: pre;" x="216.872" y="351.936">D</text>
 </svg>

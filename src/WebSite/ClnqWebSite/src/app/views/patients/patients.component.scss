@@ -1,3 +1,27 @@
+.thing {
+    padding: 1rem;
+    background-color: white; 
+    width: 99%; 
+    margin-left: -19px;
+    margin-top: -2px;
+    margin-bottom: -2px;
+
+    box-shadow: 0 0px 3px 0 rgba(0,0,0,0.11),
+      0 5px 15px 0 rgba(0,0,0,0.08);
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    
+    border-left: 0.3rem solid #de97ff;
+    border-right: 0.3rem solid #de97ff;
+    transition: border-left 300ms ease-in-out, padding-left 300ms ease-in-out;
+  }
+  
+//   .thing:hover {
+
+//     border-left: 0.5rem solid #de97ff;
+//   }
+
+
 ::ng-deep pointer-column {
     cursor: pointer;
   }
@@ -70,7 +94,7 @@
         font-weight: 500;
         font-style: normal;
         cursor: pointer;
-        background-color: #f0f8ff2e;
+        background-color: #dbd6db2e;
         font-size: 12px;
         line-height: normal;
     }

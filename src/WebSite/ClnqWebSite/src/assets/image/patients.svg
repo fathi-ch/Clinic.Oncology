@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="247.437" y1="132.118" x2="247.437" y2="461.845" id="gradient-1" spreadMethod="repeat" gradientTransform="matrix(0.996198, 0, 0, 0.891192, 0.940681, 73.886047)">
+      <stop offset="0" style="stop-color: rgba(214, 111, 200, 1)"/>
+      <stop offset="1" style="stop-color: rgba(174, 49, 157, 1)"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <g>
+      <rect x="22.779" y="156.118" width="449.317" height="329.727" style="fill-opacity: 0.79; fill: rgb(138, 21, 123);"/>
+      <path style="fill: rgb(255, 255, 255); visibility: hidden;" d="M 162.351 155.264 L 179.551 181.745 L 472.97 181.317 L 486.196 154.41 L 162.351 155.264 Z"/>
+      <rect x="23.632" y="191.628" width="447.609" height="293.85" style="fill-opacity: 0.79; fill: url(#gradient-1);"/>
+    </g>
+  </g>
+  <g style="" transform="matrix(1, 0, 0, 1.067264, 0, -22.018173)">
+    <g transform="matrix(1, 0, -0.003646, 1, 0.466078, 9)" style="">
+      <rect x="28.474" y="64.351" width="437.358" height="126.994" style="paint-order: fill; fill-rule: nonzero; stroke: rgb(207, 207, 207); stroke-opacity: 0.4; fill: rgb(245, 249, 255);"/>
+    </g>
+    <g>
+      <rect x="44.989" y="78.588" width="65.49" height="82.005" style="fill: rgb(255, 255, 255);"/>
+      <ellipse style="fill: rgb(157, 198, 220); stroke: rgb(255, 255, 255);" cx="77.017" cy="127.118" rx="21.64" ry="22.209"/>
+      <ellipse style="fill: rgb(157, 198, 220); stroke: rgb(255, 255, 255);" cx="77.587" cy="100.228" rx="9.112" ry="9.681"/>
+      <rect x="128.986" y="76.879" width="325.171" height="105.354" style="fill: rgb(255, 255, 255);"/>
+      <rect x="177.677" y="88.269" width="271.64" height="13.667" style="fill: rgba(118, 210, 244, 0.75);"/>
+      <rect x="178.392" y="107.632" width="270.501" height="13.667" style="fill: rgb(118, 210, 244);"/>
+      <rect x="143.223" y="126.994" width="305.809" height="13.667" style="fill: rgb(118, 210, 244);"/>
+      <rect x="142.515" y="145.508" width="305.809" height="13.667" style="fill: rgb(118, 210, 244);"/>
+      <rect x="54.954" y="129.8" width="47.837" height="23.959" style="fill: rgb(255, 255, 255);"/>
+    </g>
+  </g>
+  <path style="fill: rgb(228, 93, 93);" transform="matrix(-0.131742, 0, 0, 0.136185, 227.262253, 4.094948)" d="M 433.551 520.5 A 131 131 0 1 1 433.551 651.5 A 95.859 95.859 0 1 0 433.551 520.5 Z" bx:shape="crescent 547 586 131 300 0.7 1@af0b3d36"/>
+  <rect x="22.918" y="156.257" width="34.738" height="328.019" style="fill: rgb(184, 83, 170); visibility: hidden;"/>
+  <path style="fill: rgb(255, 254, 254);" transform="matrix(-0.613975, 0, 0, 0.634683, 591.701538, -35.573597)" d="M 433.551 520.5 A 131 131 0 1 1 433.551 651.5 A 95.859 95.859 0 1 0 433.551 520.5 Z" bx:shape="crescent 547 586 131 300 0.7 1@af0b3d36"/>
+</svg>

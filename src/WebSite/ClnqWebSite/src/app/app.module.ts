@@ -11,6 +11,7 @@ import { AcceuilComponent } from './main/accueil.component';
 import { PatientsComponent } from './views/patients/patients.component';
 import {RouterModule, Routes } from '@angular/router';
 import { ServicesPatient } from './services/patient/patient.service';
+import { SpinnerModule } from './spinner/spinner.module';
 
 export function initializeApp(appConfig: AppConfig) {
   return () => appConfig.load();
@@ -33,7 +34,8 @@ export function initializeApp(appConfig: AppConfig) {
     DxLoadPanelModule,
     DevExtremeModule,
     DxDataGridModule,
-    DxTemplateModule
+    DxTemplateModule,
+    SpinnerModule
   
   ],
   exports: [AppComponent

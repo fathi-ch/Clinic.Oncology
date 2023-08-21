@@ -3,45 +3,54 @@
         Pateints > Toutes les patients
     </div>
 
-  
+    
 
     <div fxFlex="calc(100% - 180px)">
 
-        <dx-data-grid #dataGrid class="gridContainer"   [showBorders]="true" 
+        <dx-data-grid #dataGrid class="gridContainer"    [showBorders]="true" 
         [hoverStateEnabled]="true" [rowAlternationEnabled]="true" [showRowLines]="true"  noDataText=""
         [dataSource]="LstPatients"  
         [showBorders]="true"  dataRowTemplate="dataRowTemplateName">
-        <!-- <dxo-scrolling rowRenderingMode="virtual"> </dxo-scrolling>
-        <dxo-paging [pageSize]="10"> </dxo-paging> 
-         <dxo-pager
-          [visible]="true"
-          allowedPageSizes="[5, 10, 'all']"
-          displayMode="full"
-          [showPageSizeSelector]="showPageSizeSelector"
-          [showInfo]="showInfo"
-          [showNavigationButtons]="showNavigationButtons"
-        >
-        </dxo-pager> -->
+     
        
         <dxi-column   caption="id" dataField="id" [visible]="false" ></dxi-column>
         <dxi-column  [width]="200"  caption="Nom"></dxi-column>
         <dxi-column  [width]="200"  caption="Prenom"></dxi-column>
+        <dxi-column  [width]="100"  caption="Sexe" ></dxi-column>
         <dxi-column  [width]="80"  caption="Age" ></dxi-column>
         <dxi-column  [width]="200"  caption="Date de naissance" ></dxi-column>
-        <dxi-column  [width]="200"  caption="Prochain RDV"></dxi-column>
+        <dxi-column  [width]="250"  caption="Prochain RDV"></dxi-column>
         <dxi-column  [width]="200"  caption="N° sécurité sociale "></dxi-column>
         <dxi-column  [width]="200"  caption="Mobile"></dxi-column>
  
         <ng-container *dxTemplate="let patient of 'dataRowTemplateName'" class="ficheControle dx-row">
-            <tr class="main-row">
+            <tr class="main-row" id="row-{{patient.data.id}}" (click)="this.showRow(patient.data.id)">
                 <td style="color: #00679a;">{{patient.data.firstName}}</td>
                 <td style="color: #00679a;">{{patient.data.lastName}}</td>
+                <td style="color: #00679a;">Male</td>
                 <td style="color: #00679a;">{{patient.data.age}}</td>
                 <td style="color: #00679a;">{{convertDate(patient.data.birthDate)}}</td>
-                <td style="color: #00679a;">{{convertDate(patient.data.nextAppointment)}}</td>
+                <td style="color: #00679a;">{{convertDateWithTime(patient.data.nextAppointment)}}</td>
                 <td style="color: #00679a;">18995331375</td>
                 <td style="color: #00679a;">0623797026</td>
             </tr>
+            <tr class="PatientDetail" id="{{patient.data.id}}" style="display: none;">
+                <td colspan="8" tyle="background-color: #00679a !important;">
+
+                    <div>
+                        <div class="thing">
+                            <div>Nom : <span>{{patient.data.firstName}}</span>, Prénom : <span>{{patient.data.lastName}}</span></div>
+                            <div></div>
+                            <div>Age : <span>{{patient.data.age}}</span><span> ans</span></div>
+                        </div>
+                        
+                    </div>
+    
+
+                </td>
+         
+            </tr>
+          
         </ng-container>
         
     </dx-data-grid>

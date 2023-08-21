@@ -1,3 +1,4 @@
+<app-spinner [visible]="spinnerVisible"></app-spinner>
 <div fxLayout="column" fxFill>
     <div fxFlex="75px" class="headerBorderStyle" fxLayout="row">
         <app-header style="position: relative; width: 100%;"></app-header>
@@ -7,7 +8,7 @@
             <div class="imgNavigation" id="imgNavigation_patient"  (click)="navigateTo('patients')" >
  
                
-                <img src="./assets/image/bilan-de-sante.png" style="     width: 40px;
+                <img src="./assets/image/patients.svg" style="     width: 40px;
                 height: 40px;
                 cursor: pointer;
                 padding-left: 1px;
@@ -23,7 +24,7 @@
       
             <div class="imgNavigation" id="imgNavigation_accueil" (click)="navigateTo('accueil')">
  
-                <img src="./assets/image/patient-doc.png" style="     width: 40px;
+                <img src="./assets/image/documents.svg" style="     width: 40px;
                 height: 40px;
                 cursor: pointer;
                 padding-left: 1px;

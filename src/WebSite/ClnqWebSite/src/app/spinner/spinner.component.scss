@@ -1,0 +1,62 @@
+.app-loading {
+    z-index: 99999;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  .app-loading .logo {
+    width: 120px;
+    height: 120px;
+  }
+  .app-loading .spinner {
+    height: 100px;
+    width: 100px;
+    animation: loadingrotate 2s linear infinite;
+    transform-origin: center center;
+    position: absolute;
+    top: -5px;
+    bottom: 52px;
+    left: -64px;
+    right: 0;
+    margin: auto;
+  }
+  .app-loading .spinner .path {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+    animation: loadingdash 1.5s ease-in-out infinite;
+    stroke-linecap: round;
+    stroke: #b141b4;
+  }
+  @keyframes loadingrotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes loadingdash {
+    0% {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+    }
+    50% {
+      stroke-dasharray: 89, 200;
+      stroke-dashoffset: -35px;
+    }
+    100% {
+      stroke-dasharray: 89, 200;
+      stroke-dashoffset: -124px;
+    }
+  }
+  
+  .spinner_overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #adadad;
+    opacity: 0.2;
+    z-index: 1000;
+}

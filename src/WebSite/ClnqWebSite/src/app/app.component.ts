@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { AppConfig } from './services/app.config';
 import { Router } from '@angular/router';
+import { ServiceCmnObject } from './services/ServiceCmnObject';
 
 @Component({
   selector: 'app-root',
@@ -9,14 +10,18 @@ import { Router } from '@angular/router';
 })
 export class AppComponent implements OnInit, AfterViewInit {
   title = 'ClnqWebSite';
-
+  public spinnerVisible = false;
   protected urlApi=AppConfig.settings.apiServer.clnqApi;
 
    lastElement: any;
 
   constructor(
-    private readonly router: Router
-  ) {}
+    private readonly router: Router,
+    private readonly serviceCmnObject:ServiceCmnObject
+  ) {
+
+    this.serviceCmnObject.spinnerLoading.subscribe(spin => this.spinnerVisible = spin);
+  }
   ngOnInit(): void {
     
   }
