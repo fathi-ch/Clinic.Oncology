@@ -6,5 +6,5 @@ public class PatientDocumentsUploadModel
 {
     public string Patient { get; set; }
 
-    public IFormFileCollection? Files { get; set; }
+    public IFormFileCollection Files { get; set; }
 }
