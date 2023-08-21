@@ -16,11 +16,9 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
   
   export class PatientsComponent implements OnInit {
 
-    // data grid pager
-    showPageSizeSelector = true;
-    showInfo = true;
-    showNavButtons = true;  
-    showNavigationButtons= true;  
+   //pop up new patient
+   popupVisible=false;
+
     lastRowOpned:string="";
 
     
@@ -59,8 +57,10 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
     }
 
 
+// show patient details 
     public showRow(id:string)
     {
+      
       if(this.lastRowOpned==id)
       {
         
@@ -88,6 +88,11 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
       }
       this.lastRowOpned=id;
       
+    }
+
+    public newPatientPopUp()
+    {
+this.popupVisible=true;
     }
 }
 

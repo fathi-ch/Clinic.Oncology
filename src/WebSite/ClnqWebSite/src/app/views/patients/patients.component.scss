@@ -1,26 +1,124 @@
+
+
+ .gridReserveOptions {
+
+    border-radius: 5px;
+    background-color: #8c54ac;
+    padding: 5px;
+    margin-bottom: 5px;
+
+    .dx-button {
+        
+        height: 30px;
+        border-radius: 9px;
+        box-shadow: none !important;
+        color: white;
+        margin-left: 10px;
+
+        .dx-button-content {
+            padding: 1px 6px !important;
+   
+        }
+
+        .dx-button-text {
+            font-size: 12px;
+
+        }
+   
+    }
+}
+::ng-deep          .dx-button-mode-outlined .dx-icon {
+    color: #fff;
+}
+::ng-deep .dx-texteditor.dx-editor-filled.dx-state-hover:after {
+    border-bottom: none !important;
+}
+
+.textBoxCssClass {
+    
+    
+    background-color: white !important;
+    height: 32px;
+    border-radius: 19px !important;
+    width:35% !important;
+    
+}
+::ng-deep .textBoxCssClass .dx-texteditor-input{
+    margin-left: 16px;
+font-size: 14px !important;
+color: #6F6F6F;
+margin-top: -3px;
+outline: none;
+border-radius: 9px !important;
+width: 30%;
+height: 25px;
+border: none !important;
+
+}
+
+.nbElements {
+    border-right: solid 1px white;
+    margin-right: 13px;
+    text-align: center;
+}
+
+::ng-deep .dx-texteditor.dx-state-focused:before {
+    border-bottom: none !important;
+}
+.textBoxCssClass {
+
+    border: none !important;
+
+    .dx-icon-search {
+        left: 11px !important;
+        top: 17px !important;
+    }
+
+    .dx-placeholder {
+        font-size: 12px;
+        color: #6F6F6F;
+        top: -10px;
+        left: 20px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: -webkit-fill-available;
+    }
+
+    .dx-texteditor-input {
+        margin-left: 16px;
+        font-size: 12px;
+        color: #6F6F6F;
+        margin-top: -3px;
+        outline: none
+    }
+
+    .dx-texteditor:before {
+        border: none !important;
+    }
+
+}
+
+.rowStyle{
+    color: #00679a !important;
+}
 .thing {
     padding: 1rem;
-    background-color: white; 
-    width: 99%; 
-    margin-left: -19px;
-    margin-top: -2px;
-    margin-bottom: -2px;
-
-    box-shadow: 0 0px 3px 0 rgba(0,0,0,0.11),
-      0 5px 15px 0 rgba(0,0,0,0.08);
+    background-color: white;
+    /* width: 98%; */
+    /* margin-left: -13px; */
+    margin-top: -7px;
+    /* margin-bottom: -2px; */
+    min-height: 500px;
+    box-shadow: 0 0px 3px 0 rgba(0, 0, 0, 0.11), 0 5px 15px 0 rgba(0, 0, 0, 0.08);
     background-color: #ffffff;
     border-radius: 0.5rem;
-    
     border-left: 0.3rem solid #de97ff;
     border-right: 0.3rem solid #de97ff;
     transition: border-left 300ms ease-in-out, padding-left 300ms ease-in-out;
+
   }
   
-//   .thing:hover {
-
-//     border-left: 0.5rem solid #de97ff;
-//   }
-
 
 ::ng-deep pointer-column {
     cursor: pointer;
@@ -35,7 +133,7 @@
 
 .titlePage {
   
-    color: #00679a;
+    color: #8c54ac;
     font-size: 14px;
     padding-top: 5px;
     padding-bottom: 15px;
@@ -43,6 +141,7 @@
 
 
 ::ng-deep .gridContainer {
+    width: 100% !important;
 
     .dx-row.dx-freespace-row {
         display: none;
@@ -82,7 +181,7 @@
         display: inline-block;
         white-space: normal;
         vertical-align: top;
-        color: #00679a;
+        color: #8c54ac;
         font-size: 12px ;
         text-align: left;
         padding-left: 9px;
@@ -94,7 +193,7 @@
         font-weight: 500;
         font-style: normal;
         cursor: pointer;
-        background-color: #dbd6db2e;
+        background-color: #ffdfff2e;
         font-size: 12px;
         line-height: normal;
     }
@@ -115,7 +214,7 @@
         border-bottom: 1px solid #D9D4D4;
         border-top: 1px solid #D9D4D4;
         padding-bottom: 1px;
-        padding-top: 1px;
+        padding-top: 8px;
         padding-left: 12px;
     }
 
@@ -225,11 +324,12 @@
     padding: 15px;
 
     .dx-button {
-        font-family: 'BouyguesRead';
+      
 
         height: 30px;
         border-radius: 9px;
         box-shadow: none !important;
+       
 
         .dx-button-content {
             padding: 1px 6px !important;
@@ -295,10 +395,9 @@
     }
 
     .dx-placeholder {
-        font-size: 12px;
+        font-size: 13px;
         color: #6F6F6F;
-        top: -10px;
-        left: 20px;
+        left: 17px;
     }
 
     .dx-texteditor-input {
@@ -557,4 +656,20 @@
         text-align: center;
     }
 
+}
+
+
+.textBoxCssClassSearch {
+    background-color: white !important;
+    height: 32px;
+    border: 1px solid #00679A !important;
+    border-radius: 19px !important;
+    width: 430px;
+
+    
+}
+
+.titreCmt
+{
+    font-size: 14px;
 }

@@ -1,5 +1,9 @@
 <div fxLayout="row" fxFill>
-    <div fxflex="" fxlayout="" style="    flex-direction: row;
+
+    <div class="colored box" style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
+
+        <div fxflex="60" style="flex: 1 1 100%; box-sizing: border-box; max-width: 55%;">
+            <div fxflex="" fxlayout="" style="    flex-direction: row;
     box-sizing: border-box;
     display: flex;
     flex: 1 1 1e-9px;
@@ -7,11 +11,28 @@
     
     border-bottom-width: 0.5px;
     background-color: #e9e8f64a;">
-        <div class="one" fxflex="20"  style=" flex-direction: row; box-sizing: border-box; display: flex; flex: 1 1 100%; max-width: 0%;"> 
-            <img src="./assets/image/logo.svg" style="width: 50px;height: 50px;margin-left: 12px;" >
+                <div class="one" fxflex="20"
+                    style=" flex-direction: row; box-sizing: border-box; display: flex; flex: 1 1 100%; max-width: 0%;">
+                    <img src="./assets/image/logo.svg" style="width: 50px;height: 50px;margin-left: 12px;">
+                </div>
+                <div class="two" fxflex="80" fxlayoutalign="center center"
+                    style="align-items: center; flex-direction: row; box-sizing: border-box; display: flex; flex: 1 1 100%;padding-left: 74px;">
+                    Bienvenue NECIB Farouk</div>
+            </div>
         </div>
-        <div class="two" fxflex="80" fxlayoutalign="center center" style="align-items: center; flex-direction: row; box-sizing: border-box; display: flex; flex: 1 1 100%;padding-left: 74px;"> Bienvenue  NECIB Farouk</div>
+        <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 45%;">
+            <div>
+                <ul class="menu">
+                    <li (click)="navigateTo('accueil')"><a id="accueil" h>Accueil</a></li>
+                    <li (click)="navigateTo('patients')"><a id="patients">Patients</a></li>
+                    <li (click)="navigateTo('patients')"><a id="rdv">Rdv médical</a></li>
+                    <li (click)="navigateTo('patients')"><a id="assitante">Assitante</a></li>
+                    <li (click)="navigateTo('patients')"><a id="parametres">Parametres</a></li>
+                    <li class="slider"></li>
+                </ul>
+            </div>
+        </div>
+
     </div>
-    
 
 </div>
