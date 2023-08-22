@@ -45,7 +45,7 @@ public class PatientsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateWithDocumentsAsync([FromForm] PatientDocumentsUploadModel model)
+    public async Task<IActionResult> CreateWithDocumentsAsync(Patient patient)
     {
         if (!ModelState.IsValid)
         {
@@ -54,8 +54,8 @@ public class PatientsController : ControllerBase
 
         try
         {
-            var patient = JsonConvert.DeserializeObject<Patient>(model.Patient);
-            var result = await _patientRepository.CreateWithDocumentsAsync(patient, model.Files);
+            //var patient = JsonConvert.DeserializeObject<Patient>(model.Patient);
+            var result = await _patientRepository.CreateWithDocumentsAsync(patient, null);
 
             if (result != null)
             {

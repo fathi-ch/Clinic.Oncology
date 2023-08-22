@@ -16,4 +16,9 @@ export class ServicesPatient {
     return this.http.get<Pateint[]>(`${this._apiUrl}/Patients`);
   }
 
+  public NewPateint(patient:Pateint): Observable<Pateint>{
+    return this.http.post(`${this._apiUrl}/Patients`,patient);
+     
+  }
+
 }
