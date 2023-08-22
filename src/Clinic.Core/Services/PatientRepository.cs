@@ -5,17 +5,17 @@ using Clinic.Core.Models;
 using Dapper;
 using Microsoft.AspNetCore.Http;
 
-namespace Clinic.Core.Repositories;
+namespace Clinic.Core.Services;
 
 public class PatientRepository : IPatientRepository
 {
     private readonly ISqliteDbConnectionFactory _connectionFactory;
-    private readonly IFileRepository _file;
+    private readonly IDocumentRepository _documentRepository;
 
-    public PatientRepository(ISqliteDbConnectionFactory connectionFactory, IFileRepository file)
+    public PatientRepository(ISqliteDbConnectionFactory connectionFactory, IDocumentRepository documentRepository)
     {
         _connectionFactory = connectionFactory;
-        _file = file;
+        _documentRepository = documentRepository;
     }
 
     public async Task<IEnumerable<Patient>> GetAllAsync()
@@ -54,7 +54,11 @@ public class PatientRepository : IPatientRepository
                 new { patient.Id, patient.FirstName, patient.LastName, patient.BirthDate, patient.NextAppointment });
 
             transaction.Commit();
-            await _file.SaveFilesAsync(files, patient.Id);
+            
+            if (files != null && files.Any())
+            {
+                await _documentRepository.CreatePatientDocumentsAsync(files, patient.Id.ToString());
+            }
             return result > 0;
         }
         catch (Exception)
@@ -78,8 +82,22 @@ public class PatientRepository : IPatientRepository
             new { PatientId = Guid.Parse(id) });
     }
 
-    public Task<bool> DeleteByIdAsync(Guid id)
+    public async Task<bool> DeleteByIdAsync(string id)
     {
-        throw new NotImplementedException();
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+
+        await _documentRepository.DeletePatientDocumentsAsync(id);
+
+        var sb = new StringBuilder();
+        sb.Append("DELETE ");
+        sb.Append("FROM Patients ");
+        sb.Append("WHERE Id = @PatientId;");
+
+        var query = sb.ToString();
+        var affectedPatientRows = await connection.ExecuteAsync(
+            query,
+            new { PatientId = id });
+
+        return affectedPatientRows > 0;
     }
 }
