@@ -27,18 +27,18 @@ public class PatientRepository : IPatientRepository
             var sb = new StringBuilder();
             sb.Append("INSERT INTO ");
             sb.Append(
-                "Patients (FirstName, LastName, BirthDate, Gender, Weight, Height, Mobile, SocialSecurityNumber, Referral) ");
+                "Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Weight, Height, Mobile, SocialSecurityNumber, Referral) ");
             sb.Append(
-                "VALUES (@FirstName, @LastName, @BirthDate, @Gender,  @Weight, @Height, @Mobile, @SocialSecurityNumber, @Referral); ");
+                "VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender,  @Weight, @Height, @Mobile, @SocialSecurityNumber, @Referral); ");
             sb.Append("SELECT last_insert_rowid();");
             var query = sb.ToString();
 
             var newId = await connection.ExecuteScalarAsync<int>(query,
                 new
                 {
-                    patientDto.FirstName, patientDto.LastName, patientDto.BirthDate, patientDto.Gender,
-                    patientDto.Weight, patientDto.Height, patientDto.Mobile, patientDto.SocialSecurityNumber,
-                    patientDto.Referral
+                    patientDto.FirstName, patientDto.LastName, patientDto.BirthDate, patientDto.NextAppointment,
+                    patientDto.Gender, patientDto.Weight, patientDto.Height, patientDto.Mobile,
+                    patientDto.SocialSecurityNumber, patientDto.Referral
                 });
 
             transaction.Commit();
@@ -77,7 +77,7 @@ public class PatientRepository : IPatientRepository
         var result = await connection.QueryFirstOrDefaultAsync<Patient>(
             query,
             new { PatientId = id });
-    
+
         return result.ToPatientResponse();
     }
 
