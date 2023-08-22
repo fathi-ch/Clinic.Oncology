@@ -405,7 +405,65 @@ border: none !important;
         font-size: 12px;
         color: #6F6F6F;
         margin-top: -3px;
-        outline: none
+        outline: none;
+        width: 100%;
+
+    }
+
+    .dx-texteditor:before {
+        border: none !important;
+    }
+
+}
+
+
+::ng-deep.dx-texteditor.dx-editor-outlined
+{
+    
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 300px;
+        height: 40px;
+        font-size: 14px !important;
+        border-color: #9b59b6;
+}
+
+::ng-deep.dx-texteditor.dx-texteditor.dx-state-focused.dx-editor-outlined
+{
+    
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 300px;
+        height: 40px;
+        font-size: 14px !important;
+        border-color: #9b59b6;
+}
+
+::ng-deep.defaultTextBoxCssClass {
+    // border: none !important;
+
+    .dx-icon-search {
+        left: 11px !important;
+        top: 17px !important;
+    }
+
+    .dx-placeholder {
+        font-size: 13px;
+        color: #6F6F6F;
+        left: 17px;
+    }
+
+    .dx-texteditor-input {
+        margin-left: 16px;
+        font-size: 12px;
+        color: #6F6F6F;
+        margin-top: 0px;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+
     }
 
     .dx-texteditor:before {
@@ -672,4 +730,5 @@ border: none !important;
 .titreCmt
 {
     font-size: 14px;
+    padding-top: 5px;
 }
