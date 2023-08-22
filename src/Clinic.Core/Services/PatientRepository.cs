@@ -45,9 +45,9 @@ public class PatientRepository : IPatientRepository
 
             return patientDto.ToPatientResponse(newId);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Console.WriteLine(e);
+            transaction.Rollback();
             throw;
         }
     }
