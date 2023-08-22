@@ -1,8 +1,7 @@
-﻿using Clinic.Core.Mappers;
-using Clinic.Core.Models;
+﻿using Clinic.Core.Contracts;
+using Clinic.Core.Dto;
 using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace Clinic.Api.Controllers;
 
@@ -21,31 +20,31 @@ public class PatientsController : ControllerBase
     [HttpGet(Name = "GetAllPatientsAsync")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<Patient>>> GetAllAsync()
+    public async Task<ActionResult<IEnumerable<PatientResponse>>> GetAllAsync()
     {
-        var result = await _patientRepository.GetAllAsync();
-        var patients = result.ToList();
+        var patients = await _patientRepository.GetAllAsync();
+        
         if (!patients.Any()) return NotFound();
 
-        return Ok(patients.Select(p => p.ToPatientResponse()));
+        return Ok(patients);
     }
 
     [HttpGet("{id}", Name = "GetPatientAsync")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Patient>> GetAsync(string id)
+    public async Task<ActionResult<PatientResponse>> GetAsync(int id)
     {
         var patient = await _patientRepository.GetByIdAsync(id);
         if (patient == null) return NotFound();
 
-        return Ok(patient.ToPatientResponse());
+        return Ok(patient);
     }
 
-    [HttpPost(Name = "CreateWithDocuments")]
+    [HttpPost(Name = "CreatePatient")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateWithDocumentsAsync([FromForm] PatientDocumentsUploadModel model)
+    public async Task<IActionResult> CreateAsync([FromBody] PatientDto patientDto)
     {
         if (!ModelState.IsValid)
         {
@@ -54,14 +53,13 @@ public class PatientsController : ControllerBase
 
         try
         {
-            var patient = JsonConvert.DeserializeObject<Patient>(model.Patient);
-            var result = await _patientRepository.CreateWithDocumentsAsync(patient, model.Files);
+            var patient = await _patientRepository.CreateAsync(patientDto);
 
-            if (result != null)
+            if (patient != null)
             {
-                return Created("Created", result);
+                return Created("Created", patient);
             }
-            
+
             return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Failed to create patient" });
         }
         catch (Exception ex)
@@ -76,19 +74,18 @@ public class PatientsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteByIdAsync(string id)
+    public async Task<IActionResult> DeleteByIdAsync(int id)
     {
         try
         {
-            var patient = await _patientRepository.GetByIdAsync(id);
+            var patient = await _patientRepository.DeleteByIdAsync(id);
 
             if (patient == null)
             {
                 return NotFound(new { Message = "Patient not found" });
             }
 
-            await _patientRepository.DeleteByIdAsync(id);
-            return NoContent();
+            return Ok(patient);
         }
         catch (Exception ex)
         {

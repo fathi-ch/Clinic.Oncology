@@ -1,24 +1,58 @@
-﻿using System.Globalization;
-using System.Text;
+﻿using System.Text;
+using Clinic.Core.Contracts;
 using Clinic.Core.Data;
+using Clinic.Core.Dto;
+using Clinic.Core.Mappers;
 using Clinic.Core.Models;
 using Dapper;
-using Microsoft.AspNetCore.Http;
 
 namespace Clinic.Core.Services;
 
 public class PatientRepository : IPatientRepository
 {
     private readonly ISqliteDbConnectionFactory _connectionFactory;
-    private readonly IDocumentRepository _documentRepository;
 
-    public PatientRepository(ISqliteDbConnectionFactory connectionFactory, IDocumentRepository documentRepository)
+    public PatientRepository(ISqliteDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
-        _documentRepository = documentRepository;
     }
 
-    public async Task<IEnumerable<Patient>> GetAllAsync()
+    public async Task<PatientResponse> CreateAsync(PatientDto patientDto)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+        using var transaction = connection.BeginTransaction();
+
+        try
+        {
+            var sb = new StringBuilder();
+            sb.Append("INSERT INTO ");
+            sb.Append(
+                "Patients (FirstName, LastName, BirthDate, Gender, Weight, Height, Mobile, SocialSecurityNumber, Referral) ");
+            sb.Append(
+                "VALUES (@FirstName, @LastName, @BirthDate, @Gender,  @Weight, @Height, @Mobile, @SocialSecurityNumber, @Referral); ");
+            sb.Append("SELECT last_insert_rowid();");
+            var query = sb.ToString();
+
+            var newId = await connection.ExecuteScalarAsync<int>(query,
+                new
+                {
+                    patientDto.FirstName, patientDto.LastName, patientDto.BirthDate, patientDto.Gender,
+                    patientDto.Weight, patientDto.Height, patientDto.Mobile, patientDto.SocialSecurityNumber,
+                    patientDto.Referral
+                });
+
+            transaction.Commit();
+
+            return patientDto.ToPatientResponse(newId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<PatientResponse>> GetAllAsync()
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
 
@@ -27,48 +61,11 @@ public class PatientRepository : IPatientRepository
         sb.Append("FROM Patients p ");
 
         var query = sb.ToString();
-        return await connection.QueryAsync<Patient>(query);
+        var result = await connection.QueryAsync<Patient>(query);
+        return result.ToList().Select(x => x.ToPatientResponse());
     }
 
-    public async Task<bool> CreateWithDocumentsAsync(Patient patient, IEnumerable<IFormFile> files)
-    {
-        using var connection = await _connectionFactory.CreateDbConnectionAsync();
-
-        using var transaction = connection.BeginTransaction();
-
-        try
-        {
-            var sb = new StringBuilder();
-            sb.Append("INSERT INTO ");
-            sb.Append("Patients (Id, FirstName, LastName, BirthDate, NextAppointment) ");
-            sb.Append("VALUES (@Id, @FirstName, @LastName, @BirthDate, @NextAppointment); ");
-
-            var query = sb.ToString();
-
-            //Possible to override ToString to contain this logic -Refactor-
-            patient.FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(patient.FirstName ?? string.Empty);
-            patient.LastName = patient.LastName?.ToUpper();
-
-            patient.Id = Guid.NewGuid();
-            var result = await connection.ExecuteAsync(query,
-                new { patient.Id, patient.FirstName, patient.LastName, patient.BirthDate, patient.NextAppointment });
-
-            transaction.Commit();
-            
-            if (files != null && files.Any())
-            {
-                await _documentRepository.CreatePatientDocumentsAsync(files, patient.Id.ToString());
-            }
-            return result > 0;
-        }
-        catch (Exception)
-        {
-            transaction.Rollback();
-            throw;
-        }
-    }
-
-    public async Task<Patient?> GetByIdAsync(string id)
+    public async Task<PatientResponse?> GetByIdAsync(int id)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
         var sb = new StringBuilder();
@@ -77,16 +74,25 @@ public class PatientRepository : IPatientRepository
         sb.Append("WHERE p.Id = @PatientId;");
 
         var query = sb.ToString();
-        return await connection.QueryFirstOrDefaultAsync<Patient>(
+        var result = await connection.QueryFirstOrDefaultAsync<Patient>(
             query,
-            new { PatientId = Guid.Parse(id) });
+            new { PatientId = id });
+    
+        return result.ToPatientResponse();
     }
 
-    public async Task<bool> DeleteByIdAsync(string id)
+    public async Task<PatientResponse> DeleteByIdAsync(int id)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
 
-        await _documentRepository.DeletePatientDocumentsAsync(id);
+        var patientToDelete = await GetByIdAsync(id);
+
+        if (patientToDelete == null)
+        {
+            return null;
+        }
+
+        // Next update to delete the visits related the patient1
 
         var sb = new StringBuilder();
         sb.Append("DELETE ");
@@ -98,6 +104,6 @@ public class PatientRepository : IPatientRepository
             query,
             new { PatientId = id });
 
-        return affectedPatientRows > 0;
+        return patientToDelete;
     }
 }

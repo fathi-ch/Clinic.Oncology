@@ -19,15 +19,18 @@ public class DatabaseInitializer
 
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
         await connection.ExecuteAsync("CREATE TABLE IF NOT EXISTS Patients (" +
-                                      "Id TEXT PRIMARY KEY," +
+                                      " Id INTEGER PRIMARY KEY," +
                                       " FirstName TEXT NOT NULL," +
                                       " LastName TEXT NOT NULL," +
-                                      " NextAppointment DATE DEFAULT CURRENT_DATE NOT NULL," +
-                                      " BirthDate DATE DEFAULT CURRENT_DATE NOT NULL);" +
-                                      "CREATE TABLE IF NOT EXISTS Documents (" +
-                                      "Id TEXT PRIMARY KEY," +
-                                      "PatientId TEXT NOT NULL," +
-                                      "Path TEXT NOT NULL," +
-                                      "FOREIGN KEY(PatientId) REFERENCES Patients(Id));");
+                                      " BirthDate DATE DEFAULT CURRENT_DATE NOT NULL," +
+                                      " NextAppointment DATE," +
+                                      " Weight REAL,"+
+                                      " Height REAL,"+
+                                      " Gender TEXT NOT NULL,"+
+                                      " Mobile TEXT NOT NULL,"+
+                                      " SocialSecurityNumber TEXT, "+
+                                      " Referral TEXT); ");
+        
     }
 }
+
