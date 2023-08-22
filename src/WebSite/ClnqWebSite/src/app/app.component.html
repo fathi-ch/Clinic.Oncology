@@ -1,0 +1,78 @@
+<app-spinner [visible]="spinnerVisible"></app-spinner>
+<div fxLayout="column" fxFill>
+    <div fxFlex="75px" class="headerBorderStyle" fxLayout="row">
+        <app-header style="position: relative; width: 100%;"></app-header>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center" style="display: flex;">
+        <!-- <div fxFlex="75px" fxLayout="column" class="navigation" style="overflow-x:auto;" >
+            <div class="imgNavigation" id="imgNavigation_patient"  (click)="navigateTo('patients')" >
+ 
+               
+                <img src="./assets/image/m01.png" style="     width: 40px;
+                height: 40px;
+                cursor: pointer;
+                padding-left: 1px;
+                padding-top: 9px;
+                padding-right: 8px;">
+
+                  <div class="MenuText" >
+                    Patients
+                  </div>
+                
+
+            </div>
+      
+           
+            <div class="imgNavigation" id="imgNavigation_accueil" (click)="navigateTo('accueil')">
+ 
+                <img src="./assets/image/rendez-vous-medical.png" style="     width: 40px;
+                height: 40px;
+                cursor: pointer;
+                padding-left: 1px;
+                padding-top: 9px;
+                padding-right: 8px;">
+
+                  <div class="MenuText" >
+                      Rdv medical
+                  </div>
+
+            </div>
+            <div class="imgNavigation"  (click)="navigateTo('/accueil')">
+ 
+                <img src="./assets/image/telemedecine.png" style="     width: 40px;
+                height: 40px;
+                cursor: pointer;
+                padding-left: 1px;
+                padding-top: 9px;
+                padding-right: 8px;">
+                 
+                 <div class="MenuText" >
+                    Parametres
+                </div>
+
+            </div>
+            <div class="imgNavigation" id="imgNavigation_accueil" (click)="navigateTo('accueil')">
+ 
+                <img src="./assets/image/documents.svg" style="     width: 40px;
+                height: 40px;
+                cursor: pointer;
+                padding-left: 1px;
+                padding-top: 9px;
+                padding-right: 8px;">
+
+                  <div class="MenuText" >
+                      Documents
+                  </div>
+
+            </div>
+            
+        
+        </div> -->
+        <div  fxFlex="calc(100% - 75px)" style="width: 100%;">
+          <router-outlet></router-outlet>
+        </div>
+    </div>
+    
+</div>
+
+
