@@ -8,13 +8,13 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
 
 @Component({
     selector: 'app-patients',
-    templateUrl: './patients.component.html',
-    styleUrls: ['./patients.component.scss']
+    templateUrl: './rdv.component.html',
+    styleUrls: ['./rdv.component.scss']
 
   })
 
   
-  export class PatientsComponent implements OnInit {
+  export class RdvComponent implements OnInit {
 
     @ViewChild("dateNais", { static: false })dateNais!: DxDateBoxComponent;
     @ViewChild("dateRdv", { static: false }) dateRdv!: DxTextBoxComponent;

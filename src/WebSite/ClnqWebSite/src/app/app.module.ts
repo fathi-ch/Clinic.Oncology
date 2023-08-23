@@ -12,6 +12,7 @@ import { PatientsComponent } from './views/patients/patients.component';
 import {RouterModule, Routes } from '@angular/router';
 import { ServicesPatient } from './services/patient/patient.service';
 import { SpinnerModule } from './spinner/spinner.module';
+import { RdvComponent } from './views/rdv/rdv.component';
 
 export function initializeApp(appConfig: AppConfig) {
   return () => appConfig.load();
@@ -23,7 +24,8 @@ export function initializeApp(appConfig: AppConfig) {
     AppComponent,
     HeaderComponent,
     PatientsComponent,
-    AcceuilComponent
+    AcceuilComponent,
+    RdvComponent
   
   ],
   imports: [

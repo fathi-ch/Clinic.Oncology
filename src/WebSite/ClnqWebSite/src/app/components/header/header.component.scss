@@ -35,9 +35,11 @@
   }
   
   a.active {
-    background-color: #9b59b6;
+    border-bottom: 2px solid;
+    border-bottom-color: #9b59b6;
+    //background-color: #9b59b6;
     pointer-events: none;
-    color: #fff !important;
+    color: #9b59b6 !important;
   }
   a:hover {
     color: #fff !important;
