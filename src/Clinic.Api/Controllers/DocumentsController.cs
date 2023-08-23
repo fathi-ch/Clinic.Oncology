@@ -16,15 +16,15 @@ public class DocumentsController : ControllerBase
         _document = document;
     }
 
-    [HttpGet(Name = "GetPatientDocumentByIdAsync")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<PatientWithDocumentsResponse>>> GetPatientDocumentByIdAsync(string id)
-    {
-        var patientDocuments = await _document.GetPatientDocumentByPatientIdAsync(id);
-        
-        if (patientDocuments == null) return NotFound();
-
-        return Ok(patientDocuments);
-    }
+    // [HttpGet(Name = "GetPatientDocumentByIdAsync")]
+    // [ProducesResponseType(StatusCodes.Status200OK)]
+    // [ProducesResponseType(StatusCodes.Status404NotFound)]
+    // public async Task<ActionResult<IEnumerable<PatientWithDocumentsResponse>>> GetPatientDocumentByIdAsync(string id)
+    // {
+    //     var patientDocuments = await _document.GetPatientDocumentByPatientIdAsync(id);
+    //     
+    //     if (patientDocuments == null) return NotFound();
+    //
+    //     return Ok(patientDocuments);
+    // }
 }

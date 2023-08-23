@@ -9,12 +9,14 @@ public static class PatientDocumentMapper
 {
     public static PatientDocumentResponse ToDocumentResponse(this PatientDocument? patientDocument)
     {
-        Guard.IsNotNull(patientDocument.Path, nameof(patientDocument.Path));
-        var imageByte = File.ReadAllBytes(patientDocument.Path);
-
+        //Code refactor needed to provide the path properly 
+        Guard.IsNotNull(patientDocument.Name, nameof(patientDocument.Name));
+        var imageByte = File.ReadAllBytes(patientDocument.Name);
+        
         return new PatientDocumentResponse
         {
-            Path = patientDocument.Path,
+            
+            Path = patientDocument.Name,
             PatientDocumentbase64 = Convert.ToBase64String(imageByte)
         };
     }
