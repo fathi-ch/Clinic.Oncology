@@ -24,7 +24,7 @@ public class PatientsController : ControllerBase
     {
         var patients = await _patientRepository.GetAllAsync();
         
-        if (!patients.Any()) return NotFound();
+        if (!patients.Any()) return Ok(Enumerable.Empty<PatientResponse>()) ;
 
         return Ok(patients);
     }
