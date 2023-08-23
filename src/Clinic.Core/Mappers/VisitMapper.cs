@@ -12,6 +12,7 @@ public static class VisitMapper
         {
             return null;
         }
+
         return new VisitResponse()
         {
             Id = id,
@@ -19,7 +20,9 @@ public static class VisitMapper
             StartTime = visitDto.StartTime,
             EndTime = visitDto.EndTime,
             Price = visitDto.Price,
-            Description = visitDto.Description
+            Description = visitDto.Description,
+            VisitType = visitDto.VisitType,
+            Status = visitDto.Status
         };
     }
 
@@ -28,7 +31,6 @@ public static class VisitMapper
         if (visit == null)
         {
             return null;
-            
         }
 
         return new VisitResponse()
@@ -39,7 +41,9 @@ public static class VisitMapper
             StartTime = visit.EndTime,
             EndTime = visit.EndTime,
             Price = visit.Price,
-            Description = visit.Description
+            Description = visit.Description,
+            VisitType = visit.VisitType,
+            Status = visit.Status
         };
     }
 }

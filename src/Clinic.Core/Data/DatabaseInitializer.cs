@@ -37,8 +37,9 @@ public class DatabaseInitializer
                                       " EndTime Date NOT NULL," +
                                       " Price REAL," +
                                       " Description TEXT," +
+                                      " VisitType TEXT," +
+                                      " Status TEXT," +
                                       " FOREIGN KEY(PatientId) REFERENCES Patients(Id));");
-        
     }
 }
 

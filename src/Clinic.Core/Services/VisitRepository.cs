@@ -25,15 +25,15 @@ public class VisitRepository : IVisitRepository
         try
         {
             var sb = new StringBuilder();
-            sb.Append("INSERT INTO Visits (PatientId, StartTime, EndTime, Price, Description) ");
-            sb.Append("VALUES (@PatientId, @StartTime, @EndTime, @Price, @Description);");
+            sb.Append("INSERT INTO Visits (PatientId, StartTime, EndTime, Price, Description, VisitType, Status) ");
+            sb.Append("VALUES (@PatientId, @StartTime, @EndTime, @Price, @Description, @VisitType, @Status);");
             sb.Append("SELECT last_insert_rowid();");
             var query = sb.ToString();
 
             var newId = await connection.ExecuteScalarAsync<int>(query,
                 new
                 {
-                    visitDto.PatientId, visitDto.StartTime, visitDto.EndTime, visitDto.Price, visitDto.Description
+                    visitDto.PatientId, visitDto.StartTime, visitDto.EndTime, visitDto.Price, visitDto.Description, visitDto.VisitType, visitDto.Status
                 });
 
             transaction.Commit();
@@ -53,7 +53,7 @@ public class VisitRepository : IVisitRepository
         
         var sb = new StringBuilder();
         sb.Append("SELECT * ");
-        sb.Append("FROM Patients p ");
+        sb.Append("FROM Visits ");
 
         var query = sb.ToString();
         var result = await connection.QueryAsync<Visit>(query);

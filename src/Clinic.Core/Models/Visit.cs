@@ -1,4 +1,6 @@
-﻿namespace Clinic.Core.Models;
+﻿using System.Globalization;
+
+namespace Clinic.Core.Models;
 
 public class Visit
 {
@@ -9,5 +11,7 @@ public class Visit
     public DateTime EndTime { get; set; }
     public float Price { get; set; }
     public string Description { get; set; }
+    public string VisitType { get; set; }
+    public string Status { get; set; }
     public List<PatientDocument> Documents { get; set; } 
 }
