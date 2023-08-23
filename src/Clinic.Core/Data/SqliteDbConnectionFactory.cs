@@ -2,8 +2,6 @@
 using Clinic.Core.Configurations;
 using Clinic.Core.Helpers;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace Clinic.Core.Data;
 
