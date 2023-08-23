@@ -6,7 +6,5 @@ export class Pateint {
     birthDate?: Date;
     age?:string;
     nextAppointment?: Date;
-    constructor(data: any) {
-        Object.assign(this, data);
-    }
+ 
 }

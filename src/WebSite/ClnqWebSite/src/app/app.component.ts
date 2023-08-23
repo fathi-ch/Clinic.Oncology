@@ -1,7 +1,9 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { AppConfig } from './services/app.config';
+import frMessages from '../fr.json';
 import { Router } from '@angular/router';
 import { ServiceCmnObject } from './services/ServiceCmnObject';
+import { loadMessages, locale } from 'devextreme/localization';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +22,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     private readonly serviceCmnObject:ServiceCmnObject
   ) {
 
+    loadMessages(frMessages);
+    locale("fr-FR");
+    
     this.serviceCmnObject.spinnerLoading.subscribe(spin => this.spinnerVisible = spin);
   }
   ngOnInit(): void {
