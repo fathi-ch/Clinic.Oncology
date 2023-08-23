@@ -3,6 +3,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxTemplateModule, DxTextBoxComponent } from "devextreme-angular";
 
 import { Pateint } from "src/app/models/patient/PatientModel";
+import { Sexe } from "src/app/models/patient/SexeModel";
 import { ServiceCmnObject } from "src/app/services/ServiceCmnObject";
 import { ServicesPatient } from "src/app/services/patient/patient.service";
 
@@ -27,11 +28,14 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
    //pop up new patient
 
    popupVisible=false;
-
+   sexePteintList:Sexe[]=[];
+   sexePteint:string="";
    pat_nom:string="";
    pat_prenom:string="";
    pat_mobile:string="";
    pat_email:string="";
+   pat_ref:string="";
+   pat_num_suc:string="";
    pat_date_n: Date = new Date();
    pat_date_rdv: Date = new Date();
    pat_date_rdv_start_Time: Date = new Date(1900, 0, 1);
@@ -53,9 +57,17 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
         private readonly serviceCmnObject:ServiceCmnObject
       )
       {
-
+        this.sexePteintList=[];
+        let _sexeMale=new Sexe();
+        _sexeMale.sexe="Male";
+        this.sexePteintList.push(_sexeMale);
+        let _sexeFemelle=new Sexe();
+        _sexeFemelle.sexe="Femelle";
+        this.sexePteintList.push(_sexeFemelle);
       }
     ngOnInit(): void {
+ 
+
       this.GetAllPateintList();
     }
 
@@ -138,6 +150,13 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
       _patien.lastName=this.pat_prenom;
       _patien.birthDate=new Date(this.dateNais.value);
       _patien.nextAppointment=new Date(this.dateRdv.value);
+      _patien.mobile=this.pat_mobile;
+      _patien.socialSecurityNumber=this.pat_num_suc;
+      _patien.weight=0;
+      _patien.height=0;
+      _patien.referral=this.pat_ref;
+      _patien.gender=this.sexePteint;
+
 
       this.PateintService.NewPateint(_patien).subscribe(pat=>{
         this.GetAllPateintList();
