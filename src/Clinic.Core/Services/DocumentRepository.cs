@@ -66,7 +66,7 @@ public class DocumentRepository : IDocumentRepository
     public async Task<PatientWithDocumentsResponse> GetPatientDocumentByPatientIdAsync(string id)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
-        var patientDictionary = new Dictionary<Guid, PatientWithDocumentsResponse>();
+        var patientDictionary = new Dictionary<int, PatientWithDocumentsResponse>();
 
         await connection.QueryAsync<Patient, PatientDocument, PatientWithDocumentsResponse>(
             PatientWithDocumentsQuery,
@@ -135,7 +135,7 @@ public class DocumentRepository : IDocumentRepository
     }
 
     private static Func<Patient, PatientDocument, PatientWithDocumentsResponse> MapPatientWithDocuments(
-        Dictionary<Guid, PatientWithDocumentsResponse> patientDocuments)
+        Dictionary<int, PatientWithDocumentsResponse> patientDocuments)
     {
         return (patient, document) =>
         {
