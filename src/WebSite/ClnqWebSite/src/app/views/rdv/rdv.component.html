@@ -58,16 +58,25 @@
 
     </div>
 
-    <div fxFlex="calc(100% - 180px)">
+    <div fxFlex="calc(100% - 180px)" style="height: 600px;">
 
         <dx-scheduler
-        timeZone="Paris"
+        timeZone="Etc/UTC"
         textExpr="title"
-    allDayExpr="dayLong"
-    [height]="'calc(100% - 60px)'"
-    ScrollAreaHeight="100%"
-    [adaptivityEnabled]="true"
-    [showCurrentTimeIndicator]='true' [shadeUntilCurrentTime]='true'>
+        allDayExpr="dayLong"
+        [height]="'calc(100% - 60px)'"
+        ScrollAreaHeight="100%"
+        [adaptivityEnabled]="true"
+        [showCurrentTimeIndicator]='true' 
+        [shadeUntilCurrentTime]='true'
+        [firstDayOfWeek]="6"
+        [currentDate]="currentDate"
+        [dataSource]="rdvData"
+        startDateExpr="startDate" 
+        endDateExpr="endDate"
+        [allDayPanelMode]="'hidden'"
+        (onContentReady)="onContentReady($event)"
+        (onAppointmentUpdating)="onAppointmentUpdating($event)"
       >
       <dxi-view
         type="day"
@@ -79,7 +88,7 @@
         [startDayHour]="07"
         [endDayHour]="22">
     </dxi-view>
-    <dxi-view type="month"></dxi-view>
+   
     </dx-scheduler>
 
     </div>
