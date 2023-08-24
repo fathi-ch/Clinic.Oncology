@@ -1,7 +1,13 @@
+import { Pateint } from "../patient/PatientModel";
+
+
 export class Rdv {
     id?: number;
-    startDate?:Date;
-    endDate?:Date;
-    type?:string;
+    startTime?:Date;
+    endTime?:Date;
+    visitType?:string;
     title?:string;
+    description?:string;
+    status?:string;
+    patient?:Pateint;
 }

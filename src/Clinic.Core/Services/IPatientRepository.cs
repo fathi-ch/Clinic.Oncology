@@ -9,4 +9,5 @@ public interface IPatientRepository
     Task<PatientResponse?> GetByIdAsync(int id);
     Task<PatientResponse> CreateAsync(PatientDto patientDto);
     Task<PatientResponse> DeleteByIdAsync(int id);
+    Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string name);
 }

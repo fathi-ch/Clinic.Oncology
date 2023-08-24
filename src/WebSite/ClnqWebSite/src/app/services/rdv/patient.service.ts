@@ -5,7 +5,7 @@ import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 
 @Injectable()
-export class ServicesPatient {
+export class ServicesRdv {
 
   public _apiUrl = AppConfig.settings.apiServer.clnqApi;
  
@@ -14,10 +14,6 @@ export class ServicesPatient {
 
   public GetAllPateints():Observable<Pateint[]>{
     return this.http.get<Pateint[]>(`${this._apiUrl}/Patients`);
-  }
-
-  public SearchPateints(name:string):Observable<Pateint[]>{
-    return this.http.get<Pateint[]>(`${this._apiUrl}/Patients/SearchPatients?firstName=${name}`);
   }
 
   public NewPateint(patient:Pateint): Observable<Pateint>{

@@ -47,6 +47,8 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
    timeMin: Date = new Date(0,0,0,7,0,0);
    timeMax: Date = new Date(0,0,0,22,0,0);
 
+   searchText:string="";
+
    
     
     // data grid data source 
@@ -68,7 +70,7 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
     ngOnInit(): void {
  
 
-      this.GetAllPateintList();
+      //this.GetAllPateintList();
     }
 
     public convertDate(date:string)
@@ -127,6 +129,25 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
          this.LstPatients= lstPatients;
          this.serviceCmnObject.spinnerLoading.next(false);
         });
+    }
+
+    public searchPatient()
+    {
+      if(this.searchText && this.searchText.length>0)
+      {
+      //  this.serviceCmnObject.spinnerLoading.next(true);
+        this.lastRowOpned = "";
+        // calling all pateints end point 
+        this.PateintService.SearchPateints(this.searchText).subscribe(lstPatients => {
+          this.LstPatients = lstPatients;
+        //  this.serviceCmnObject.spinnerLoading.next(false);
+        });
+      }
+      else
+      {
+        this.LstPatients=[];
+      }
+   
     }
 
     public newPatientPopUp()

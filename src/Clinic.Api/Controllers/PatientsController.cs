@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Clinic.Api.Controllers;
 
 [ApiController]
-[Route("/v1/api/patients")]
+[Route("/v1/api/[controller]")]
 public class PatientsController : ControllerBase
 {
     private readonly IPatientRepository _patientRepository;
@@ -28,6 +28,12 @@ public class PatientsController : ControllerBase
 
         return Ok(patients);
     }
+
+    [HttpGet,Route("SearchPatients")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string firstName="")
+        => (await _patientRepository.GetAllByNameAsync(firstName));
+
 
     [HttpGet("{id}", Name = "GetPatientAsync")]
     [ProducesResponseType(StatusCodes.Status200OK)]

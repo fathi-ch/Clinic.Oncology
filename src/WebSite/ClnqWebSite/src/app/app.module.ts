@@ -13,6 +13,7 @@ import {RouterModule, Routes } from '@angular/router';
 import { ServicesPatient } from './services/patient/patient.service';
 import { SpinnerModule } from './spinner/spinner.module';
 import { RdvComponent } from './views/rdv/rdv.component';
+import { ServicesRdv } from './services/rdv/patient.service';
 
 export function initializeApp(appConfig: AppConfig) {
   return () => appConfig.load();
@@ -43,7 +44,7 @@ export function initializeApp(appConfig: AppConfig) {
   exports: [AppComponent
   ],
 
-  providers: [ ServicesPatient,AppConfig,
+  providers: [ ServicesPatient,ServicesRdv,AppConfig,
     { provide: APP_INITIALIZER,
       useFactory: initializeApp,
       deps: [AppConfig], multi: true }],

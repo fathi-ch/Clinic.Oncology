@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 using Clinic.Core.Contracts;
 using Clinic.Core.Data;
 using Clinic.Core.Dto;
@@ -63,6 +64,24 @@ public class PatientRepository : IPatientRepository
         var query = sb.ToString();
         var result = await connection.QueryAsync<Patient>(query);
         return result.ToList().Select(x => x.ToPatientResponse());
+    }
+    public async Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string name)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+
+        var sb = new StringBuilder()
+                .Append("SELECT * ")
+                .Append("FROM Patients p ");
+        
+
+        return (await connection.QueryAsync<Patient>(sb.ToString()))
+                .Where(patient =>
+                patient.FirstName.ToLower().Contains(name.ToLower()))
+                .ToList().
+                Select(x =>
+                x.ToPatientResponse())
+                ?? 
+                Enumerable.Empty<PatientResponse>();
     }
 
     public async Task<PatientResponse?> GetByIdAsync(int id)

@@ -3,6 +3,9 @@
         Rdv Médical > Gestion des Rdv
     </div>
 
+
+     
+    
     <div fxFlex="62px" class="gridReserveOptions" fxLayout="row" fxLayoutGap="5px">
 
 
@@ -17,8 +20,9 @@
 
                     <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
                         <dx-text-box fxFlex="calc(100% - 350px)" [class]="'textBoxCssClass'" valueChangeEvent="keyup"
-                            stylingMode="filled" [placeholder]="'Recherchez nom , prénom ... '" mode="search"
-                            [showClearButton]="true">
+                            stylingMode="filled" [placeholder]="'Recherchez nom , prénom ... '" mode="search" [(value)]="searchText"
+                            [showClearButton]="true"
+                            (onValueChanged)="searchPatient()">
                         </dx-text-box>
 
                     </div>
@@ -57,10 +61,15 @@
 
 
     </div>
+    <!-- list patiens -->
 
+  
+
+    <!-- rdv -->
     <div fxFlex="calc(100% - 180px)" style="height: 600px;">
 
         <dx-scheduler
+        #scheduler_ges id="scheduler_ges"
         timeZone="Etc/UTC"
         textExpr="title"
         allDayExpr="dayLong"
@@ -72,22 +81,26 @@
         [firstDayOfWeek]="6"
         [currentDate]="currentDate"
         [dataSource]="rdvData"
-        startDateExpr="startDate" 
-        endDateExpr="endDate"
+        startDateExpr="startTime" 
+        endDateExpr="endTime"
+        currentView="week"
         [allDayPanelMode]="'hidden'"
         (onContentReady)="onContentReady($event)"
         (onAppointmentUpdating)="onAppointmentUpdating($event)"
+        (onAppointmentFormOpening)="onAppointmentFormOpening($event)"
+        (onOptionChanged)="handlePropertyChange($event)"> 
       >
+      <dxi-view
+      type="week"
+      [startDayHour]="07"
+      [endDayHour]="22">
+  </dxi-view>
       <dxi-view
         type="day"
         [startDayHour]="07"
         [endDayHour]="22">
     </dxi-view>
-    <dxi-view
-        type="week"
-        [startDayHour]="07"
-        [endDayHour]="22">
-    </dxi-view>
+   
    
     </dx-scheduler>
 
@@ -98,186 +111,112 @@
 
 <!-- new patinet -->
 
-<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [width]="700" [height]="420" [showTitle]="true"
-    [position]="'top'" [dragEnabled]="false" title="Nouveau Patient" [hideOnOutsideClick]="true"
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [width]="670" [height]="277" [showTitle]="true"
+    [position]="'top'" [dragEnabled]="false" title="Nouveau rdv. médical" [hideOnOutsideClick]="true"
     [(visible)]="popupVisible">
 
-   
-
     <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
-        
+
+        <!-- nom & prenom -->
         <!-- nom & prenom -->
         <div style="display: flex; padding-bottom: 8px;">
 
 
             <div>
-                <span class="titreCmt">Nom</span>
-    
-                <dx-text-box [placeholder]="''"  [class]="'defaultTextBoxCssClass'" name="pat_nom" text="" [(value)]="pat_nom"
-                    mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
-                </dx-text-box>
+                <span class="titreCmt">Nom ,Prénom Date de naissance</span>
+
+                                    <dx-autocomplete
+                                    [width]="631"
+                                    placeholder="Nom"
+                                    [showClearButton]="true"
+                                    [(value)]="searchText"
+                                    [dataSource]="LstPatients"
+                                    (onValueChanged)="searchPatient()"
+                                    (onSelectionChanged)="selectedPatien($event)"
+                                    valueExpr="autocpmliteValue"
+                                  ></dx-autocomplete>
+              
             </div>
     
-            <div style="padding-left: 5%;">
-                <span class="titreCmt">Prénom</span>
-    
-                <dx-text-box [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="pat_prenom" text="" [(value)]="pat_prenom"
-                    mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
-                </dx-text-box>
-            </div>
+            
 
         </div>
-       
-        <!-- date de nai. -->
-        <div style="padding-bottom: 8px;">
-            <span class="titreCmt">Date de naissance</span>
 
-            <dx-date-box
-            #dateNais
-            placeholder="Ex : JJ/MM/AAAA"
-            [min]="min"
-            [max]="pat_date_n"
-            >
-        </dx-date-box>
-        </div>
-        
-        <!-- rdv. -->
+        <!-- Prochain Rdv -->
 
-        <div style="display: flex;padding-bottom: 8px;">
+        <div style="display: flex;padding-bottom: 15px;">
 
             <div>
 
                 <span class="titreCmt">Prochain Rdv</span>
-            
-                <dx-date-box 
-                #dateRdv
-                placeholder="Ex : JJ/MM/AAAA"
-                 [min]="pat_date_rdv"
-                 >
+
+                <dx-date-box #dateRdv placeholder="Ex : JJ/MM/AAAA" [min]="pat_date_rdv">
                 </dx-date-box>
-                
+
 
             </div>
 
             <div style="padding-left: 5%;">
 
                 <span class="titreCmt">de</span>
-                <dx-date-box 
-                #startRdv
-                placeholder="HH:mm"
-                type="time" 
-                [width]="100"  
-                [interval]="15"
-                [inputAttr]="{ 'aria-label': 'Time' }">
-            </dx-date-box>
+                <dx-date-box #startRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15"
+                    [inputAttr]="{ 'aria-label': 'Time' }">
+                </dx-date-box>
 
             </div>
 
             <div style="padding-left: 5%;">
 
                 <span class="titreCmt">à</span>
-                <dx-date-box 
-                #endRdv
-                placeholder="HH:mm"
-                type="time" 
-                [width]="100"  
-                [interval]="15"
-                [inputAttr]="{ 'aria-label': 'Time' }">
-            </dx-date-box>
+                <dx-date-box #endRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15"
+                    [inputAttr]="{ 'aria-label': 'Time' }">
+                </dx-date-box>
 
             </div>
-         
-            
-      
-        </div>
-        <div style="display: flex; padding-bottom: 8px;">
-          <!-- Mobile. -->
-          <div style="padding-bottom: 8px;">
-            <span class="titreCmt">Mobile</span>
 
-            <dx-text-box 
-          
-            [placeholder]="''" 
-            mask="0 000000000" 
-            [class]="'defaultTextBoxCssClass'" 
-            name="pat_prenom" 
-            text="" 
-            [(value)]="pat_mobile"
-            mode="text" 
-            [stylingMode]="'outlined'" 
-            [showClearButton]="true">
-        </dx-text-box>
+
 
         </div>
 
-         <!-- Mail. -->
-         <div style="padding-bottom: 15px;padding-left: 5%;">
-            <span class="titreCmt">Email</span>
-
-            <dx-text-box
-          
-            [placeholder]="''"   
-            [class]="'defaultTextBoxCssClass'" 
-            name="pat_prenom" 
-            text="" 
-            [(value)]="pat_email"
-            mode="text" 
-            [stylingMode]="'outlined'" 
-            [showClearButton]="true">
-            <dx-validator>
-                <dxi-validation-rule 
-                    type="email" 
-                    message="e-mail icorrect">
-                </dxi-validation-rule>
-            </dx-validator>
-        </dx-text-box>
-
-        </div>
-    </div>
-      
-
-        <div fxFlex="62px" class="gridReserveOptions" fxLayout="row" fxLayoutGap="5px">
+        <div fxFlex="62px" class="gridReserveOptions" style="width: 631px !important;" fxLayout="row" fxLayoutGap="5px">
 
 
-
-            <div class="colored box" style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
-                <!-- search -->
-                <div fxflex="60" style="flex: 1 1 100%; box-sizing: border-box; max-width: 75%;">
+            <div class="colored box"
+                style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
+              
+                <div fxflex="60" style="flex: 1 1 100%; box-sizing: border-box; max-width: 73%;">
                     <div fxFlex fxLayout="row">
-    
-    
-    
-    
                         <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
-                           
-    
+
+
                         </div>
                     </div>
                 </div>
                 <!-- buttons controle -->
-              
-    
-                <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 15%;">
+
+
+                <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 25%;">
                     <div style="float: left;
                     font-size: 14px;
                     color: white;
                     padding-top: 0px;
                     padding-left: 22px;">
-    
+
                         <dx-button stylingMode="outlined" text="Ajouter" type="normal" [width]="130" [icon]="'todo'"
-                            (click)="newPatient()"></dx-button>
-    
-    
+                            (click)="newRdv()"></dx-button>
+
+
                     </div>
                 </div>
-    
+
             </div>
-    
-    
+
+
         </div>
 
-                        
 
-          
+
     </div>
+
+  
 </dx-popup>

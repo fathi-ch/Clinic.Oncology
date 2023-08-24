@@ -17,11 +17,28 @@
 
                     <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
                         <dx-text-box fxFlex="calc(100% - 350px)" [class]="'textBoxCssClass'" valueChangeEvent="keyup"
-                            stylingMode="filled" [placeholder]="'Recherchez nom , prénom ... '" mode="search"
-                            [showClearButton]="true">
+                            stylingMode="filled" [placeholder]="'Recherchez nom , prénom ... '" mode="search" [(value)]="searchText"
+                            [showClearButton]="true"
+                            (onValueChanged)="searchPatient()">
                         </dx-text-box>
+                      
 
                     </div>
+                   
+                </div>
+            </div>
+            <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 10%;">
+
+                <div style="float: left;
+                font-size: 14px;
+                color: white;
+                padding-top: 5px;">
+
+                    <dx-button stylingMode="outlined" text="Tous" type="normal" [width]="130" [icon]="'group'"
+                        (click)="GetAllPateintList()"></dx-button>
+
+
+
                 </div>
             </div>
             <!-- buttons controle -->
@@ -58,7 +75,9 @@
 
     </div>
 
-    <div fxFlex="calc(100% - 180px)">
+    <div fxFlex="calc(100% - 180px)" style="height: 100%;
+    border: 1px solid;
+    border-color: #8c54ac;">
 
         <dx-data-grid #dataGrid class="gridContainer" [hoverStateEnabled]="true" [rowAlternationEnabled]="true"
             [showRowLines]="true" noDataText="" [dataSource]="LstPatients" [height]="'auto'" [showBorders]="false"

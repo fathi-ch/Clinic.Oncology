@@ -12,9 +12,9 @@
         height: 30px;
         border-radius: 9px;
         box-shadow: none !important;
-        color: white;
+        color: #8c54ac;
         margin-left: 10px;
-
+background-color: white;
         .dx-button-content {
             padding: 1px 6px !important;
    
@@ -28,9 +28,15 @@
     }
 }
 ::ng-deep.dx-button-mode-outlined .dx-icon {
-    color: #fff;
+    color: #8c54ac;
 }
-
+::ng-deep.dx-button-mode-outlined .dx-state-hover {
+    color: #ffffff !important;
+    background-color: transparent !important;
+}
+::ng-deep.dx-button-mode-outlined .dx-icon .dx-state-hover {
+    color: #ffffff !important;
+}
 ::ng-deep.DatePicker
 {
     .dx-button-mode-outlined .dx-icon {
