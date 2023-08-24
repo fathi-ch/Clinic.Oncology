@@ -22,6 +22,8 @@ builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 builder.Services.AddSingleton<IDocumentRepository, DocumentRepository>();
 builder.Services.AddSingleton<IFileRepository, FileRepository>();
+builder.Services.AddSingleton<IVisitRepository, VisitRepository>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,

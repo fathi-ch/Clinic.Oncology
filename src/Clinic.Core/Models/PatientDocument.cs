@@ -2,7 +2,10 @@
 
 public class PatientDocument
 {
-    public Guid Id { get; set; }
-    public Guid PatientId { get; set; }
-    public string Path { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string? DocumentType { get; set; }
+    public int VisitId { get; set; }
+    public Visit Visit { get; set; }
+    
 }
