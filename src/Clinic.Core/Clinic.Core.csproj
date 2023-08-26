@@ -21,5 +21,11 @@
         </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Data\SqlLiteScripts\Database.sql">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 
 </Project>
