@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace Clinic.Core.Models;
+﻿namespace Clinic.Core.Models;
 
 public class Visit
 {
