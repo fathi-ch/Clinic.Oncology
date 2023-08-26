@@ -44,7 +44,7 @@ public class DocumentsController : ControllerBase
         {
             // Logging in the future
             return StatusCode(StatusCodes.Status500InternalServerError,
-                new { Message = "An error occurred while creating the patient" });
+                new { Message = "An error occurred while creating the Documents" });
         }
     }
     
@@ -55,7 +55,7 @@ public class DocumentsController : ControllerBase
     {
         var documents = await _document.GetAllAsync();
         
-        if (documents.Count() == 0) return NotFound();
+        if (documents.Count() == 0) return Ok(Enumerable.Empty<PatientDocumentResponse>());
     
         return Ok(documents);
     }

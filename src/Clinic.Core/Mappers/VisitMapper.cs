@@ -26,7 +26,7 @@ public static class VisitMapper
         };
     }
 
-    public static VisitResponse ToVisitResponse(this Visit visit)
+    public static VisitResponse ToVisitResponse(this Visit visit, IEnumerable<PatientDocumentResponse> documents)
     {
         if (visit == null)
         {
@@ -38,12 +38,13 @@ public static class VisitMapper
             Id = visit.Id,
             PatientId = visit.PatientId,
             Patient = visit.Patient.ToPatientResponse(),
-            StartTime = visit.EndTime,
+            StartTime = visit.StartTime,
             EndTime = visit.EndTime,
             Price = visit.Price,
             Description = visit.Description,
             VisitType = visit.VisitType,
-            Status = visit.Status
+            Status = visit.Status,
+            Documents = documents
         };
     }
 }

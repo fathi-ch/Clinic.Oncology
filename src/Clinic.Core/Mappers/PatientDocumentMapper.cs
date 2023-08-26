@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
-using Clinic.Core.Configurations;
-using Clinic.Core.Contracts;
+﻿using Clinic.Core.Contracts;
 using Clinic.Core.Dto;
-using Clinic.Core.Helpers;
 using Clinic.Core.Models;
 
 namespace Clinic.Core.Mappers;
