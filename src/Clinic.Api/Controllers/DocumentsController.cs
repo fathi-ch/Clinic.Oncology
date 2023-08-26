@@ -1,6 +1,5 @@
 ﻿using Clinic.Core.Contracts;
 using Clinic.Core.Dto;
-using Clinic.Core.Mappers;
 using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
