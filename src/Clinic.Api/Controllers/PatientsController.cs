@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Clinic.Api.Controllers;
 
 [ApiController]
-[Route("/v1/api/[controller]")]
+[Route("/v1/api/patients")]
 public class PatientsController : ControllerBase
 {
     private readonly IPatientRepository _patientRepository;
