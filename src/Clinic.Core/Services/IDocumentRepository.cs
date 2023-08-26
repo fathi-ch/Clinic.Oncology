@@ -1,7 +1,5 @@
 ﻿using Clinic.Core.Contracts;
 using Clinic.Core.Dto;
-using Clinic.Core.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace Clinic.Core.Services;
 
