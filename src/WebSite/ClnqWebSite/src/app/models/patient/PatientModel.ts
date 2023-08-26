@@ -12,5 +12,6 @@ export class Pateint {
     referral?:string;
     weight?: number;
     height?: number;
+    autocpmliteValue?:string;
 
 }

@@ -1,4 +1,6 @@
-﻿namespace Clinic.Core.Contracts;
+﻿using System.Runtime.CompilerServices;
+
+namespace Clinic.Core.Contracts;
 
 public class PatientResponse
 {
@@ -14,4 +16,6 @@ public class PatientResponse
     public string? Mobile { get; set; }
     public string? SocialSecurityNumber { get; set; }
     public string? Referral { get; set; }
+    public string AutocpmliteValue { get { return  string.Format("{0} ,{1}    {2}", this.FirstName,this.LastName,this.BirthDate.ToString("dd/MM/yyyy")); } }
+    
 }

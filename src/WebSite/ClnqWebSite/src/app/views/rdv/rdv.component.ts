@@ -1,6 +1,10 @@
 import { Component, NgModule, OnInit, ViewChild } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxTemplateModule, DxTextBoxComponent } from "devextreme-angular";
+import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxSchedulerComponent, DxTemplateModule, DxTextBoxComponent } from "devextreme-angular";
+import { LoadOptions } from "devextreme/data";
+import CustomStore from "devextreme/data/custom_store";
+import DataSource from "devextreme/data/data_source";
+import { AppointmentUpdatedEvent } from "devextreme/ui/scheduler";
 
 import { Pateint } from "src/app/models/patient/PatientModel";
 import { Rdv } from "src/app/models/rdv/RdvModel";
@@ -18,19 +22,54 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
 export class RdvComponent implements OnInit {
 
   @ViewChild("dateNais", { static: false }) dateNais!: DxDateBoxComponent;
-  @ViewChild("dateRdv", { static: false }) dateRdv!: DxTextBoxComponent;
+  @ViewChild("dateRdv", { static: false }) dateRdv!: DxDateBoxComponent;
   @ViewChild("startRdv", { static: false }) startRdv!: DxDateBoxComponent;
-  @ViewChild("endRdv", { static: false }) endRdv!: DxTextBoxComponent;
+  @ViewChild("endRdv", { static: false }) endRdv!: DxDateBoxComponent;
+  @ViewChild("scheduler_ges", { static: false })  scheduler_ges!: DxSchedulerComponent;
 
 
 
-
-
-  rdvData: Rdv[] =[];
+  rdvData: DataSource;
 
   lastRowOpned: string = "";
 
-
+dataSource= [
+  {
+  id: 1,
+  startTime: new Date('2023-08-24T13:00:00.000'),
+  endTime: new Date('2023-08-24T13:15:00.000'),
+  title:'NECIB Farouk'
+  
+},
+{
+  id: 2,
+  startTime: new Date('2023-08-24T14:00:00.000Z'),
+  endTime: new Date('2023-08-24T14:30:00.000Z'),
+  title:'NECIB Yanis'
+  
+},
+{
+  id: 3,
+  startTime: new Date('2023-08-24T15:00:00.000Z'),
+  endTime: new Date('2023-08-24T15:30:00.000Z'),
+  title:'CHABAN Fathi'
+  
+},
+{
+  id: 4,
+  startTime: new Date('2023-08-24T16:00:00.000Z'),
+  endTime: new Date('2023-08-24T17:30:00.000Z'),
+  title:'CHABAN Issam'
+  
+},
+{
+  id: 5,
+  startTime: new Date('2023-08-24T18:00:00.000Z'),
+  endTime: new Date('2023-08-24T18:30:00.000Z'),
+  title:'NECIB Ramzi'
+  
+}
+];
   //pop up new patient
 
   popupVisible = false;
@@ -41,6 +80,7 @@ export class RdvComponent implements OnInit {
   pat_email: string = "";
   pat_date_n: Date = new Date();
   pat_date_rdv: Date = new Date();
+  pat_date_rdv_a: Date = new Date();
   pat_date_rdv_start_Time: Date = new Date(1900, 0, 1);
   pat_date_rdv_End_Time: Date = new Date(1900, 0, 1);
   firstWorkDay2017: Date = new Date(2017, 0, 3);
@@ -52,6 +92,9 @@ export class RdvComponent implements OnInit {
 
   public currentDate: Date = new Date();
 
+  searchText:string="";
+
+  newRdvSelectedPatien:Pateint=new Pateint();
 
 
   // data grid data source 
@@ -61,47 +104,38 @@ export class RdvComponent implements OnInit {
     public readonly PateintService: ServicesPatient,
     private readonly serviceCmnObject: ServiceCmnObject
   ) {
+    const that = this;
+    this.rdvData=new DataSource({
+     
+      store: new CustomStore({
+        key:'id',
+        load:function(LoadOptions:LoadOptions){
+          let d=that.scheduler_ges.instance.getStartViewDate();
+          let f=that.scheduler_ges.instance.getEndViewDate();
+          return  that.dataSource;
+        },
+        update:(key,value)=>
+        {
+        
+          
+          that.dataSource.splice(5,1);
+          that.dataSource.push(value);
+          
+          that.rdvData.reload();
+          return  value;
+        }
+       
+      }),
+      paginate: false
+    
+  
+  });
 
-  }
+}
+  
+  
   ngOnInit(): void {
-    this.rdvData = [
-      {
-      id: 1,
-      startDate: new Date('2023-08-23T13:00:00.000'),
-      endDate: new Date('2023-08-23T13:15:00.000'),
-      title:'NECIB Farouk'
-      
-    },
-    {
-      id: 2,
-      startDate: new Date('2023-08-23T14:00:00.000Z'),
-      endDate: new Date('2023-08-23T14:30:00.000Z'),
-      title:'NECIB Yanis'
-      
-    },
-    {
-      id: 3,
-      startDate: new Date('2023-08-23T15:00:00.000Z'),
-      endDate: new Date('2023-08-23T15:30:00.000Z'),
-      title:'CHABAN Fathi'
-      
-    },
-    {
-      id: 4,
-      startDate: new Date('2023-08-23T16:00:00.000Z'),
-      endDate: new Date('2023-08-23T17:30:00.000Z'),
-      title:'CHABAN Issam'
-      
-    },
-    {
-      id: 5,
-      startDate: new Date('2023-08-23T18:00:00.000Z'),
-      endDate: new Date('2023-08-23T18:30:00.000Z'),
-      title:'NECIB Ramzi'
-      
-    }
-    ];
-    this.GetAllPateintList();
+    
   }
 
   public convertDate(date: string) {
@@ -154,8 +188,32 @@ export class RdvComponent implements OnInit {
     });
   }
 
+  public searchPatient()
+  {
+    if(this.searchText && this.searchText.length>3)
+    {
+    //  this.serviceCmnObject.spinnerLoading.next(true);
+      this.lastRowOpned = "";
+      // calling all pateints end point 
+      this.PateintService.SearchPateints(this.searchText).subscribe(lstPatients => {
+        this.LstPatients = lstPatients;
+      //  this.serviceCmnObject.spinnerLoading.next(false);
+      });
+    }
+    else
+    {
+      this.LstPatients=[];
+    }
+ 
+  }
+
   public newPatientPopUp() {
     this.popupVisible = true;
+  }
+
+  public getValueDisplay(data:any)
+  {
+    return data.firstName +" "+ data.lastNime
   }
 
   public newPatienPopUpInit() {
@@ -164,24 +222,21 @@ export class RdvComponent implements OnInit {
     this.dateNais.value = "";
     this.dateRdv.value = "";
   }
-
-  public newPatient() {
-    this.serviceCmnObject.spinnerLoading.next(true);
-    let _patien = new Pateint();
-    _patien.firstName = this.pat_nom;
-    _patien.lastName = this.pat_prenom;
-    _patien.birthDate = new Date(this.dateNais.value);
-    _patien.nextAppointment = new Date(this.dateRdv.value);
-
-    this.PateintService.NewPateint(_patien).subscribe(pat => {
-      this.GetAllPateintList();
-      this.serviceCmnObject.spinnerLoading.next(true);
-      this.popupVisible = false;
-    });
-
-
-
-
+  public selectedPatien(e:any)
+  {
+    if(e.selectedItem)
+    {
+        this.newRdvSelectedPatien=e.selectedItem;
+    }
+      
+ 
+  }
+  public newRdv() {
+     
+      let startTime=new Date(this.dateRdv.value);
+      startTime.setHours(new Date(this.endRdv.value).getHours());
+      startTime.setMinutes(new Date(this.endRdv.value).getMinutes());
+   
   }
 
   public onContentReady(e:any) {
@@ -190,6 +245,18 @@ export class RdvComponent implements OnInit {
 
   public onAppointmentUpdating(e:any) {
     let d=e;
+  }
+
+  public onAppointmentFormOpening(e:any)
+  {
+    e.cancel = true;
+    this.popupVisible=true;
+  }
+
+  public  handlePropertyChange(e:any)
+  {
+    e.cancel = true;
+   
   }
 
 }

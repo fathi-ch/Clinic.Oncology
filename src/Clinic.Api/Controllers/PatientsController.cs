@@ -29,6 +29,12 @@ public class PatientsController : ControllerBase
         return Ok(patients);
     }
 
+    [HttpGet,Route("SearchPatients")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string firstName="")
+        => (await _patientRepository.GetAllByNameAsync(firstName));
+
+
     [HttpGet("{id}", Name = "GetPatientAsync")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
