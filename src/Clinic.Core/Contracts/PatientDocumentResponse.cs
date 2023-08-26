@@ -2,6 +2,9 @@
 
 public class PatientDocumentResponse
 {
-    public string Path { get; set; }
-    public string PatientDocumentbase64 { get; set; }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int VisitId { get; set; }
+    public string DocumentType { get; set; }
+    public string PatientDocumentsbase64 { get; set; }
 }

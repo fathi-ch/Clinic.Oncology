@@ -1,4 +1,5 @@
 ﻿using Clinic.Core.Contracts;
+using Clinic.Core.Dto;
 using Clinic.Core.Models;
 using Microsoft.AspNetCore.Http;
 
@@ -6,7 +7,9 @@ namespace Clinic.Core.Services;
 
 public interface IDocumentRepository
 {
-    // Task<bool> CreatePatientDocumentsAsync(IEnumerable<IFormFile> files, string id);
-    // Task<PatientWithDocumentsResponse> GetPatientDocumentByPatientIdAsync(string id);
-    Task<bool> DeletePatientDocumentsAsync(int id);
+    Task<IEnumerable<PatientDocumentResponse>> CreateAsync(PatientDocumentDto patientDocumentDto);
+    Task<IEnumerable<PatientDocumentResponse>> GetAllAsync();
+    Task<PatientDocumentResponse?> GetByIdAsync(int id);
+    Task<PatientDocumentResponse> DeleteByIdAsync(int id);
+    Task<IEnumerable<PatientDocumentResponse>> DeleteByVisitIdAsync(int visitId);
 }
