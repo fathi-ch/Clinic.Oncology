@@ -97,8 +97,9 @@ public class VisitRepository : IVisitRepository
         {
             return null;
         }
-
-        await _documentRepository.DeleteByVisitIdAsync(id);
+        
+        
+        var listOfDocs=  await _documentRepository.DeleteByVisitIdAsync(id);
 
         var deleteQuery = new StringBuilder();
         deleteQuery.Append("DELETE FROM Visits ");
@@ -115,7 +116,8 @@ public class VisitRepository : IVisitRepository
             throw;
         }
 
-        visitToDelete.Documents = null;
+       visitToDelete.Documents = listOfDocs;
         return visitToDelete;
     }
+
 }

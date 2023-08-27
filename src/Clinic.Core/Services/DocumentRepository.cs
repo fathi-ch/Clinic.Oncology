@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata;
+using System.Text;
 using Clinic.Core.Configurations;
 using Clinic.Core.Contracts;
 using Clinic.Core.Data;
@@ -35,15 +36,15 @@ public class DocumentRepository : IDocumentRepository
             var documentsResponse = new List<PatientDocumentResponse>();
             if (patientDocumentDto.Files.Count() > 0)
             {
-                var sb = new StringBuilder();
-                sb.Append("INSERT INTO ");
-                sb.Append("Documents (VisitId, Name, DocumentType) ");
-                sb.Append("VALUES (@VisitId, @Name, @DocumentType); ");
-                sb.Append("SELECT last_insert_rowid();");
-                var query = sb.ToString();
-
                 foreach (var file in patientDocumentDto.Files)
                 {
+                    var sb = new StringBuilder();
+                    sb.Append("INSERT INTO ");
+                    sb.Append("Documents (VisitId, Name, DocumentType) ");
+                    sb.Append("VALUES (@VisitId, @Name, @DocumentType); ");
+                    sb.Append("SELECT last_insert_rowid();");
+                    
+                    var query = sb.ToString();
                     var originalFileExtension = Path.GetExtension(file.FileName);
                     var documentsFullName = GenerateDocumentPath(patientDocumentDto.VisitId, originalFileExtension);
                     newId = await connection.ExecuteScalarAsync<int>(query,
@@ -55,11 +56,13 @@ public class DocumentRepository : IDocumentRepository
 
                     await _fileRepository.SaveFilesAsync(file, documentsFullName);
 
-                    var documentResponse = patientDocumentDto.ToDocumentResponse(newId, documentsFullName, _dbConfigs.GetFullSaveFolderPathForDocuments(documentsFullName));
+                    var documentResponse = patientDocumentDto.ToDocumentResponse(newId, documentsFullName,
+                        _dbConfigs.GetFullSaveFolderPathForDocuments(documentsFullName));
 
                     documentsResponse.Add(documentResponse);
-                    transaction.Commit();
+                    
                 }
+                transaction.Commit();
             }
 
 
@@ -134,35 +137,49 @@ public class DocumentRepository : IDocumentRepository
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
 
-        var documentsToDelete = await GetByVisitIdAsync(visitId);
-
-        if (documentsToDelete.Count() == 0)
-        {
-            return null;
-        }
-
-        foreach (var document in documentsToDelete)
-        {
-            await _fileRepository.DeleteFilesAsync(document.Name);
-        }
-
-        var sb = new StringBuilder();
-        sb.Append("DELETE ");
-        sb.Append("FROM Documents ");
-        sb.Append("WHERE VisitId = @VisitId;");
-        var query = sb.ToString();
-
         try
         {
-            var deteledDocuments = await connection.ExecuteAsync(query, new { VisitId = visitId });
+            var sb1 = new StringBuilder();
+            sb1.Append("DELETE FROM Documents ");
+            sb1.Append("WHERE VisitId = @VisitId");
+            var deleteFromDoucments = sb1.ToString();
+
+            var result = (await GetAllAsync()).Where(d => d.VisitId == visitId);
+            
+            var documentsToDeleteClone = result.Select(d => new PatientDocumentResponse 
+            {
+                Id = d.Id,
+                Name = d.Name,
+                VisitId = d.VisitId,
+                DocumentType = d.DocumentType,
+                PatientDocumentsbase64 = d.PatientDocumentsbase64
+            }).ToList();
+
+            var documents = await connection.QueryAsync<PatientDocument>(deleteFromDoucments, new { VisitId = visitId });
+
+            List<Task> tasks = new List<Task>();
+            foreach (var doc in result)
+            {
+                tasks.Add(_fileRepository.DeleteFilesAsync(doc.Name));
+            }
+
+
+            var sb = new StringBuilder();
+            sb.Append("DELETE ");
+            sb.Append("FROM Visits ");
+            sb.Append("WHERE Id = @VisitId;");
+            var query = sb.ToString();
+
+
+            var deletedVisits = await connection.QueryAsync<PatientDocument>(query, new { VisitId = visitId });
+            await Task.WhenAll(tasks);
+            return documentsToDeleteClone;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
-
-        return documentsToDelete;
     }
 
     private string GenerateDocumentPath(int visitId, string originalFileExtension)
