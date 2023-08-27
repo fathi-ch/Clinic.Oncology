@@ -11,5 +11,5 @@ public class VisitResponse
     public string Description { get; set; }
     public string VisitType { get; set; }
     public string Status { get; set; }
-    public List<PatientDocumentResponse> Documents { get; set; } 
+    public IEnumerable<PatientDocumentResponse> Documents { get; set; } 
 }

@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Text;
+﻿using System.Text;
 using Clinic.Core.Contracts;
 using Clinic.Core.Data;
 using Clinic.Core.Dto;
@@ -27,10 +26,8 @@ public class PatientRepository : IPatientRepository
         {
             var sb = new StringBuilder();
             sb.Append("INSERT INTO ");
-            sb.Append(
-                "Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Weight, Height, Mobile, SocialSecurityNumber, Referral) ");
-            sb.Append(
-                "VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender,  @Weight, @Height, @Mobile, @SocialSecurityNumber, @Referral); ");
+            sb.Append("Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Weight, Height, Mobile, SocialSecurityNumber, Referral) ");
+            sb.Append("VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender,  @Weight, @Height, @Mobile, @SocialSecurityNumber, @Referral); ");
             sb.Append("SELECT last_insert_rowid();");
             var query = sb.ToString();
 
@@ -110,8 +107,6 @@ public class PatientRepository : IPatientRepository
         {
             return null;
         }
-
-        // Next update to delete the visits related the patient1
 
         var sb = new StringBuilder();
         sb.Append("DELETE ");

@@ -1,24 +1,23 @@
 ﻿using Clinic.Core.Configurations;
-using Clinic.Core.Data;
 using Microsoft.AspNetCore.Http;
 
 namespace Clinic.Core.Services;
 
 public class FileRepository : IFileRepository
 {
-    private readonly ISqliteDbConnectionFactory _connectionFactory;
     private readonly DatabaseConfigurations _dbConfigs;
 
-    public FileRepository(ISqliteDbConnectionFactory connectionFactory, DatabaseConfigurations dbConfigs)
+    public FileRepository(DatabaseConfigurations dbConfigs)
     {
-        _connectionFactory = connectionFactory;
         _dbConfigs = dbConfigs;
     }
 
-    public async Task<bool> SaveFilesAsync(IFormFile file, string path, FileMode fileMode = FileMode.Create)
+    public async Task<bool> SaveFilesAsync(IFormFile file, string fileName, FileMode fileMode = FileMode.Create)
     {
         try
         {
+            var path = Path.Combine(_dbConfigs.GetFullSaveFolderPathForDocuments(fileName), fileName);
+
             await using var fileStream = new FileStream(path, fileMode);
             await file.CopyToAsync(fileStream);
         }
@@ -39,13 +38,20 @@ public class FileRepository : IFileRepository
         return true;
     }
 
-    public async Task<bool> DeleteFilesAsync(string path)
+    public async Task<bool> DeleteFilesAsync(string fileName)
     {
+        var currDirectory = _dbConfigs.GetFullSaveFolderPathForDocuments(fileName);
         try
         {
+            var path = Path.Combine(currDirectory, fileName);
             if (File.Exists(path))
             {
                 await Task.Run(() => File.Delete(path));
+            }
+
+            if (Directory.GetFiles(currDirectory).Length == 0)
+            {
+                await Task.Run(() => Directory.Delete(currDirectory));
             }
         }
         catch (FileNotFoundException)

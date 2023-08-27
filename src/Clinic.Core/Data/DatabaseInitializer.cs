@@ -8,14 +8,11 @@ public class DatabaseInitializer
 {
     private readonly ISqliteDbConnectionFactory _connectionFactory;
     private readonly DatabaseConfigurations _databaseConfig;
-
-
     public DatabaseInitializer(ISqliteDbConnectionFactory connectionFactory, DatabaseConfigurations databaseConfig)
     {
         _connectionFactory = connectionFactory;
         _databaseConfig = databaseConfig;
     }
-
     public async Task InitializeAsync()
     {
         SqlMapper.AddTypeHandler(new SqLiteGuidTypeHandler());

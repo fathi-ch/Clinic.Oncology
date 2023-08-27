@@ -68,4 +68,29 @@ public class VisitsController : ControllerBase
                 new { Message = "An error occurred while creating the visit." });
         }
     }
+    
+    [HttpDelete("{id}", Name = "DeleteVisit")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteByIdAsync(int id)
+    {
+        try
+        {
+            var visit = await _visitRepository.DeleteByIdAsync(id);
+
+            if (visit == null)
+            {
+                return NotFound(new { Message = "Visit not found" });
+            }
+
+            return Ok(visit);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception (ex) here
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new { Message = "An error occurred while deleting the Visit" });
+        }
+    }
 }

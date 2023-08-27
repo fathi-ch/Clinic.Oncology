@@ -8,5 +8,6 @@ public interface IVisitRepository
    Task<VisitResponse> CreateAsync(VisitDto visitDto);
    Task<IEnumerable<VisitResponse>> GetAllAsync();
    Task<VisitResponse> GetByIdAsync(int id);
+   Task<VisitResponse> DeleteByIdAsync(int id);
    
 }

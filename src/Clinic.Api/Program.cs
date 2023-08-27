@@ -21,8 +21,9 @@ builder.Services.AddSingleton<ISqliteDbConnectionFactory, SqliteDbConnectionFact
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
 builder.Services.AddSingleton<IDocumentRepository, DocumentRepository>();
-builder.Services.AddSingleton<IFileRepository, FileRepository>();
 builder.Services.AddSingleton<IVisitRepository, VisitRepository>();
+builder.Services.AddSingleton<IFileRepository, FileRepository>();
+
 
 builder.Services.AddCors(options =>
 {

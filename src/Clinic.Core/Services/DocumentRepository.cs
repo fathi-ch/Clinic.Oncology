@@ -1,11 +1,12 @@
-﻿using System.Text;
+﻿using System.Reflection.Metadata;
+using System.Text;
 using Clinic.Core.Configurations;
 using Clinic.Core.Contracts;
 using Clinic.Core.Data;
+using Clinic.Core.Dto;
 using Clinic.Core.Mappers;
 using Clinic.Core.Models;
 using Dapper;
-using Microsoft.AspNetCore.Http;
 
 
 namespace Clinic.Core.Services;
@@ -24,147 +25,169 @@ public class DocumentRepository : IDocumentRepository
         _dbConfigs = dbConfigs;
     }
 
-    // public async Task<bool> CreatePatientDocumentsAsync(IEnumerable<IFormFile> files, string id)
-    // {
-    //     using var connection = await _connectionFactory.CreateDbConnectionAsync();
-    //     using var transaction = connection.BeginTransaction();
-    //
-    //     try
-    //     {
-    //         var result = 0;
-    //         if (files.Any())
-    //         {
-    //             const string lastPatientQuery = "SELECT * FROM Patients WHERE Id = @Id";
-    //             const string documentQuery =
-    //                 "INSERT INTO Documents (Id, PatientId, Path) VALUES (@Id, @PatientId, @Path)";
-    //
-    //             var lastPatient =
-    //                 await connection.QuerySingleOrDefaultAsync<Patient>(lastPatientQuery, new { Id = id });
-    //
-    //             foreach (var file in files)
-    //             {
-    //                 var newDocumentId = Guid.NewGuid();
-    //                 var originalFileExtension = Path.GetExtension(file.FileName);
-    //                 var documentsPath = GenerateDocumentPath(lastPatient, newDocumentId, originalFileExtension);
-    //
-    //                 await _fileRepository.SaveFilesAsync(file, documentsPath);
-    //                 result = await connection.ExecuteAsync(documentQuery,
-    //                     new { Id = newDocumentId, PatientId = lastPatient.Id, Path = documentsPath });
-    //             }
-    //         }
-    //
-    //         transaction.Commit();
-    //         return result > 0;
-    //     }
-    //     catch (Exception)
-    //     {
-    //         transaction.Rollback();
-    //         throw;
-    //     }
-    // }
-    //
-    // public async Task<PatientWithDocumentsResponse> GetPatientDocumentByPatientIdAsync(string id)
-    // {
-    //     using var connection = await _connectionFactory.CreateDbConnectionAsync();
-    //     var patientDictionary = new Dictionary<int, PatientWithDocumentsResponse>();
-    //
-    //     await connection.QueryAsync<Patient, PatientDocument, PatientWithDocumentsResponse>(
-    //         PatientWithDocumentsQuery,
-    //         MapPatientWithDocuments(patientDictionary),
-    //         param: new { PatientId = Guid.Parse(id) },
-    //         splitOn: SplitOnIdColumnName
-    //     );
-    //
-    //     return patientDictionary.Values.FirstOrDefault() ?? throw new InvalidOperationException();
-    // }
-    //
-    // public async Task<bool> DeletePatientDocumentsAsync(string id)
-    // {
-    //     var patientDocuments = await GetPatientDocumentByPatientIdAsync(id);
-    //     if (patientDocuments?.Patient == null || !patientDocuments.Documents.Any())
-    //     {
-    //         return false;
-    //     }
-    //
-    //     var filesDeleted = await DeleteFilesFromDiskAsync(patientDocuments.Documents);
-    //     var dbDeleted = await DeletePatientDocumentsFromDbAsync(id);
-    //
-    //     return filesDeleted && dbDeleted;
-    // }
-    //
-    // private async Task<bool> DeleteFilesFromDiskAsync(IEnumerable<PatientDocumentResponse> patientDocuments)
-    // {
-    //     var deleteFileTasks = patientDocuments
-    //         .Where(document => document?.Path != null)
-    //         .Select(document => _fileRepository.DeleteFilesAsync(document.Path))
-    //         .ToList();
-    //
-    //     await Task.WhenAll(deleteFileTasks);
-    //
-    //     return true;
-    // }
-    //
-    // private string GenerateDocumentPath(Patient lastPatient, Guid newDocumentId, string originalFileExtension)
-    // {
-    //     var currentTimeMs = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond).ToString();
-    //     var timeStamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-    //     var fileName = $"{lastPatient.FirstName}_{newDocumentId}_{timeStamp}_{currentTimeMs}";
-    //
-    //     return Path.Combine(_dbConfigs.GetFullDocumentsPath(), fileName + originalFileExtension);
-    // }
-    //
-    // private async Task<bool> DeletePatientDocumentsFromDbAsync(string id)
-    // {
-    //     try
-    //     {
-    //         using var connection = await _connectionFactory.CreateDbConnectionAsync();
-    //         var sb = new StringBuilder();
-    //         sb.Append("DELETE ");
-    //         sb.Append("FROM Documents ");
-    //         sb.Append("WHERE PatientId = @PatientId;");
-    //
-    //         var deletePatientQuery = sb.ToString();
-    //         var affectedRows = await connection.ExecuteAsync(deletePatientQuery, new { PatientId = Guid.Parse(id) });
-    //         return affectedRows > 0;
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         // Log the exception
-    //         return false;
-    //     }
-    // }
-    //
-    // private static Func<Patient, PatientDocument, PatientWithDocumentsResponse> MapPatientWithDocuments(
-    //     Dictionary<int, PatientWithDocumentsResponse> patientDocuments)
-    // {
-    //     return (patient, document) =>
-    //     {
-    //         if (!patientDocuments.TryGetValue(patient.Id, out var patientEntry))
-    //         {
-    //             patientEntry = new PatientWithDocumentsResponse
-    //             {
-    //                 Patient = patient.ToPatientResponse(),
-    //                 Documents = new List<PatientDocumentResponse>()
-    //             };
-    //             patientDocuments.Add(patient.Id, patientEntry);
-    //         }
-    //
-    //         if (document != null)
-    //         {
-    //             patientEntry.Documents.Add(document.ToDocumentResponse());
-    //         }
-    //
-    //         return patientEntry;
-    //     };
-    // }
-
-    private const string SplitOnIdColumnName = "Id";
-
-    private const string PatientWithDocumentsQuery =
-        @"SELECT p.*, d.* FROM Patients p LEFT JOIN Documents d ON p.Id = d.PatientId WHERE p.Id = @PatientId;";
-
-    public Task<bool> DeletePatientDocumentsAsync(int id)
+    public async Task<IEnumerable<PatientDocumentResponse>> CreateAsync(PatientDocumentDto patientDocumentDto)
     {
-        throw new NotImplementedException();
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+        using var transaction = connection.BeginTransaction();
+
+        try
+        {
+            int newId = 0;
+            var documentsResponse = new List<PatientDocumentResponse>();
+            if (patientDocumentDto.Files.Count() > 0)
+            {
+                foreach (var file in patientDocumentDto.Files)
+                {
+                    var sb = new StringBuilder();
+                    sb.Append("INSERT INTO ");
+                    sb.Append("Documents (VisitId, Name, DocumentType) ");
+                    sb.Append("VALUES (@VisitId, @Name, @DocumentType); ");
+                    sb.Append("SELECT last_insert_rowid();");
+                    
+                    var query = sb.ToString();
+                    var originalFileExtension = Path.GetExtension(file.FileName);
+                    var documentsFullName = GenerateDocumentPath(patientDocumentDto.VisitId, originalFileExtension);
+                    newId = await connection.ExecuteScalarAsync<int>(query,
+                        new
+                        {
+                            VisitId = patientDocumentDto.VisitId, Name = documentsFullName,
+                            DocumentType = patientDocumentDto.DocumentType
+                        });
+
+                    await _fileRepository.SaveFilesAsync(file, documentsFullName);
+
+                    var documentResponse = patientDocumentDto.ToDocumentResponse(newId, documentsFullName,
+                        _dbConfigs.GetFullSaveFolderPathForDocuments(documentsFullName));
+
+                    documentsResponse.Add(documentResponse);
+                    
+                }
+                transaction.Commit();
+            }
+
+
+            return documentsResponse;
+        }
+        catch (Exception e)
+        {
+            transaction.Rollback();
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<PatientDocumentResponse>> GetAllAsync()
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+
+        try
+        {
+            var sb = new StringBuilder();
+            sb.Append("SELECT * FROM Documents ");
+            var query = sb.ToString();
+
+            return (await connection.QueryAsync<PatientDocument>(query)).ToList().Select(d =>
+                d.ToDocumentResponse(_dbConfigs.GetFullSaveFolderPathForDocuments(d.Name)));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<PatientDocumentResponse?> GetByIdAsync(int id) =>
+        (await GetAllAsync()).SingleOrDefault(d => d.Id == id);
+
+    public async Task<IEnumerable<PatientDocumentResponse>> GetByVisitIdAsync(int visitId)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+
+        var sb = new StringBuilder();
+        sb.Append("SELECT * FROM Documents ");
+        sb.Append("WHERE VisitId = @VisitId");
+        var query = sb.ToString();
+
+        return (await connection.QueryAsync<PatientDocument>(query, new { VisitId = visitId })).ToList().Select(d =>
+            d.ToDocumentResponse(_dbConfigs.GetFullSaveFolderPathForDocuments(d.Name)));
+    }
+
+    public async Task<PatientDocumentResponse> DeleteByIdAsync(int id)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+
+        var documentToDelete = await GetByIdAsync(id);
+        if (documentToDelete == null)
+        {
+            return null!;
+        }
+
+        var sb = new StringBuilder();
+        sb.Append("DELETE FROM Documents ");
+        sb.Append("WHERE id= @id");
+        var query = sb.ToString();
+
+        await _fileRepository.DeleteFilesAsync(documentToDelete.Name);
+
+        await connection.QueryFirstOrDefaultAsync<PatientDocument>(query, new { id = id });
+
+        return documentToDelete;
+    }
+
+    public async Task<IEnumerable<PatientDocumentResponse>> DeleteByVisitIdAsync(int visitId)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+
+        try
+        {
+            var sb1 = new StringBuilder();
+            sb1.Append("DELETE FROM Documents ");
+            sb1.Append("WHERE VisitId = @VisitId");
+            var deleteFromDoucments = sb1.ToString();
+
+            var result = (await GetAllAsync()).Where(d => d.VisitId == visitId);
+            
+            var documentsToDeleteClone = result.Select(d => new PatientDocumentResponse 
+            {
+                Id = d.Id,
+                Name = d.Name,
+                VisitId = d.VisitId,
+                DocumentType = d.DocumentType,
+                PatientDocumentsbase64 = d.PatientDocumentsbase64
+            }).ToList();
+
+            var documents = await connection.QueryAsync<PatientDocument>(deleteFromDoucments, new { VisitId = visitId });
+
+            List<Task> tasks = new List<Task>();
+            foreach (var doc in result)
+            {
+                tasks.Add(_fileRepository.DeleteFilesAsync(doc.Name));
+            }
+
+
+            var sb = new StringBuilder();
+            sb.Append("DELETE ");
+            sb.Append("FROM Visits ");
+            sb.Append("WHERE Id = @VisitId;");
+            var query = sb.ToString();
+
+
+            var deletedVisits = await connection.QueryAsync<PatientDocument>(query, new { VisitId = visitId });
+            await Task.WhenAll(tasks);
+            return documentsToDeleteClone;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private string GenerateDocumentPath(int visitId, string originalFileExtension)
+    {
+        var currentTimeMs = (DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond).ToString();
+        var timeStamp = DateTimeOffset.UtcNow.ToString("yyyyMMdd_HHmmss");
+        var fileName = $"{visitId}_{timeStamp}_{currentTimeMs}";
+
+        return Path.Combine(fileName + originalFileExtension);
     }
 }
