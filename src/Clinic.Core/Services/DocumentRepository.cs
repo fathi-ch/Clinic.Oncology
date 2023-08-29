@@ -194,7 +194,7 @@ public class DocumentRepository : IDocumentRepository
         {
             var sb = new StringBuilder();
             sb.Append("UPDATE Documents SET ");
-            sb.Append("VisitId = @VisitId, ");
+         //   sb.Append("VisitId = @VisitId, ");
             sb.Append("DocumentType = @DocumentType ");
             sb.Append("WHERE Id = @id;");
             var query = sb.ToString();
@@ -206,7 +206,7 @@ public class DocumentRepository : IDocumentRepository
             return new PatientDocumentResponse()
             {
                 Id = id,
-                VisitId = patientDocumentDto.VisitId,
+               // VisitId = patientDocumentDto.VisitId,
                 DocumentType = patientDocumentDto.DocumentType
             };
         }
