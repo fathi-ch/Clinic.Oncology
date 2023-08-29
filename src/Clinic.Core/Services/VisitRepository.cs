@@ -68,7 +68,7 @@ public class VisitRepository : IVisitRepository
         }).ToList();
 
         var visitResponses = await Task.WhenAll(visitTasks);
-        
+
         return visitResponses;
     }
 
@@ -97,9 +97,9 @@ public class VisitRepository : IVisitRepository
         {
             return null;
         }
-        
-        
-        var listOfDocs=  await _documentRepository.DeleteByVisitIdAsync(id);
+
+
+        var listOfDocs = await _documentRepository.DeleteByVisitIdAsync(id);
 
         var deleteQuery = new StringBuilder();
         deleteQuery.Append("DELETE FROM Visits ");
@@ -116,8 +116,46 @@ public class VisitRepository : IVisitRepository
             throw;
         }
 
-       visitToDelete.Documents = listOfDocs;
+        visitToDelete.Documents = listOfDocs;
         return visitToDelete;
     }
 
+    public async Task<VisitResponse> UpdateByIdAsync(int id, VisitDto visitDto)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+        using var transaction = connection.BeginTransaction();
+
+        try
+        {
+            var sb = new StringBuilder();
+            sb.Append("UPDATE Visits SET ");
+            sb.Append("PatientId = @PatientId, ");
+            sb.Append("StartTime = @StartTime, ");
+            sb.Append("EndTime = @EndTime, ");
+            sb.Append("Price = @Price, ");
+            sb.Append("Description = @Description, ");
+            sb.Append("VisitType = @VisitType, ");
+            sb.Append("Status = @Status ");
+            sb.Append("WHERE Id = @id;");
+
+            var query = sb.ToString();
+
+            await connection.ExecuteAsync(query,
+                new
+                {
+                    id = id, PatientId = visitDto.PatientId, StartTime = visitDto.StartTime, EndTime = visitDto.EndTime,
+                    Price = visitDto.Price, Description = visitDto.Description,
+                    VisitType = visitDto.VisitType, Status = visitDto.Status
+                });
+
+            transaction.Commit();
+
+            return visitDto.ToVisitResponse(id);
+        }
+        catch (Exception)
+        {
+            transaction.Rollback();
+            throw;
+        }
+    }
 }

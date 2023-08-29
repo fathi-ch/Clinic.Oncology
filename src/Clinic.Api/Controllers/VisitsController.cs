@@ -68,7 +68,7 @@ public class VisitsController : ControllerBase
                 new { Message = "An error occurred while creating the visit." });
         }
     }
-    
+
     [HttpDelete("{id}", Name = "DeleteVisit")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -92,5 +92,18 @@ public class VisitsController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError,
                 new { Message = "An error occurred while deleting the Visit" });
         }
+    }
+
+    [HttpPut("{id}", Name = "UpdateVisitAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<VisitResponse>> UpdateAsync(int id, VisitDto visitDto)
+    {
+        var visit = await _visitRepository.GetByIdAsync(id);
+        if (visit == null) return NotFound();
+
+        var visitInDb = await _visitRepository.UpdateByIdAsync(id, visitDto);
+
+        return Ok(visitInDb);
     }
 }

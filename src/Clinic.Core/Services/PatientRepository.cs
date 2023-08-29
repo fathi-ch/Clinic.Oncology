@@ -26,8 +26,10 @@ public class PatientRepository : IPatientRepository
         {
             var sb = new StringBuilder();
             sb.Append("INSERT INTO ");
-            sb.Append("Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Weight, Height, Mobile, SocialSecurityNumber, Referral) ");
-            sb.Append("VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender,  @Weight, @Height, @Mobile, @SocialSecurityNumber, @Referral); ");
+            sb.Append(
+                "Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Weight, Height, Mobile, SocialSecurityNumber, Referral) ");
+            sb.Append(
+                "VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender,  @Weight, @Height, @Mobile, @SocialSecurityNumber, @Referral); ");
             sb.Append("SELECT last_insert_rowid();");
             var query = sb.ToString();
 
@@ -62,24 +64,25 @@ public class PatientRepository : IPatientRepository
         var result = await connection.QueryAsync<Patient>(query);
         return result.ToList().Select(x => x.ToPatientResponse());
     }
+
     public async Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string name)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
 
         var sb = new StringBuilder()
-                .Append("SELECT * ")
-                .Append("FROM Patients p ");
-        
+            .Append("SELECT * ")
+            .Append("FROM Patients p ");
+
 
         return (await connection.QueryAsync<Patient>(sb.ToString()))
-                .Where(patient =>
-                patient.FirstName.ToLower().Contains(name.ToLower()))
-                .ToList().
-                Select(x =>
-                x.ToPatientResponse())
-                ?? 
-                Enumerable.Empty<PatientResponse>();
+               .Where(patient =>
+                   patient.FirstName.ToLower().Contains(name.ToLower()))
+               .ToList().Select(x =>
+                   x.ToPatientResponse())
+               ??
+               Enumerable.Empty<PatientResponse>();
     }
+
     public async Task<PatientResponse?> GetByIdAsync(int id)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
@@ -119,12 +122,12 @@ public class PatientRepository : IPatientRepository
 
         return patientToDelete;
     }
-    
+
     public async Task<PatientResponse> UpdateByIdAsync(int id, PatientDto patientDto)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
         using var transaction = connection.BeginTransaction();
-        
+
         try
         {
             var sb = new StringBuilder();
@@ -143,12 +146,14 @@ public class PatientRepository : IPatientRepository
 
             var query = sb.ToString();
 
-             await connection.ExecuteAsync(query,
+            await connection.ExecuteAsync(query,
                 new
                 {
-                    id=id,   FirstName = patientDto.FirstName,LastName= patientDto.LastName, BirthDate= patientDto.BirthDate,NextAppointment= patientDto.NextAppointment,
-                    Gender=patientDto.Gender, Weight=patientDto.Weight, Height=patientDto.Height,Mobile= patientDto.Mobile,
-                    SocialSecurityNumber=patientDto.SocialSecurityNumber, Referral= patientDto.Referral
+                    id = id, FirstName = patientDto.FirstName, LastName = patientDto.LastName,
+                    BirthDate = patientDto.BirthDate, NextAppointment = patientDto.NextAppointment,
+                    Gender = patientDto.Gender, Weight = patientDto.Weight, Height = patientDto.Height,
+                    Mobile = patientDto.Mobile, SocialSecurityNumber = patientDto.SocialSecurityNumber,
+                    Referral = patientDto.Referral
                 });
 
             transaction.Commit();
