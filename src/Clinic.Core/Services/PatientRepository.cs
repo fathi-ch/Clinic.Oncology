@@ -80,7 +80,6 @@ public class PatientRepository : IPatientRepository
                 ?? 
                 Enumerable.Empty<PatientResponse>();
     }
-
     public async Task<PatientResponse?> GetByIdAsync(int id)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
@@ -119,5 +118,47 @@ public class PatientRepository : IPatientRepository
             new { PatientId = id });
 
         return patientToDelete;
+    }
+    
+    public async Task<PatientResponse> UpdateByIdAsync(int id, PatientDto patientDto)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+        using var transaction = connection.BeginTransaction();
+        
+        try
+        {
+            var sb = new StringBuilder();
+            sb.Append("UPDATE Patients SET ");
+            sb.Append("FirstName = @FirstName, ");
+            sb.Append("LastName = @LastName, ");
+            sb.Append("BirthDate = @BirthDate, ");
+            sb.Append("NextAppointment = @NextAppointment, ");
+            sb.Append("Gender = @Gender, ");
+            sb.Append("Weight = @Weight, ");
+            sb.Append("Height = @Height, ");
+            sb.Append("Mobile = @Mobile, ");
+            sb.Append("SocialSecurityNumber = @SocialSecurityNumber, ");
+            sb.Append("Referral = @Referral ");
+            sb.Append("WHERE Id = @id;");
+
+            var query = sb.ToString();
+
+             await connection.ExecuteAsync(query,
+                new
+                {
+                    id=id,   FirstName = patientDto.FirstName,LastName= patientDto.LastName, BirthDate= patientDto.BirthDate,NextAppointment= patientDto.NextAppointment,
+                    Gender=patientDto.Gender, Weight=patientDto.Weight, Height=patientDto.Height,Mobile= patientDto.Mobile,
+                    SocialSecurityNumber=patientDto.SocialSecurityNumber, Referral= patientDto.Referral
+                });
+
+            transaction.Commit();
+
+            return patientDto.ToPatientResponse(id);
+        }
+        catch (Exception)
+        {
+            transaction.Rollback();
+            throw;
+        }
     }
 }
