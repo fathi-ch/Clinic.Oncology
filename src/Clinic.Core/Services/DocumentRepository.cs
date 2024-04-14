@@ -43,7 +43,7 @@ public class DocumentRepository : IDocumentRepository
                     sb.Append("Documents (VisitId, Name, DocumentType) ");
                     sb.Append("VALUES (@VisitId, @Name, @DocumentType); ");
                     sb.Append("SELECT last_insert_rowid();");
-                    
+
                     var query = sb.ToString();
                     var originalFileExtension = Path.GetExtension(file.FileName);
                     var documentsFullName = GenerateDocumentPath(patientDocumentDto.VisitId, originalFileExtension);
@@ -60,8 +60,8 @@ public class DocumentRepository : IDocumentRepository
                         _dbConfigs.GetFullSaveFolderPathForDocuments(documentsFullName));
 
                     documentsResponse.Add(documentResponse);
-                    
                 }
+
                 transaction.Commit();
             }
 
@@ -145,8 +145,8 @@ public class DocumentRepository : IDocumentRepository
             var deleteFromDoucments = sb1.ToString();
 
             var result = (await GetAllAsync()).Where(d => d.VisitId == visitId);
-            
-            var documentsToDeleteClone = result.Select(d => new PatientDocumentResponse 
+
+            var documentsToDeleteClone = result.Select(d => new PatientDocumentResponse
             {
                 Id = d.Id,
                 Name = d.Name,
@@ -155,7 +155,8 @@ public class DocumentRepository : IDocumentRepository
                 PatientDocumentsbase64 = d.PatientDocumentsbase64
             }).ToList();
 
-            var documents = await connection.QueryAsync<PatientDocument>(deleteFromDoucments, new { VisitId = visitId });
+            var documents =
+                await connection.QueryAsync<PatientDocument>(deleteFromDoucments, new { VisitId = visitId });
 
             List<Task> tasks = new List<Task>();
             foreach (var doc in result)
@@ -178,6 +179,40 @@ public class DocumentRepository : IDocumentRepository
         catch (Exception e)
         {
             Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<PatientDocumentResponse> UpdateByIdAsync(int id, PatientDocumentDto patientDocumentDto)
+    {
+        //NOT FINAL SNEAK AND PEAK IT REQUIRES MORE WORK TO UPDATE BY DOCUMENT NAME
+
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+        using var transaction = connection.BeginTransaction();
+
+        try
+        {
+            var sb = new StringBuilder();
+            sb.Append("UPDATE Documents SET ");
+         //   sb.Append("VisitId = @VisitId, ");
+            sb.Append("DocumentType = @DocumentType ");
+            sb.Append("WHERE Id = @id;");
+            var query = sb.ToString();
+
+            await connection.ExecuteAsync(query,
+                new { id = id, VisitId = patientDocumentDto.VisitId, DocumentType = patientDocumentDto.DocumentType });
+            transaction.Commit();
+
+            return new PatientDocumentResponse()
+            {
+                Id = id,
+               // VisitId = patientDocumentDto.VisitId,
+                DocumentType = patientDocumentDto.DocumentType
+            };
+        }
+        catch (Exception e)
+        {
+            transaction.Rollback();
             throw;
         }
     }

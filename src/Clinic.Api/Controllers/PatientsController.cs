@@ -101,4 +101,17 @@ public class PatientsController : ControllerBase
                 new { Message = "An error occurred while deleting the patient" });
         }
     }
+    
+    [HttpPut("{id}", Name = "UpdatePatientAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PatientResponse>> UpdateAsync(int id, PatientDto patientDto)
+    {
+        var patient = await _patientRepository.GetByIdAsync(id);
+        if (patient == null) return NotFound();
+
+        var patientInDb = await _patientRepository.UpdateByIdAsync(id, patientDto);
+        
+        return Ok(patientInDb);
+    }
 }

@@ -11,4 +11,5 @@ public interface IDocumentRepository
     Task<IEnumerable<PatientDocumentResponse>> GetByVisitIdAsync(int visitId);
     Task<PatientDocumentResponse> DeleteByIdAsync(int id);
     Task<IEnumerable<PatientDocumentResponse>> DeleteByVisitIdAsync(int visitId);
+    Task<PatientDocumentResponse> UpdateByIdAsync(int id, PatientDocumentDto patientDocumentDto);
 }
