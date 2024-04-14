@@ -1,12 +1,13 @@
 ﻿using Clinic.Core.Contracts;
 using Clinic.Core.Dto;
 using Clinic.Core.Models;
+using System.Linq;
 
 namespace Clinic.Core.Mappers;
 
 public static class VisitMapper
 {
-    public static VisitResponse ToVisitResponse(this VisitDto visitDto, int id)
+    public static VisitResponse ToVisitResponse(this VisitDto visitDto)
     {
         if (visitDto == null)
         {
@@ -15,7 +16,8 @@ public static class VisitMapper
 
         return new VisitResponse()
         {
-            Id = id,
+
+            Id = visitDto.Id,
             PatientId = visitDto.PatientId,
             StartTime = visitDto.StartTime,
             EndTime = visitDto.EndTime,
@@ -45,6 +47,27 @@ public static class VisitMapper
             VisitType = visit.VisitType,
             Status = visit.Status,
             Documents = documents
+        };
+    }
+    public static VisitResponse ToVisitResponse(this Visit visit, PatientResponse patient)
+    {
+        if (visit == null)
+        {
+            return null;
+        }
+
+        return new VisitResponse()
+        {
+            Id = visit.Id,
+            PatientId = visit.PatientId,
+            Patient = patient,
+            StartTime = visit.StartTime,
+            EndTime = visit.EndTime,
+            Price = visit.Price,
+            Description = visit.Description,
+            VisitType = visit.VisitType,
+            Status = visit.Status,
+            Documents = null
         };
     }
 }

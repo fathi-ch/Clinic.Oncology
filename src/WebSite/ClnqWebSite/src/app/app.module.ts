@@ -13,7 +13,7 @@ import {RouterModule, Routes } from '@angular/router';
 import { ServicesPatient } from './services/patient/patient.service';
 import { SpinnerModule } from './spinner/spinner.module';
 import { RdvComponent } from './views/rdv/rdv.component';
-import { ServicesRdv } from './services/rdv/patient.service';
+import { ServicesRdv } from './services/rdv/rdv.service';
 
 export function initializeApp(appConfig: AppConfig) {
   return () => appConfig.load();
