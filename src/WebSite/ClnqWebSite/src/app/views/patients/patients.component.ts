@@ -41,7 +41,8 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
    pat_date_rdv_start_Time: Date = new Date(1900, 0, 1);
    pat_date_rdv_End_Time: Date = new Date(1900, 0, 1);
    firstWorkDay2017: Date = new Date(2017, 0, 3);
-   min: Date = new Date(1900, 0, 1);
+   min: Date = new Date(1900, 0, 1,7);
+   max: Date = new Date(1900, 0, 1,22);
    dateClear = new Date(2015, 11, 1, 6);
 
    timeMin: Date = new Date(0,0,0,7,0,0);

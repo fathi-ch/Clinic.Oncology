@@ -352,7 +352,7 @@ border: none !important;
     }
 
     .buttonOption {
-        font-family: 'BouyguesRead';
+        
         height: 30px;
         padding: 1px;
         color: #00679A;
@@ -381,7 +381,7 @@ border: none !important;
     }
 
     .buttonOption:hover {
-        font-family: 'BouyguesRead';
+        
 
         background-color: #00679A;
         border: 1px solid white;
@@ -551,7 +551,7 @@ border: none !important;
     }
     
     .dx-button {
-        font-family: 'BouyguesRead';
+        
     
             height: 30px;
             border-radius: 9px;
@@ -563,7 +563,7 @@ border: none !important;
         }
         
     .buttonOption {
-        font-family: 'BouyguesRead';
+        
     
             height: 30px;
             padding:1px;
@@ -589,7 +589,7 @@ border: none !important;
         }
     
         .buttonOption:hover {
-        font-family: 'BouyguesRead';
+        
     
             background-color: #00679A;
             border: 1px solid white;
@@ -617,7 +617,7 @@ border: none !important;
 
     }
 
-    font-family: 'BouyguesRead';
+    
 
     // .dx-switch.dx-state-hover .dx-switch-handle::before {
     //     background-color: #00B050;
@@ -665,7 +665,7 @@ border: none !important;
 
     .textBoxCssClass {
         border: none !important;
-        font-family: 'BouyguesRead';
+        
   
 
         .dx-icon-search {
@@ -705,7 +705,8 @@ border: none !important;
     .textBoxCssClass {
         background-color: white !important;
         height: 32px;
-        border-radius: 19px;
+        border-radius: 19px !important;
+        width:350px !important;
     }
 
     .dx-texteditor.dx-state-focused:before {

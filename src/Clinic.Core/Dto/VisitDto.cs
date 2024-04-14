@@ -4,6 +4,7 @@ namespace Clinic.Core.Dto;
 
 public class VisitDto
 {
+    public int Id { get; set; }
     public int PatientId { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }

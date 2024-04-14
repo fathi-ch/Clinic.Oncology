@@ -9,25 +9,26 @@
 
         <div class="colored box" style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
             <!-- search -->
-            <div fxflex="60" style="flex: 1 1 100%; box-sizing: border-box; max-width: 80%;">
-                <div fxFlex fxLayout="row">
+            
 
 
 
 
-                    <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
-                        <dx-text-box fxFlex="calc(100% - 350px)" [class]="'textBoxCssClass'" valueChangeEvent="keyup"
-                            stylingMode="filled" [placeholder]="'Recherchez nom , prénom ... '" mode="search" [(value)]="searchText"
-                            [showClearButton]="true"
-                            (onValueChanged)="searchPatient()">
-                        </dx-text-box>
-                      
+                <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
+                    <dx-text-box  [class]="'textBoxCssClass'" valueChangeEvent="keyup"
+                        stylingMode="filled" [placeholder]="'Recherchez nom , prénom ... '" mode="search" [(value)]="searchText"
+                        [showClearButton]="true"
+                        (onValueChanged)="searchPatient()">
+                    </dx-text-box>
+                  
 
-                    </div>
-                   
                 </div>
+               
+            
+            <div fxflex="30" style="flex: 1 1 100%; box-sizing: border-box; max-width: 10%;">
+                
             </div>
-            <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 10%;">
+            <div style=" box-sizing: border-box; ">
 
                 <div style="float: left;
                 font-size: 14px;
@@ -42,7 +43,7 @@
                 </div>
             </div>
             <!-- buttons controle -->
-            <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 10%;">
+            <div style=" box-sizing: border-box; ">
 
                 <div style="float: left;
                 font-size: 14px;
@@ -57,7 +58,7 @@
                 </div>
             </div>
 
-            <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 10%;">
+            <div style=" box-sizing: border-box; ">
                 <div style="float: left;
                 font-size: 14px;
                 color: white;
@@ -75,12 +76,10 @@
 
     </div>
 
-    <div fxFlex="calc(100% - 180px)" style="height: 100%;
-    border: 1px solid;
-    border-color: #8c54ac;">
+    <div fxFlex="calc(100% - 180px)" style="height: 100%;">
 
         <dx-data-grid #dataGrid class="gridContainer" [hoverStateEnabled]="true" [rowAlternationEnabled]="true"
-            [showRowLines]="true" noDataText="" [dataSource]="LstPatients" [height]="'auto'" [showBorders]="false"
+            [showRowLines]="true" noDataText=""   [dataSource]="LstPatients" [height]="'auto'" [showBorders]="false"
             dataRowTemplate="dataRowTemplateName">
 
             <dxi-column caption="id" dataField="id" [visible]="false"></dxi-column>
@@ -91,7 +90,7 @@
             <dxi-column [width]="150" caption="Date de naissance" [alignment]="'left'"></dxi-column>
             <dxi-column [width]="150" caption="Prochain RDV" [alignment]="'left'"></dxi-column>
             <dxi-column [width]="150" caption="N° sécurité sociale" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="100" caption="Mobile" [alignment]="'left'"></dxi-column>
+            <dxi-column [width]="150" caption="Mobile" [alignment]="'left'"></dxi-column>
             <dxi-column [width]="100" caption="Réference" [alignment]="'left'"></dxi-column>
 
             <dxo-load-panel [enabled]="false"></dxo-load-panel>
@@ -100,7 +99,6 @@
             <dxo-paging [pageSize]="20"></dxo-paging>
             <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[20, 30, 40]" [showInfo]="false"
                 [showNavigationButtons]="true"></dxo-pager>
-
 
             <ng-container *dxTemplate="let patient of 'dataRowTemplateName'">
                 <tr class="main-row" id="row-{{patient.data.id}}" (click)="this.showRow(patient.data.id)">
@@ -233,7 +231,7 @@
             <div style="padding-left: 5%;">
 
                 <span class="titreCmt">de</span>
-                <dx-date-box #startRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15"
+                <dx-date-box #startRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15" [min]="min" [max]="max" [value]="min"
                     [inputAttr]="{ 'aria-label': 'Time' }">
                 </dx-date-box>
 
@@ -242,7 +240,7 @@
             <div style="padding-left: 5%;">
 
                 <span class="titreCmt">à</span>
-                <dx-date-box #endRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15"
+                <dx-date-box #endRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15" [min]="min" [max]="max" [value]="min"
                     [inputAttr]="{ 'aria-label': 'Time' }">
                 </dx-date-box>
 

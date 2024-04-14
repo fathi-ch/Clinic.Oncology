@@ -1,5 +1,6 @@
 BEGIN TRANSACTION;
 
+
 CREATE TABLE IF NOT EXISTS "Patients"
 (
     "Id"                   INTEGER,
@@ -39,5 +40,7 @@ CREATE TABLE IF NOT EXISTS "Documents"
     FOREIGN KEY ("VisitId") REFERENCES "Visits" ("Id"),
     PRIMARY KEY ("Id")
 );
+
+
 
 COMMIT;

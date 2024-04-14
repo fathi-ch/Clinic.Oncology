@@ -3,6 +3,7 @@ import { Pateint } from "../patient/PatientModel";
 
 export class Rdv {
     id?: number;
+    patientId?:number;
     startTime?:Date;
     endTime?:Date;
     visitType?:string;
@@ -10,4 +11,5 @@ export class Rdv {
     description?:string;
     status?:string;
     patient?:Pateint;
+    price?:number;
 }

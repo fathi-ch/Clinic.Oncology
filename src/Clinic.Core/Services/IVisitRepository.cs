@@ -5,9 +5,12 @@ namespace Clinic.Core.Services;
 
 public interface IVisitRepository
 {
-    Task<VisitResponse> CreateAsync(VisitDto visitDto);
-    Task<IEnumerable<VisitResponse>> GetAllAsync();
-    Task<VisitResponse> GetByIdAsync(int id);
-    Task<VisitResponse> DeleteByIdAsync(int id);
-    Task<VisitResponse> UpdateByIdAsync(int id, VisitDto visitDto);
+
+   Task<VisitResponse> CreateAsync(VisitDto visitDto);
+   Task<IEnumerable<VisitResponse>> GetAllAsync();
+   Task<VisitResponse> GetByIdAsync(int id);
+   Task<VisitResponse> DeleteByIdAsync(int id);
+   Task UpdateAsync(VisitDto visitDto);
+   Task<IEnumerable<VisitResponse>> GetBydDateAsync(DateTime fromDate, DateTime toDate);
+
 }

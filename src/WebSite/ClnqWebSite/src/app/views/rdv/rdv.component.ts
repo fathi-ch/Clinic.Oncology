@@ -1,15 +1,19 @@
 import { Component, NgModule, OnInit, ViewChild } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxSchedulerComponent, DxTemplateModule, DxTextBoxComponent } from "devextreme-angular";
+import { DxSchedulerTypes } from "devextreme-angular/ui/scheduler";
 import { LoadOptions } from "devextreme/data";
 import CustomStore from "devextreme/data/custom_store";
 import DataSource from "devextreme/data/data_source";
 import { AppointmentUpdatedEvent } from "devextreme/ui/scheduler";
+import { BehaviorSubject } from "rxjs";
 
 import { Pateint } from "src/app/models/patient/PatientModel";
 import { Rdv } from "src/app/models/rdv/RdvModel";
+import { RdvType } from "src/app/models/rdv/RdvTypeModel";
 import { ServiceCmnObject } from "src/app/services/ServiceCmnObject";
 import { ServicesPatient } from "src/app/services/patient/patient.service";
+import { ServicesRdv } from "src/app/services/rdv/rdv.service";
 
 @Component({
   selector: 'app-patients',
@@ -31,49 +35,58 @@ export class RdvComponent implements OnInit {
 
   rdvData: DataSource;
 
-  lastRowOpned: string = "";
 
-dataSource= [
+  lastRowOpned: string = "";
+  //dataSource:[];
+
+  allRdvData:Rdv[]=[];
+  dataSource= [
+    {
+    id: 1,
+    startTime: new Date('2024-04-14T13:00:00.000'),
+    endTime: new Date('2024-004-14T13:15:00.000'),
+    title:'NECIB Farouk'
+    
+  },
   {
-  id: 1,
-  startTime: new Date('2023-08-24T13:00:00.000'),
-  endTime: new Date('2023-08-24T13:15:00.000'),
-  title:'NECIB Farouk'
-  
-},
-{
-  id: 2,
-  startTime: new Date('2023-08-24T14:00:00.000Z'),
-  endTime: new Date('2023-08-24T14:30:00.000Z'),
-  title:'NECIB Yanis'
-  
-},
-{
-  id: 3,
-  startTime: new Date('2023-08-24T15:00:00.000Z'),
-  endTime: new Date('2023-08-24T15:30:00.000Z'),
-  title:'CHABAN Fathi'
-  
-},
-{
-  id: 4,
-  startTime: new Date('2023-08-24T16:00:00.000Z'),
-  endTime: new Date('2023-08-24T17:30:00.000Z'),
-  title:'CHABAN Issam'
-  
-},
-{
-  id: 5,
-  startTime: new Date('2023-08-24T18:00:00.000Z'),
-  endTime: new Date('2023-08-24T18:30:00.000Z'),
-  title:'NECIB Ramzi'
-  
-}
-];
+    id: 2,
+    startTime: new Date('2023-09-05T14:00:00.000Z'),
+    endTime: new Date('2023-09-05T14:30:00.000Z'),
+    title:'NECIB Yanis'
+    
+  },
+  {
+    id: 3,
+    startTime: new Date('2023-09-05T15:00:00.000Z'),
+    endTime: new Date('2023-09-05T15:30:00.000Z'),
+    title:'CHABAN Fathi'
+    
+  },
+  {
+    id: 4,
+    startTime: new Date('2023-09-05T16:00:00.000Z'),
+    endTime: new Date('2023-09-05T17:30:00.000Z'),
+    title:'CHABAN Issam'
+    
+  },
+  {
+    id: 5,
+    startTime: new Date('2023-09-05T18:00:00.000Z'),
+    endTime: new Date('2023-09-05T18:30:00.000Z'),
+    title:'NECIB Ramzi'
+    
+  }
+  ];
   //pop up new patient
 
   popupVisible = false;
 
+  rdvType:RdvType[]=[
+    {code:'RDV',type:'Rdv médical'},
+    {code:'ABS',type:'Abcent'},]
+
+  selectedType:string=""
+  rdvPrix:number=0;
   pat_nom: string = "";
   pat_prenom: string = "";
   pat_mobile: string = "";
@@ -84,7 +97,8 @@ dataSource= [
   pat_date_rdv_start_Time: Date = new Date(1900, 0, 1);
   pat_date_rdv_End_Time: Date = new Date(1900, 0, 1);
   firstWorkDay2017: Date = new Date(2017, 0, 3);
-  min: Date = new Date(1900, 0, 1);
+  min: Date = new Date(1900, 0, 1,7);
+  max: Date = new Date(1900, 0, 1,22);
   dateClear = new Date(2015, 11, 1, 6);
 
   timeMin: Date = new Date(0, 0, 0, 7, 0, 0);
@@ -102,6 +116,7 @@ dataSource= [
 
   constructor(
     public readonly PateintService: ServicesPatient,
+    public readonly RdvService: ServicesRdv,
     private readonly serviceCmnObject: ServiceCmnObject
   ) {
     const that = this;
@@ -109,17 +124,24 @@ dataSource= [
      
       store: new CustomStore({
         key:'id',
-        load:function(LoadOptions:LoadOptions){
+       load:async (LoadOptions:LoadOptions)=>{
           let d=that.scheduler_ges.instance.getStartViewDate();
           let f=that.scheduler_ges.instance.getEndViewDate();
-          return  that.dataSource;
+
+          // rendring all rdvs
+          await that.RdvService.GetRdvByDate(d as Date,f as Date).then(data=>{
+            that.allRdvData=  data as Rdv[];
+         });
+
+        return that.allRdvData;
+          
         },
         update:(key,value)=>
         {
         
-          
-          that.dataSource.splice(5,1);
-          that.dataSource.push(value);
+   
+            
+         this.updateRdv(value as Rdv)
           
           that.rdvData.reload();
           return  value;
@@ -134,8 +156,8 @@ dataSource= [
 }
   
   
-  ngOnInit(): void {
-    
+  async ngOnInit() {
+
   }
 
   public convertDate(date: string) {
@@ -178,14 +200,8 @@ dataSource= [
 
   }
 
-  public GetAllPateintList() {
-    this.serviceCmnObject.spinnerLoading.next(true);
-    this.lastRowOpned = "";
-    // calling all pateints end point 
-    this.PateintService.GetAllPateints().subscribe(lstPatients => {
-      this.LstPatients = lstPatients;
-      this.serviceCmnObject.spinnerLoading.next(false);
-    });
+  public RdvRefresh() {
+    this.rdvData.reload();
   }
 
   public searchPatient()
@@ -231,11 +247,88 @@ dataSource= [
       
  
   }
-  public newRdv() {
+
+  public onPopUpRdvOpen()
+  {
+    this.newRdvSelectedPatien=new Pateint();
+    this.searchText="";
+    this.dateRdv.instance.reset();
+    this.startRdv.value=this.min;
+    this.endRdv.value=this.min;
+   
+  }
+
+  public async newRdv() 
+  {
+    // date début
+      let startTime=new Date(this.dateRdv.value)
+      startTime.setHours(new Date(this.startRdv.value).getHours());
+      startTime.setMinutes(new Date(this.startRdv.value).getMinutes());
+    // date fin       
+      let endTime=new Date(this.dateRdv.value);
+      endTime.setHours(new Date(this.endRdv.value).getHours());
+      endTime.setMinutes(new Date(this.endRdv.value).getMinutes());
+      let _patien=this.newRdvSelectedPatien;
+      let _selectedType=this.selectedType;
+
+    //   startTime = new Date(startTime);
+    // var timeZoneDifference = (startTime.getTimezoneOffset() / 60) * -1; //convert to positive value.
+    // startTime.setTime(startTime.getTime() + (timeZoneDifference * 60) * 60 * 1000);
+    // startTime.toISOString();
+
+    
+    // endTime = new Date(endTime);
+    // var timeZoneDifference = (endTime.getTimezoneOffset() / 60) * -1; //convert to positive value.
+    // endTime.setTime(endTime.getTime() + (timeZoneDifference * 60) * 60 * 1000);
+    // endTime.toISOString();
+
+
+      let _rdv=new Rdv();
+      _rdv.patientId=this.newRdvSelectedPatien.id;
+      _rdv.startTime=startTime;
+      _rdv.endTime=endTime;
+      _rdv.price=this.rdvPrix;
+      _rdv.status="PLA";
+      _rdv.visitType=this.selectedType;
+      _rdv.description="";
+
+      await this.RdvService.NewRdv(_rdv);
+      this.rdvData.reload();
+      this.popupVisible=false;
+
+
+  }
+
+  public async updateRdv(rdv: Rdv) 
+  {
+   
+    //   startTime = new Date(startTime);
+    // var timeZoneDifference = (startTime.getTimezoneOffset() / 60) * -1; //convert to positive value.
+    // startTime.setTime(startTime.getTime() + (timeZoneDifference * 60) * 60 * 1000);
+    // startTime.toISOString();
+
+    
+    // endTime = new Date(endTime);
+    // var timeZoneDifference = (endTime.getTimezoneOffset() / 60) * -1; //convert to positive value.
+    // endTime.setTime(endTime.getTime() + (timeZoneDifference * 60) * 60 * 1000);
+    // endTime.toISOString();
+      await this.RdvService.UpdateRdv(rdv);
+      this.rdvData.reload();
+
+
+  }
+
+
+  public async onAppointmentDeleting (e: DxSchedulerTypes.AppointmentDeletingEvent) {
      
-      let startTime=new Date(this.dateRdv.value);
-      startTime.setHours(new Date(this.endRdv.value).getHours());
-      startTime.setMinutes(new Date(this.endRdv.value).getMinutes());
+    let rdv=e.appointmentData as Rdv;
+    await this.RdvService.DeleteRdv(rdv.id as number);
+    this.rdvData.reload();
+    // Handler of the "appointmentDeleting" event
+}
+
+  public async getAllRdv()
+  {
    
   }
 
