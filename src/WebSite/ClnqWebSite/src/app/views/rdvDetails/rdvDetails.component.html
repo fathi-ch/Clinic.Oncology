@@ -1,6 +1,6 @@
 <div fxLayout="column" fxFill style="padding:20px;padding-top: 10px;" fxLayoutGap="8px">
     <div fxFlex="20px" class="titlePage">
-        Rdv Médical > Gestion des Rdv
+        Rdv Médical > Gestion des Rdv > de : {{currentRdv?.startTime!}} 
     </div>
 
 
@@ -21,7 +21,7 @@
                 padding-top: 5px; display: none;">
 
                     <dx-button stylingMode="outlined" text="Nouveau" type="normal" [width]="130" [icon]="'plus'"
-                        (click)="newPatientPopUp()"></dx-button>
+                        (click)="updateDetailRdv()"></dx-button>
 
 
 
@@ -33,8 +33,8 @@
                 color: white;
                 padding-top: 5px;">
 
-                    <dx-button stylingMode="outlined" text="Recharger" type="normal" [width]="130" [icon]="'refresh'"
-                        (click)="RdvRefresh()"></dx-button>
+                    <dx-button stylingMode="outlined" text="Enregistrer" type="normal" [width]="150" [icon]="'save'"
+                    (click)="updateDetailRdv()"></dx-button>
 
 
                 </div>
@@ -44,47 +44,75 @@
 
 
     </div>
-    <!-- list patiens -->
-
-
-
+   
     <!-- rdv -->
-    <div fxFlex="calc(100% - 180px)" style="height: 600px;">
+    <div style="background-color: #ddd7ee; color: black;">
+         Patient
+    </div>
+<div style="background-color: #f9f8fc;">
+    <div style="display: flex; padding-bottom: 8px;">
+        <div>
+            <span class="titreCmt">Nom et Prénom : </span>
+            <span class="textCmt">{{currentRdv?.patient?.firstName!}} {{currentRdv?.patient?.lastName!}}</span>
+            
+        </div>
+    </div>
+    <div style="display: flex; padding-bottom: 8px;">
+        <div>
+            <span class="titreCmt">Date de naissance : </span>
+            <span class="textCmt">{{currentRdv?.patient?.birthDate!}} </span>
+            <span class="titreCmt">Age : </span>
+            <span class="textCmt">{{currentRdv?.patient?.age!}} ans</span>
+        </div>
+    </div>
+    <div style="background-color: #ddd7ee; color: black;">
+         Consultation
+    </div>
+    <div style="padding-bottom: 8px;">
+        <span class="titreCmt">Détail:</span>
 
-        <dx-scheduler #scheduler_ges id="scheduler_ges" timeZone="Africa/Algiers" textExpr="title" allDayExpr="dayLong"
-            [height]="'calc(100% - 60px)'" ScrollAreaHeight="100%" [adaptivityEnabled]="true"
-            [showCurrentTimeIndicator]='true' [shadeUntilCurrentTime]='true' [firstDayOfWeek]="6"
-            [currentDate]="currentDate" [dataSource]="rdvData" startDateExpr="startTime" endDateExpr="endTime"
-            currentView="week" [allDayPanelMode]="'hidden'" (onContentReady)="onContentReady($event)"
-            (onAppointmentClick)="onAppointmentClick($event)"
-            (onAppointmentUpdating)="onAppointmentUpdating($event)"
-            (onAppointmentFormOpening)="onAppointmentFormOpening($event)"
-            (onAppointmentDeleting)="onAppointmentDeleting($event)" (onOptionChanged)="handlePropertyChange($event)"
-            appointmentTemplate="appointmentTemplate">
-            >
+        <dx-text-area
+        #descText
+        style="width: 100%;"
+        [height]="150"
+      
+        [(value)]="currentRdv.description!"
+        [autoResizeEnabled]="false"
+        [inputAttr]="{ 'aria-label': 'Notes' }"
+      >
+      </dx-text-area>
+      <dx-file-uploader
+      style="height: fit-content;"
+      selectButtonText="Parcourir"
+      labelText="Fichiers acceptés png, pdf, jpeg"
+      uploadMode="useForm"
+      [multiple]="true" 
+      (onValueChanged)="filesUploaded($event)"
+      [allowedFileExtensions]="['.pdf', '.jpeg', '.png','.jpg']"
+    >
+    </dx-file-uploader>
+    <dx-scroll-view>
+    <div *ngFor="let img of pjListeTemp ; let index=index ">
 
-            <dxi-resource fieldExpr="Id" [allowMultiple]="false" [dataSource]="rdvData" label="patient.firstName">
-            </dxi-resource>
+                                  
 
-    
-
-            <div *dxTemplate="let cellData of 'appointmentTemplate'"  style="width: 100%;">
-                <div >
-                    <div class="day-cell">{{cellData.appointmentData.patient?.firstName}}</div>
-                    <div class="day-cell">{{cellData.appointmentData.patient?.lastName}}</div>
-                   
-                </div>
-            </div>
-            <dxi-view type="week" [startDayHour]="07" [endDayHour]="22">
-            </dxi-view>
-            <dxi-view type="day" [startDayHour]="07" [endDayHour]="22">
-            </dxi-view>
-
-
-        </dx-scheduler>
+                                            <div class="responsive">
+                                                <div class="gallery">
+                                                  
+                                                    <img src="data:image/png;base64,{{img.patientDocumentsbase64}}" alt="Forest" onclick="window.open('anotherpage.html', '_blank');" width="400px" height="200px">
+                                                 
+                                                  <div class="desc" >
+                                                   
+                                                    <i class="dx-icon-remove dx-icon-custom-style" style="cursor: pointer;" (click)="DeletePj(img.id)"></i>
+                        </div>
+                                                </div>
+                                              </div>
 
     </div>
+</dx-scroll-view>
+    
 
+</div>
 
 </div>
 
@@ -171,7 +199,19 @@
 
             </div>
 
+            <div style="padding-bottom: 8px;">
+                <span class="titreCmt">Réference & Contact:</span>
 
+                <dx-text-area
+                [height]="65"
+                [width]="631"
+              
+                [autoResizeEnabled]="true"
+                [inputAttr]="{ 'aria-label': 'Notes' }"
+              >
+              </dx-text-area>
+
+            </div>
 
 
 
@@ -200,7 +240,7 @@
 </div>
 <div *ngIf="!toAdd" style="float: inline-end;">
                             <dx-button  style="float: right;" stylingMode="outlined" text="Démarer" type="normal" [width]="130" [icon]="'pinleft'"
-                            (click)="getToRdv()" ></dx-button>
+                            (click)="updateRdvForm()" ></dx-button>
                             <dx-button  style="float: right;" stylingMode="outlined" text="Supprimer" type="normal" [width]="130" [icon]="'remove'"
                             (click)="deleteRdv()" ></dx-button>
                             <dx-button  style="float: right;" stylingMode="outlined" text="Modifier" type="normal" [width]="130" [icon]="'edit'"

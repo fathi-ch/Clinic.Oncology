@@ -10,11 +10,13 @@ namespace Clinic.Api.Controllers;
 public class PatientsController : ControllerBase
 {
     private readonly IPatientRepository _patientRepository;
+    private readonly IVisitRepository _visitRepository;
 
-    public PatientsController(IPatientRepository patientRepository)
+    public PatientsController(IPatientRepository patientRepository, IVisitRepository visitRepository)
     {
-        _patientRepository = patientRepository ??
-                             throw new ArgumentException(null, nameof(patientRepository));
+        this._patientRepository = patientRepository;
+
+        this._visitRepository = visitRepository;
     }
 
     [HttpGet(Name = "GetAllPatientsAsync")]
@@ -44,6 +46,18 @@ public class PatientsController : ControllerBase
         if (patient == null) return NotFound();
 
         return Ok(patient);
+    }
+
+    [HttpGet("{id}/visits", Name = "GetVisitsByPateintIdAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<VisitResponse>>> GetByDateAsync(int id)
+    {
+        var visits = await _visitRepository.GetAllAsync();
+
+        if (!visits.Any() || !visits.Where(visit=> visit.PatientId==id).Any()) return Ok(Enumerable.Empty<VisitResponse>());
+
+        return Ok(visits.Where(visit => visit.PatientId == id));
     }
 
     [HttpPost(Name = "CreatePatient")]
@@ -100,5 +114,18 @@ public class PatientsController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError,
                 new { Message = "An error occurred while deleting the patient" });
         }
+    }
+    
+    [HttpPut("{id}", Name = "UpdatePatientAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PatientResponse>> UpdateAsync(int id, PatientDto patientDto)
+    {
+        var patient = await _patientRepository.GetByIdAsync(id);
+        if (patient == null) return NotFound();
+
+        var patientInDb = await _patientRepository.UpdateByIdAsync(id, patientDto);
+        
+        return Ok(patientInDb);
     }
 }

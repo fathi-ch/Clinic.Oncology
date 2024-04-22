@@ -4,6 +4,6 @@ namespace Clinic.Core.Services;
 
 public interface IFileRepository
 {
-    Task<bool> SaveFilesAsync(IFormFile file, string path, FileMode fileMode = FileMode.Create);
-    Task<bool> DeleteFilesAsync(string path);
+    Task<bool> SaveFilesAsync(string file, string fileName, string visitId);
+    Task<bool> DeleteFilesAsync(string fileName, string visitId);
 }

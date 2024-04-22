@@ -12,5 +12,5 @@ public class VisitDto
     public string Description { get; set; }
     public string VisitType { get; set; }
     public string Status { get; set; }
-    IEnumerable<IFormFile?> Documents { get; set; }
+    //public IEnumerable<IFormFile?> Documents { get; set; }
 }

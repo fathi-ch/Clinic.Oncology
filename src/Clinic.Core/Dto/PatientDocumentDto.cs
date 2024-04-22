@@ -4,7 +4,7 @@ namespace Clinic.Core.Dto;
 
 public class PatientDocumentDto
 {
-    public IEnumerable<IFormFile> Files { get; set; }
+    public string File64 { get; set; } // To bypass the endpoint validations
     public int VisitId { get; set; }
-    public string? DocumentType { get; set; }
+    public string FileName { get; set; }
 }

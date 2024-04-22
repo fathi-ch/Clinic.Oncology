@@ -38,9 +38,36 @@ public class VisitRepository : IVisitRepository
                 new
                 {
                     visitDto.Id,
-                    visitDto.PatientId, visitDto.StartTime, visitDto.EndTime, visitDto.Price, visitDto.Description,
-                    visitDto.VisitType, visitDto.Status
+                    visitDto.PatientId,
+                    visitDto.StartTime,
+                    visitDto.EndTime,
+                    visitDto.Price,
+                    visitDto.Description,
+                    visitDto.VisitType,
+                    visitDto.Status
                 });
+
+            var all = await this.GetAllAsync();
+            all = all.Where(visit => visit.PatientId == visitDto.PatientId);
+            if (all.Any())
+            {
+                var nextDate = all.Max(visit => visit.StartTime);
+
+                sb = new StringBuilder();
+                sb.Append("UPDATE Patients set ");
+                sb.Append("NextAppointment = @NextAppointment ");
+                sb.Append("WHERE Id = @id;");
+
+                query = sb.ToString();
+
+                await connection.ExecuteAsync(query,
+                    new
+                    {
+                        NextAppointment = nextDate,
+                        id = visitDto.PatientId
+
+                    });
+            }
 
             transaction.Commit();
 
@@ -71,11 +98,11 @@ public class VisitRepository : IVisitRepository
         }).ToList();
 
         var visitResponses = await Task.WhenAll(visitTasks);
-        
+
         return visitResponses;
     }
 
-    public async Task<IEnumerable<VisitResponse>> GetBydDateAsync(DateTime fromDate,DateTime toDate)
+    public async Task<IEnumerable<VisitResponse>> GetBydDateAsync(DateTime fromDate, DateTime toDate)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
 
@@ -111,48 +138,23 @@ public class VisitRepository : IVisitRepository
             query,
             new { VisitId = id });
 
-        return result.ToVisitResponse(await _documentRepository.GetByVisitIdAsync(id));
-    }
-
-    public async Task UpdateAsync(VisitDto visitDto)
-    {
-        using var connection = await _connectionFactory.CreateDbConnectionAsync();
-        var sb = new StringBuilder();
-        sb.Append("UPDATE Visits set PatientId=@PatientId, StartTime=@StartTime, EndTime=@EndTime, Price=@Price, Description=@Description, VisitType=@VisitType, Status=@Status ");
-        sb.Append("WHERE Id=@Id;");
-       
-
-        var query = sb.ToString();
-        await connection.ExecuteAsync(query, new
-        {
-            Id = visitDto.Id,
-            PatientId = visitDto.PatientId,
-            StartTime=visitDto.StartTime,
-            EndTime=visitDto.EndTime,
-            Price = visitDto.Price,
-            Description = visitDto.Description,
-            VisitType = visitDto.VisitType,
-            Status = visitDto.Status
-            
-        });
-
-        
-
-       
+        return result is null ? null : result.ToVisitResponse(await _patientRepository.GetByIdAsync(result.PatientId));
     }
 
     public async Task<VisitResponse> DeleteByIdAsync(int id)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
+      
 
         var visitToDelete = await GetByIdAsync(id);
         if (visitToDelete == null)
         {
             return null;
         }
-        
-        
-        var listOfDocs=  await _documentRepository.DeleteByVisitIdAsync(id);
+
+        var visit = await GetByIdAsync(id);
+
+        var listOfDocs = await _documentRepository.DeleteByVisitIdAsync(id);
 
         var deleteQuery = new StringBuilder();
         deleteQuery.Append("DELETE FROM Visits ");
@@ -162,6 +164,32 @@ public class VisitRepository : IVisitRepository
         try
         {
             await connection.ExecuteAsync(query, new { Id = id });
+
+
+            var all = await this.GetAllAsync();
+            all = all.Where(visit => visit.PatientId == visitToDelete.PatientId);
+            if (all.Any())
+            {
+                var nextDate = all.Max(visit => visit.StartTime);
+
+                var sb = new StringBuilder();
+                sb.Append("UPDATE Patients set ");
+                sb.Append("NextAppointment = @NextAppointment ");
+                sb.Append("WHERE Id = @id;");
+
+                query = sb.ToString();
+
+                await connection.ExecuteAsync(query,
+                    new
+                    {
+                        NextAppointment = nextDate,
+                        id = visitToDelete.PatientId
+
+                    });
+            }
+
+            visitToDelete.Documents = listOfDocs;
+
         }
         catch (Exception e)
         {
@@ -169,8 +197,74 @@ public class VisitRepository : IVisitRepository
             throw;
         }
 
-       visitToDelete.Documents = listOfDocs;
+        
         return visitToDelete;
     }
 
+    public async Task<VisitResponse> UpdateByIdAsync(int id, VisitDto visitDto)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+        using var transaction = connection.BeginTransaction();
+
+        try
+        {
+            var sb = new StringBuilder();
+            sb.Append("UPDATE Visits SET ");
+            sb.Append("PatientId = @PatientId, ");
+            sb.Append("StartTime = @StartTime, ");
+            sb.Append("EndTime = @EndTime, ");
+            sb.Append("Price = @Price, ");
+            sb.Append("Description = @Description, ");
+            sb.Append("VisitType = @VisitType, ");
+            sb.Append("Status = @Status ");
+            sb.Append("WHERE Id = @id;");
+
+            var query = sb.ToString();
+
+            await connection.ExecuteAsync(query,
+                new
+                {
+                    id = id,
+                    PatientId = visitDto.PatientId,
+                    StartTime = visitDto.StartTime,
+                    EndTime = visitDto.EndTime,
+                    Price = visitDto.Price,
+                    Description = visitDto.Description,
+                    VisitType = visitDto.VisitType,
+                    Status = visitDto.Status
+                });
+
+            var all = await this.GetAllAsync();
+            all = all.Where(visit => visit.PatientId == visitDto.PatientId);
+            if(all.Any())
+            {
+                var nextDate = all.Max(visit => visit.StartTime);
+
+                sb = new StringBuilder();
+                sb.Append("UPDATE Patients set ");
+                sb.Append("NextAppointment = @NextAppointment ");
+                sb.Append("WHERE Id = @id;");
+
+                query = sb.ToString();
+
+                await connection.ExecuteAsync(query,
+                    new
+                    {
+                        NextAppointment = nextDate,
+                        id = visitDto.PatientId
+
+                    });
+            }
+          
+
+            transaction.Commit();
+
+            return visitDto.ToVisitResponse(id);
+        }
+        catch (Exception)
+        {
+            transaction.Rollback();
+            throw;
+        }
+    }
 }

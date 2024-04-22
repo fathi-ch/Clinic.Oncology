@@ -6,5 +6,5 @@ public class PatientDocument
     public string Name { get; set; }
     public string? DocumentType { get; set; }
     public int VisitId { get; set; }
-    public Visit Visit { get; set; }
+    //public Visit Visit { get; set; }
 }
