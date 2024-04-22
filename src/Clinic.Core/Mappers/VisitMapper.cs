@@ -28,6 +28,27 @@ public static class VisitMapper
         };
     }
 
+    public static VisitResponse ToVisitResponse(this VisitDto visitDto,int id)
+    {
+        if (visitDto == null)
+        {
+            return null;
+        }
+
+        return new VisitResponse()
+        {
+
+            Id = id,
+            PatientId = visitDto.PatientId,
+            StartTime = visitDto.StartTime,
+            EndTime = visitDto.EndTime,
+            Price = visitDto.Price,
+            Description = visitDto.Description,
+            VisitType = visitDto.VisitType,
+            Status = visitDto.Status
+        };
+    }
+
     public static VisitResponse ToVisitResponse(this Visit visit, IEnumerable<PatientDocumentResponse> documents)
     {
         if (visit == null)
@@ -45,8 +66,7 @@ public static class VisitMapper
             Price = visit.Price,
             Description = visit.Description,
             VisitType = visit.VisitType,
-            Status = visit.Status,
-            Documents = documents
+            Status = visit.Status
         };
     }
     public static VisitResponse ToVisitResponse(this Visit visit, PatientResponse patient)
@@ -66,8 +86,7 @@ public static class VisitMapper
             Price = visit.Price,
             Description = visit.Description,
             VisitType = visit.VisitType,
-            Status = visit.Status,
-            Documents = null
+            Status = visit.Status
         };
     }
 }

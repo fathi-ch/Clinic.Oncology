@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { DevExtremeModule, DxButtonModule, DxDataGridComponent, DxDataGridModule, DxLoadPanelModule, DxTemplateModule } from 'devextreme-angular';
+import { DevExtremeModule, DxButtonModule, DxContextMenuComponent, DxDataGridComponent, DxDataGridModule, DxLoadPanelModule, DxTemplateModule } from 'devextreme-angular';
 import { AppConfig } from './services/app.config';
 import { HttpClientModule } from '@angular/common/http';
 import { HeaderComponent } from './components/header/header.component';
@@ -14,6 +14,9 @@ import { ServicesPatient } from './services/patient/patient.service';
 import { SpinnerModule } from './spinner/spinner.module';
 import { RdvComponent } from './views/rdv/rdv.component';
 import { ServicesRdv } from './services/rdv/rdv.service';
+import { RdvDetailsComponent } from './views/rdvDetails/rdvDetails.component';
+import { patientsDetailComponent } from './views/patientsDatails/patientsDetail.component';
+import { FileUploaderComponent } from './views/fileUploader/file-uploader.component';
 
 export function initializeApp(appConfig: AppConfig) {
   return () => appConfig.load();
@@ -26,7 +29,10 @@ export function initializeApp(appConfig: AppConfig) {
     HeaderComponent,
     PatientsComponent,
     AcceuilComponent,
-    RdvComponent
+    RdvComponent,
+    RdvDetailsComponent,
+    patientsDetailComponent,
+    FileUploaderComponent
   
   ],
   imports: [

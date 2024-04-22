@@ -20,7 +20,7 @@ public class DocumentsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateAsync([FromForm] PatientDocumentDto patientDocumentDto)
+    public async Task<IActionResult> CreateAsync(PatientDocumentDto patientDocumentDto)
     {
         if (!ModelState.IsValid)
         {

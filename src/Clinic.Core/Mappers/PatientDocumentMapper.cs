@@ -24,7 +24,7 @@ public static class PatientDocumentMapper
     
     public static PatientDocumentResponse ToDocumentResponse(this PatientDocumentDto patientDocumentDto, int id, string name, string documentPath)
     {
-        var path = Path.Combine(documentPath, name);
+        var path = Path.Combine(documentPath, patientDocumentDto.VisitId.ToString(), name);
         var imageByte = File.ReadAllBytes(path);
        
         return new PatientDocumentResponse()
@@ -32,7 +32,7 @@ public static class PatientDocumentMapper
             Id = id,
             VisitId = patientDocumentDto.VisitId,
             Name = name,
-            DocumentType = patientDocumentDto.DocumentType,
+            DocumentType = Path.GetExtension(patientDocumentDto.FileName),
             PatientDocumentsbase64 = Convert.ToBase64String(imageByte)
         };
     }

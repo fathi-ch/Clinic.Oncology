@@ -36,9 +36,16 @@ public class PatientRepository : IPatientRepository
             var newId = await connection.ExecuteScalarAsync<int>(query,
                 new
                 {
-                    patientDto.FirstName, patientDto.LastName, patientDto.BirthDate, patientDto.NextAppointment,
-                    patientDto.Gender, patientDto.Weight, patientDto.Height, patientDto.Mobile,
-                    patientDto.SocialSecurityNumber, patientDto.Referral
+                    patientDto.FirstName,
+                    patientDto.LastName,
+                    patientDto.BirthDate,
+                    patientDto.NextAppointment,
+                    patientDto.Gender,
+                    patientDto.Weight,
+                    patientDto.Height,
+                    patientDto.Mobile,
+                    patientDto.SocialSecurityNumber,
+                    patientDto.Referral
                 });
 
             transaction.Commit();
@@ -149,10 +156,16 @@ public class PatientRepository : IPatientRepository
             await connection.ExecuteAsync(query,
                 new
                 {
-                    id = id, FirstName = patientDto.FirstName, LastName = patientDto.LastName,
-                    BirthDate = patientDto.BirthDate, NextAppointment = patientDto.NextAppointment,
-                    Gender = patientDto.Gender, Weight = patientDto.Weight, Height = patientDto.Height,
-                    Mobile = patientDto.Mobile, SocialSecurityNumber = patientDto.SocialSecurityNumber,
+                    id = id,
+                    FirstName = patientDto.FirstName,
+                    LastName = patientDto.LastName,
+                    BirthDate = patientDto.BirthDate,
+                    NextAppointment = patientDto.NextAppointment,
+                    Gender = patientDto.Gender,
+                    Weight = patientDto.Weight,
+                    Height = patientDto.Height,
+                    Mobile = patientDto.Mobile,
+                    SocialSecurityNumber = patientDto.SocialSecurityNumber,
                     Referral = patientDto.Referral
                 });
 

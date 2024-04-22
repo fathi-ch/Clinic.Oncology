@@ -1,0 +1,9 @@
+<div fxLayout="column" fxLayoutGap="15px" style="height: fit-content;">
+    <div fxFlex="42px" class="file-uploader-block" fxLayout="row">
+       
+        <dx-file-uploader  fxFlex selectButtonText="Parcourir" labelText="Format de fichiers acceptés png, pdf, jpeg"
+            [multiple]="true" #fileUploader
+            [allowedFileExtensions]="['.pdf', '.jpeg', '.png','.jpg']">
+        </dx-file-uploader>
+    </div>
+</div>

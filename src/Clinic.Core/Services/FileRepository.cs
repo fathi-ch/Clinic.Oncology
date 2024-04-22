@@ -12,14 +12,16 @@ public class FileRepository : IFileRepository
         _dbConfigs = dbConfigs;
     }
 
-    public async Task<bool> SaveFilesAsync(IFormFile file, string fileName, FileMode fileMode = FileMode.Create)
+    public async Task<bool> SaveFilesAsync(string file, string fileName,string visitId)
     {
         try
         {
-            var path = Path.Combine(_dbConfigs.GetFullSaveFolderPathForDocuments(fileName), fileName);
-
-            await using var fileStream = new FileStream(path, fileMode);
-            await file.CopyToAsync(fileStream);
+            if(!Directory.Exists(Path.Combine(_dbConfigs.DocumentsPath, visitId))) {
+                Directory.CreateDirectory(Path.Combine(_dbConfigs.DocumentsPath, visitId));
+            }
+            var pathf = Path.Combine(_dbConfigs.DocumentsPath, visitId, fileName);
+            var bytes = Convert.FromBase64String(file.Split(',')[1]);
+            File.WriteAllBytes(pathf, bytes);
         }
         catch (IOException)
         {
@@ -38,9 +40,9 @@ public class FileRepository : IFileRepository
         return true;
     }
 
-    public async Task<bool> DeleteFilesAsync(string fileName)
+    public async Task<bool> DeleteFilesAsync(string fileName,string visitId)
     {
-        var currDirectory = _dbConfigs.GetFullSaveFolderPathForDocuments(fileName);
+        var currDirectory = Path.Combine(_dbConfigs.DocumentsPath,visitId,fileName);
         try
         {
             var path = Path.Combine(currDirectory, fileName);

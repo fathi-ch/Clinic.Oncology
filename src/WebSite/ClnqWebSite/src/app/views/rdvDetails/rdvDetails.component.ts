@@ -1,7 +1,6 @@
-import { Component, NgModule, OnInit, ViewChild } from "@angular/core";
+import { Component, EventEmitter, NgModule, OnInit, ViewChild } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
-import { Router } from "@angular/router";
-import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxSchedulerComponent, DxTemplateModule, DxTextBoxComponent, DxContextMenuComponent, DxAutocompleteComponent, DxNumberBoxComponent } from "devextreme-angular";
+import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxSchedulerComponent, DxTemplateModule, DxTextBoxComponent, DxContextMenuComponent, DxAutocompleteComponent, DxNumberBoxComponent, DxTextAreaComponent } from "devextreme-angular";
 import { DxSchedulerTypes } from "devextreme-angular/ui/scheduler";
 import { LoadOptions } from "devextreme/data";
 import CustomStore from "devextreme/data/custom_store";
@@ -12,19 +11,20 @@ import { BehaviorSubject } from "rxjs";
 import { Pateint } from "src/app/models/patient/PatientModel";
 import { Rdv } from "src/app/models/rdv/RdvModel";
 import { RdvType } from "src/app/models/rdv/RdvTypeModel";
+import { PieceJointe } from "src/app/models/rdv/piecejointe";
 import { ServiceCmnObject } from "src/app/services/ServiceCmnObject";
 import { ServicesPatient } from "src/app/services/patient/patient.service";
 import { ServicesRdv } from "src/app/services/rdv/rdv.service";
 
 @Component({
-  selector: 'app-rdv',
-  templateUrl: './rdv.component.html',
-  styleUrls: ['./rdv.component.scss']
+  selector: 'app-rdvDetails',
+  templateUrl: './rdvDetails.component.html',
+  styleUrls: ['./rdvDetails.component.scss']
 
 })
 
 
-export class RdvComponent implements OnInit {
+export class RdvDetailsComponent implements OnInit {
 
   @ViewChild("dateNais", { static: false }) dateNais!: DxDateBoxComponent;
   @ViewChild("dateRdv", { static: false }) dateRdv!: DxDateBoxComponent;
@@ -34,15 +34,19 @@ export class RdvComponent implements OnInit {
   @ViewChild('contextMenu', { static: false }) contextMenu!: DxContextMenuComponent;
   @ViewChild('patientRdv', { static: false }) patientRdv!: DxAutocompleteComponent;
   @ViewChild('prixRdv', { static: false }) prixRdv!: DxNumberBoxComponent;
+  @ViewChild('descText', { static: false }) descText!: DxTextAreaComponent;
   
 
-
+  
 
   toAdd: boolean = true;
   rdvData: DataSource;
   onContextMenuItemClick: any;
   cellContextMenuItems: any[] | undefined;
   appointmentContextMenuItems: any[] | undefined;
+  pjListeTemp:any[]=[];
+  viewpj:string="";
+  public pjListe : BehaviorSubject<PieceJointe[]>=new BehaviorSubject<PieceJointe[]>([]);
 
   lastRowOpned: string = "";
   //dataSource:[];
@@ -74,7 +78,7 @@ export class RdvComponent implements OnInit {
 
   timeMin: Date = new Date(0, 0, 0, 7, 0, 0);
   timeMax: Date = new Date(0, 0, 0, 22, 0, 0);
-  currentRdv = new Rdv();
+  public currentRdv = new Rdv();
 
   public currentDate: Date = new Date();
 
@@ -85,13 +89,14 @@ export class RdvComponent implements OnInit {
 
   // data grid data source 
   LstPatients: Pateint[] = [];
+  pjList = new EventEmitter<PieceJointe>()
 
   constructor(
     public readonly PateintService: ServicesPatient,
     public readonly RdvService: ServicesRdv,
-    private readonly serviceCmnObject: ServiceCmnObject,
-    private readonly router: Router
+    private readonly serviceCmnObject: ServiceCmnObject
   ) {
+    this.currentRdv={id:0,patient:{age:"0",firstName:"",lastName:"",birthDate:new Date(Date.now())},startTime:new Date(Date.now())};
     const that = this;
     this.rdvData = new DataSource({
 
@@ -129,9 +134,25 @@ export class RdvComponent implements OnInit {
 
 
   async ngOnInit() {
+this.serviceCmnObject.rdvDetail.subscribe(rdv=>{
+  this.currentRdv=rdv;
+  if(rdv.description)
+    this.descText.value=rdv.description;
 
+})
+   await this.refreshPj();
   }
 
+  async refreshPj()
+  {
+    if(this.currentRdv.id)
+      {
+        await this.RdvService.GetDocument(this.currentRdv?.id).then(pj=>{
+          this.pjListeTemp=pj;
+              });
+      }
+  
+  }
   public convertDate(date: string) {
     let shortDate = date.split('T')[0];
     return shortDate.split('-')[2] + "-" + shortDate.split('-')[1] + "-" + shortDate.split('-')[0]
@@ -265,11 +286,6 @@ export class RdvComponent implements OnInit {
 
   }
 
-  public getToRdv()
-  {
-    this.serviceCmnObject.rdvDetail.next(this.currentRdv);
-    this.router.navigate(['/rdvDetails']);
-  }
   public async updateRdvForm() {
     let _rdv = this.currentRdv;
     // date début
@@ -304,6 +320,15 @@ export class RdvComponent implements OnInit {
 
     await this.RdvService.UpdateRdv(rdv);
     this.rdvData.reload();
+
+
+  }
+
+  public async updateDetailRdv() {
+
+this.currentRdv.description=this.descText.value;
+    await this.RdvService.UpdateRdv(this.currentRdv);
+   
 
 
   }
@@ -417,6 +442,51 @@ export class RdvComponent implements OnInit {
   public handlePropertyChange(e: any) {
     e.cancel = true;
 
+  }
+async DeletePj(id:number)
+{
+  await this.RdvService.DeleteDocument(id);
+  await this.refreshPj();
+}
+  public filesUploaded(e:any)
+  {
+    if (e.value.length) {
+      e.value.forEach((file: any) => {
+       
+         
+       
+          let reader = new FileReader();
+          reader.onload = (fr: any) => {
+            let img = new Image();
+            img.src = reader.result?reader.result.toString():"";
+            setTimeout(async () => {
+              let currPJComment: PieceJointe = {
+                visitId: 1,
+                fileName: encodeURI(file.name.toString()),
+                file64:img.src
+              };
+              
+              this.pjList.emit(currPJComment);
+
+              await this.RdvService.AddDocument(currPJComment);
+              await this.refreshPj();
+
+
+            }, 0);
+          };
+          //this.pjListe.next(this.pjListeTemp);
+          this.pjListe.subscribe(v=>{
+            this.pjListeTemp=v;
+          })
+          reader.readAsDataURL(file);
+        
+      
+      
+      });
+    
+      
+    
+  }
   }
 
 }

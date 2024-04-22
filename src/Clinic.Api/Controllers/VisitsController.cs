@@ -10,10 +10,13 @@ namespace Clinic.Api.Controllers;
 public class VisitsController : ControllerBase
 {
     private readonly IVisitRepository _visitRepository;
+    private readonly IDocumentRepository _documentRepository;
 
-    public VisitsController(IVisitRepository _visitRepository)
+
+    public VisitsController(IVisitRepository _visitRepository, IDocumentRepository documentRepository)
     {
         this._visitRepository = _visitRepository;
+        this._documentRepository = documentRepository;
     }
 
     [HttpGet(Name = "GetAllVisitsAsync")]
@@ -82,36 +85,47 @@ public class VisitsController : ControllerBase
     }
 
 
-    [HttpPut(Name = "UpdateVisit")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateAsync(VisitDto VisitDto)
+    [HttpGet("{visitid}/documents", Name = "GetDocumentsByVisitIdAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PatientDocumentResponse>> GetDocumentsByVisitIdAsync(int visitid)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { Message = "Invalid input data", Errors = ModelState });
-        }
+        var patientDocumentResponse = await _documentRepository.GetByVisitIdAsync(visitid);
+        if (patientDocumentResponse == null) return NotFound();
 
-        try
-        {
-            await _visitRepository.UpdateAsync(VisitDto);
-            var visit = await _visitRepository.GetByIdAsync(VisitDto.Id);
-
-            if (visit != null)
-            {
-                return  Accepted("Updated", visit);
-            }
-
-            return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Failed to update visit" });
-        }
-        catch (Exception ex)
-        {
-            // Logging in the future
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                new { Message = "An error occurred while creating the visit." });
-        }
+        return Ok(patientDocumentResponse);
     }
+
+    //[HttpPut(Name = "UpdateVisit")]
+    //[ProducesResponseType(StatusCodes.Status201Created)]
+    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    //public async Task<IActionResult> UpdateAsync(VisitDto VisitDto)
+    //{
+    //    if (!ModelState.IsValid)
+    //    {
+    //        return BadRequest(new { Message = "Invalid input data", Errors = ModelState });
+    //    }
+
+    //    try
+    //    {
+    //        await _visitRepository.UpdateByIdAsync(VisitDto.Id,VisitDto);
+    //        var visit = await _visitRepository.GetByIdAsync(VisitDto.Id);
+
+    //        if (visit != null)
+    //        {
+    //            return  Accepted("Updated", visit);
+    //        }
+
+    //        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Failed to update visit" });
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        // Logging in the future
+    //        return StatusCode(StatusCodes.Status500InternalServerError,
+    //            new { Message = "An error occurred while creating the visit." });
+    //    }
+    //}
 
 
     [HttpDelete("{id}", Name = "DeleteVisit")]

@@ -77,4 +77,28 @@ public static class PatientMapper
             Referral = patientDto.Referral
         };
     }
+
+    public static PatientDto ToPatientDto(this PatientResponse patientResponse, int id)
+    {
+        if (patientResponse == null)
+        {
+            return null;
+        }
+
+        return new PatientDto()
+        {
+            id = id,
+            FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(patientResponse.FirstName ?? string.Empty),
+            LastName = patientResponse.LastName?.ToUpper(),
+            BirthDate = patientResponse.BirthDate,
+            Age = patientResponse.BirthDate.GetCurrentAge(),
+            NextAppointment = patientResponse.NextAppointment,
+            Gender = patientResponse.Gender,
+            Weight = patientResponse.Weight,
+            Height = patientResponse.Height,
+            Mobile = patientResponse.Mobile,
+            SocialSecurityNumber = patientResponse.SocialSecurityNumber,
+            Referral = patientResponse.Referral
+        };
+    }
 }

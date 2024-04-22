@@ -34,10 +34,9 @@ public class DocumentRepository : IDocumentRepository
         {
             int newId = 0;
             var documentsResponse = new List<PatientDocumentResponse>();
-            if (patientDocumentDto.Files.Count() > 0)
+            if (!string.IsNullOrEmpty(patientDocumentDto.File64))
             {
-                foreach (var file in patientDocumentDto.Files)
-                {
+             
                     var sb = new StringBuilder();
                     sb.Append("INSERT INTO ");
                     sb.Append("Documents (VisitId, Name, DocumentType) ");
@@ -45,22 +44,26 @@ public class DocumentRepository : IDocumentRepository
                     sb.Append("SELECT last_insert_rowid();");
 
                     var query = sb.ToString();
-                    var originalFileExtension = Path.GetExtension(file.FileName);
+                    var originalFileExtension = Path.GetExtension(patientDocumentDto.FileName);
                     var documentsFullName = GenerateDocumentPath(patientDocumentDto.VisitId, originalFileExtension);
                     newId = await connection.ExecuteScalarAsync<int>(query,
                         new
                         {
-                            VisitId = patientDocumentDto.VisitId, Name = documentsFullName,
-                            DocumentType = patientDocumentDto.DocumentType
+                            VisitId = patientDocumentDto.VisitId,
+                            Name = documentsFullName,
+                            DocumentType = originalFileExtension
                         });
 
-                    await _fileRepository.SaveFilesAsync(file, documentsFullName);
+                    await _fileRepository.SaveFilesAsync(patientDocumentDto.File64, documentsFullName, patientDocumentDto.VisitId.ToString());
 
                     var documentResponse = patientDocumentDto.ToDocumentResponse(newId, documentsFullName,
-                        _dbConfigs.GetFullSaveFolderPathForDocuments(documentsFullName));
+                        Path.Combine(_dbConfigs.DocumentsPath));
 
                     documentsResponse.Add(documentResponse);
-                }
+
+              
+
+
 
                 transaction.Commit();
             }
@@ -126,7 +129,7 @@ public class DocumentRepository : IDocumentRepository
         sb.Append("WHERE id= @id");
         var query = sb.ToString();
 
-        await _fileRepository.DeleteFilesAsync(documentToDelete.Name);
+        await _fileRepository.DeleteFilesAsync(documentToDelete.Name, documentToDelete.VisitId.ToString());
 
         await connection.QueryFirstOrDefaultAsync<PatientDocument>(query, new { id = id });
 
@@ -161,7 +164,7 @@ public class DocumentRepository : IDocumentRepository
             List<Task> tasks = new List<Task>();
             foreach (var doc in result)
             {
-                tasks.Add(_fileRepository.DeleteFilesAsync(doc.Name));
+                tasks.Add(_fileRepository.DeleteFilesAsync(doc.Name, doc.VisitId.ToString()));
             }
 
 
@@ -194,20 +197,20 @@ public class DocumentRepository : IDocumentRepository
         {
             var sb = new StringBuilder();
             sb.Append("UPDATE Documents SET ");
-         //   sb.Append("VisitId = @VisitId, ");
+            //   sb.Append("VisitId = @VisitId, ");
             sb.Append("DocumentType = @DocumentType ");
             sb.Append("WHERE Id = @id;");
             var query = sb.ToString();
 
             await connection.ExecuteAsync(query,
-                new { id = id, VisitId = patientDocumentDto.VisitId, DocumentType = patientDocumentDto.DocumentType });
+                new { id = id, VisitId = patientDocumentDto.VisitId, DocumentType = Path.GetExtension(patientDocumentDto.FileName) });
             transaction.Commit();
 
             return new PatientDocumentResponse()
             {
                 Id = id,
-               // VisitId = patientDocumentDto.VisitId,
-                DocumentType = patientDocumentDto.DocumentType
+                // VisitId = patientDocumentDto.VisitId,
+                DocumentType =Path.GetExtension(patientDocumentDto.FileName)
             };
         }
         catch (Exception e)
