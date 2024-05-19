@@ -97,6 +97,8 @@ namespace Clinic.Api.BusinessService
             var rdv = await _visitRepository.GetByIdAsync(id);
             if(rdv is not null)
             {
+                // delete visit documents 
+                await _documentRepository.DeleteByVisitIdAsync(id);
 
                 await _visitRepository.DeleteByIdAsync(id);
                 // update next appointment value

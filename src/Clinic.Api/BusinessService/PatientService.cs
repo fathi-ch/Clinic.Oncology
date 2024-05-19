@@ -59,7 +59,7 @@ namespace Clinic.Api.BusinessService
 
         public async Task DeleteByIdAsync(int id)
         {
-            await _patientRepository.DeleteByIdAsync(id);
+          
 
             // delete visits
             var vsists = await this.GetVisitesByPatientIdAsync(id);
@@ -70,6 +70,8 @@ namespace Clinic.Api.BusinessService
 
                 await _visitRepository.DeleteByIdAsync(vsist.Id);
             }
+
+            await _patientRepository.DeleteByIdAsync(id);
         }
        
 
