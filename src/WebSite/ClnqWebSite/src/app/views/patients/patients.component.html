@@ -101,37 +101,18 @@
                 [showNavigationButtons]="true"></dxo-pager>
 
             <ng-container *dxTemplate="let patient of 'dataRowTemplateName'">
-                <tr class="main-row" id="row-{{patient.data.id}}" (click)="this.details(patient.data)">
-                    <td class="rowStyle">{{patient.data.firstName}}</td>
-                    <td class="rowStyle">{{patient.data.lastName}}</td>
-                    <td class="rowStyle">{{patient.data.gender}}</td>
-                    <td class="rowStyle">{{patient.data.age}}</td>
-                    <td class="rowStyle">{{convertDate(patient.data.birthDate)}}</td>
-                    <td class="rowStyle">{{convertDate(patient.data.nextAppointment)}}</td>
-                    <td class="rowStyle">{{patient.data.socialSecurityNumber?patient.data.socialSecurityNumber:"-"}}</td>
-                    <td sclass="rowStyle"> {{patient.data.mobile?patient.data.mobile:"-"}} </td>
-                    <td sclass="rowStyle"> {{patient.data.referral}} </td>
-                    
+                <tr class="rowStyle"  id="row-{{patient.data.id}}" (click)="this.details(patient.data)">
+                    <td>{{patient.data.firstName}}</td>
+                    <td>{{patient.data.lastName}}</td>
+                    <td>{{patient.data.gender}}</td>
+                    <td>{{patient.data.age}}</td>
+                    <td>{{convertDate(patient.data.birthDate)}}</td>
+                    <td>{{convertDate(patient.data.nextAppointment)}}</td>
+                    <td>{{patient.data.socialSecurityNumber?patient.data.socialSecurityNumber:"-"}}</td>
+                    <td> {{patient.data.mobile?patient.data.mobile:"-"}} </td>
+                    <td> {{patient.data.referral}} </td>
                 </tr>
-                <tr class="PatientDetail" id="{{patient.data.id}}" style="display: none;">
-                    <td colspan="9" tyle="background-color: #00679a !important;">
-
-                        <div>
-                            <div class="thing">
-                                <div>Nom : <span>{{patient.data.firstName}}</span>, Prénom :
-                                    <span>{{patient.data.lastName}}</span>
-                                </div>
-                                <div></div>
-                                <div>Age : <span>{{patient.data.age}}</span><span> ans</span></div>
-                            </div>
-
-                        </div>
-
-
-                    </td>
-
-                </tr>
-
+                
             </ng-container>
         </dx-data-grid>
 
