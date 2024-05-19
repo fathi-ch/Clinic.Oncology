@@ -8,13 +8,14 @@ import DataSource from "devextreme/data/data_source";
 import { AppointmentUpdatedEvent } from "devextreme/ui/scheduler";
 import { BehaviorSubject } from "rxjs";
 
-import { Pateint } from "src/app/models/patient/PatientModel";
-import { Rdv } from "src/app/models/rdv/RdvModel";
-import { RdvType } from "src/app/models/rdv/RdvTypeModel";
-import { PieceJointe } from "src/app/models/rdv/piecejointe";
-import { ServiceCmnObject } from "src/app/services/ServiceCmnObject";
-import { ServicesPatient } from "src/app/services/patient/patient.service";
-import { ServicesRdv } from "src/app/services/rdv/rdv.service";
+import { Pateint } from "../../models/patient/PatientModel";
+import { Rdv } from "../../models/rdv/RdvModel";
+import { RdvType } from "../../models/rdv/RdvTypeModel";
+import { PieceJointe } from "../../models/rdv/piecejointe";
+import { ServiceCmnObject } from "../../services/ServiceCmnObject";
+import { ServicesPatient } from "../../services/patient/patient.service";
+import { ServicesRdv } from "../../services/rdv/rdv.service";
+import notify from "devextreme/ui/notify";
 
 @Component({
   selector: 'app-rdvDetails',
@@ -40,7 +41,6 @@ export class RdvDetailsComponent implements OnInit {
   
 
   toAdd: boolean = true;
-  rdvData: DataSource;
   onContextMenuItemClick: any;
   cellContextMenuItems: any[] | undefined;
   appointmentContextMenuItems: any[] | undefined;
@@ -66,6 +66,7 @@ export class RdvDetailsComponent implements OnInit {
   pat_prenom: string = "";
   pat_mobile: string = "";
   pat_email: string = "";
+  currentImageView:string="";
   pat_date_n: Date = new Date();
   pat_date_rdv: Date = new Date();
   pat_date_rdv_a: Date = new Date();
@@ -82,6 +83,8 @@ export class RdvDetailsComponent implements OnInit {
 
   public currentDate: Date = new Date();
 
+
+
   searchText: string = "";
 
   newRdvSelectedPatien: Pateint = new Pateint();
@@ -97,50 +100,22 @@ export class RdvDetailsComponent implements OnInit {
     private readonly serviceCmnObject: ServiceCmnObject
   ) {
     this.currentRdv={id:0,patient:{age:"0",firstName:"",lastName:"",birthDate:new Date(Date.now())},startTime:new Date(Date.now())};
-    const that = this;
-    this.rdvData = new DataSource({
-
-      store: new CustomStore({
-        key: 'id',
-        load: async (LoadOptions: LoadOptions) => {
-          let d = that.scheduler_ges.instance.getStartViewDate();
-          let f = that.scheduler_ges.instance.getEndViewDate();
-
-          // rendring all rdvs
-          await that.RdvService.GetRdvByDate(d as Date, f as Date).then(data => {
-            that.allRdvData = data as Rdv[];
-          });
-
-          return that.allRdvData;
-
-        },
-        update: (key, value) => {
-
-
-
-          this.updateRdv(value as Rdv)
-
-          that.rdvData.reload();
-          return value;
-        }
-
-      }),
-      paginate: false
-
-
-    });
+    this.pjListeTemp=[];
+    this.serviceCmnObject.rdvDetail.subscribe(async rdv=>{
+      this.currentRdv=rdv;
+      if(rdv.description)
+        this.descText.value=rdv.description;
+      await this.refreshPj();
+    
+    })
+     
+   
 
   }
 
 
   async ngOnInit() {
-this.serviceCmnObject.rdvDetail.subscribe(rdv=>{
-  this.currentRdv=rdv;
-  if(rdv.description)
-    this.descText.value=rdv.description;
 
-})
-   await this.refreshPj();
   }
 
   async refreshPj()
@@ -153,6 +128,14 @@ this.serviceCmnObject.rdvDetail.subscribe(rdv=>{
       }
   
   }
+
+  public viewImage(id:any)
+  {
+    let image=this.pjListeTemp.find(x=>x.id==id);
+    this.currentImageView=image.patientDocumentsbase64;
+    this.popupVisible=true;
+  } 
+
   public convertDate(date: string) {
     let shortDate = date.split('T')[0];
     return shortDate.split('-')[2] + "-" + shortDate.split('-')[1] + "-" + shortDate.split('-')[0]
@@ -165,82 +148,15 @@ this.serviceCmnObject.rdvDetail.subscribe(rdv=>{
   }
 
 
-  // show patient details 
-  public showRow(id: string) {
+ 
 
-    if (this.lastRowOpned == id) {
-
-      var lastElement = <HTMLFormElement>document.getElementById(id);
-      let disp = lastElement.style.display;
-      lastElement.style.display = lastElement.style.display == 'none' ? 'contents' : 'none';
-    }
-    else {
-      if (this.lastRowOpned && this.lastRowOpned.length > 0) {
-        var lastElement = <HTMLFormElement>document.getElementById(this.lastRowOpned);
-        lastElement.style.display = 'none';
-        lastElement = <HTMLFormElement>document.getElementById(id);
-        lastElement.style.display = 'contents';
-      }
-      else {
-
-        lastElement = <HTMLFormElement>document.getElementById(id);
-        lastElement.style.display = 'contents';
-
-      }
-
-    }
-    this.lastRowOpned = id;
-
-  }
-
-  public RdvRefresh() {
-    this.rdvData.reload();
-  }
-
-  public searchPatient() {
-    if (this.searchText && this.searchText.length > 3) {
-      //  this.serviceCmnObject.spinnerLoading.next(true);
-      this.lastRowOpned = "";
-      // calling all pateints end point 
-      this.PateintService.SearchPateints(this.searchText).subscribe(lstPatients => {
-        this.LstPatients = lstPatients;
-        //  this.serviceCmnObject.spinnerLoading.next(false);
-      });
-    }
-    else {
-      this.LstPatients = [];
-    }
-
-  }
-
-  public newPatientPopUp() {
-    this.toAdd = true;
-    this.dateRdv.instance.reset();
-    this.startRdv.value = this.min;
-    this.endRdv.value = this.min;
-    this.popupVisible = true;
-    this.patientRdv.value = "";
-    this.newRdvSelectedPatien = new Pateint();
-    this.prixRdv.value=0;
-  }
+ 
 
   public getValueDisplay(data: any) {
     return data.firstName + " " + data.lastNime
   }
 
-  public newPatienPopUpInit() {
-    this.pat_nom = "";
-    this.pat_prenom = "";
-    this.dateNais.value = "";
-    this.dateRdv.value = "";
-  }
-  public selectedPatien(e: any) {
-    if (e.selectedItem) {
-      this.newRdvSelectedPatien = e.selectedItem;
-    }
 
-
-  }
 
 
   public onPopUpRdvOpen() {
@@ -258,33 +174,7 @@ this.serviceCmnObject.rdvDetail.subscribe(rdv=>{
 
   }
 
-  public async newRdv() {
-    // date début
-    let startTime = new Date(this.dateRdv.value)
-    startTime.setHours(new Date(this.startRdv.value).getHours());
-    startTime.setMinutes(new Date(this.startRdv.value).getMinutes());
-    // date fin       
-    let endTime = new Date(this.dateRdv.value);
-    endTime.setHours(new Date(this.endRdv.value).getHours());
-    endTime.setMinutes(new Date(this.endRdv.value).getMinutes());
-    let _patien = this.newRdvSelectedPatien;
-    let _selectedType = this.selectedType;
-
-    let _rdv = new Rdv();
-    _rdv.patientId = this.newRdvSelectedPatien.id;
-    _rdv.startTime = startTime;
-    _rdv.endTime = endTime;
-    _rdv.price = this.rdvPrix;
-    _rdv.status = "PLA";
-    _rdv.visitType = this.selectedType;
-    _rdv.description = "";
-
-    await this.RdvService.NewRdv(_rdv);
-    this.rdvData.reload();
-    this.popupVisible = false;
-
-
-  }
+ 
 
   public async updateRdvForm() {
     let _rdv = this.currentRdv;
@@ -309,7 +199,6 @@ this.serviceCmnObject.rdvDetail.subscribe(rdv=>{
     _rdv.description = "";
 
     await this.RdvService.UpdateRdv(_rdv);
-    this.rdvData.reload();
     this.popupVisible = false;
 
 
@@ -319,7 +208,6 @@ this.serviceCmnObject.rdvDetail.subscribe(rdv=>{
 
 
     await this.RdvService.UpdateRdv(rdv);
-    this.rdvData.reload();
 
 
   }
@@ -328,25 +216,21 @@ this.serviceCmnObject.rdvDetail.subscribe(rdv=>{
 
 this.currentRdv.description=this.descText.value;
     await this.RdvService.UpdateRdv(this.currentRdv);
-   
+    notify({ message: "la modification est pris en compte", width: 300, shading: false }, "success", 2000);
 
 
   }
 
+  public async terminerDetailRdv() {
 
-  public async onAppointmentDeleting(e: DxSchedulerTypes.AppointmentDeletingEvent) {
+    this.currentRdv.description=this.descText.value;
+    this.currentRdv.status='TRM';
+        await this.RdvService.UpdateRdv(this.currentRdv);
+        notify({ message: "la modification est pris en compte", width: 300, shading: false }, "success", 2000);
+    
+    
+      }
 
-    let rdv = e.appointmentData as Rdv;
-    await this.RdvService.DeleteRdv(rdv.id as number);
-    this.rdvData.reload();
-  }
-
-  public async deleteRdv() {
-    console.log(this.currentRdv);
-    await this.RdvService.DeleteRdv(this.currentRdv.id as number);
-    this.popupVisible = false;
-    this.rdvData.reload();
-  }
 
   public async getAllRdv() {
 
@@ -461,7 +345,7 @@ async DeletePj(id:number)
             img.src = reader.result?reader.result.toString():"";
             setTimeout(async () => {
               let currPJComment: PieceJointe = {
-                visitId: 1,
+                visitId: this.currentRdv.id,
                 fileName: encodeURI(file.name.toString()),
                 file64:img.src
               };

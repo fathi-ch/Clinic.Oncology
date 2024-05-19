@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { DxFileUploaderComponent } from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
-import { PieceJointe } from 'src/app/models/rdv/piecejointe';
+import { PieceJointe } from '../../models/rdv/piecejointe';
 
 
 @Component({

@@ -2,10 +2,11 @@ import { Component, NgModule, OnInit, ViewChild } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxTemplateModule, DxTextBoxComponent } from "devextreme-angular";
 
-import { Pateint } from "src/app/models/patient/PatientModel";
-import { Sexe } from "src/app/models/patient/SexeModel";
-import { ServiceCmnObject } from "src/app/services/ServiceCmnObject";
-import { ServicesPatient } from "src/app/services/patient/patient.service";
+import { Pateint } from "../../models/patient/PatientModel";
+import { Sexe } from "../../models/patient/SexeModel";
+import { ServiceCmnObject } from "../../services/ServiceCmnObject"
+import { ServicesPatient } from "../../services/patient/patient.service";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'app-patients',
@@ -28,6 +29,7 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
    //pop up new patient
 
    popupVisible=false;
+   popupDetVisible=false;
    sexePteintList:Sexe[]=[];
    sexePteint:string="";
    pat_nom:string="";
@@ -57,7 +59,8 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
 
     constructor(
         public readonly PateintService: ServicesPatient,
-        private readonly serviceCmnObject:ServiceCmnObject
+        private readonly serviceCmnObject:ServiceCmnObject,
+        private readonly router: Router
       )
       {
         this.sexePteintList=[];
@@ -87,7 +90,13 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
       return shortDate.split('-')[2]+"-"+shortDate.split('-')[1]+"-"+shortDate.split('-')[0]+ " à "+date.split('T')[1];
     }
 
-
+// go to datail 
+public details(pateint:Pateint)
+{
+  this.serviceCmnObject.patientDetail.next(pateint);
+  this.popupDetVisible=true;
+  //  this.router.navigate(['/patientsDetail']);
+}
 // show patient details 
     public showRow(id:string)
     {
@@ -173,9 +182,8 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
       _patien.birthDate=new Date(this.dateNais.value);
       _patien.nextAppointment=new Date(this.dateRdv.value);
       _patien.mobile=this.pat_mobile;
+      _patien.email=this.pat_email;
       _patien.socialSecurityNumber=this.pat_num_suc;
-      _patien.weight=0;
-      _patien.height=0;
       _patien.referral=this.pat_ref;
       _patien.gender=this.sexePteint;
 
@@ -189,6 +197,12 @@ import { ServicesPatient } from "src/app/services/patient/patient.service";
       
       
       
+    }
+
+    public PopUpPatientDetailonShowing()
+    {
+      
+
     }
 }
 

@@ -8,12 +8,11 @@ CREATE TABLE IF NOT EXISTS "Patients"
     "LastName"             TEXT NOT NULL,
     "BirthDate"            DATE NOT NULL DEFAULT CURRENT_DATE,
     "NextAppointment"      DATE,
-    "Weight"               REAL,
-    "Height"               REAL,
     "Gender"               TEXT NOT NULL,
     "Mobile"               TEXT NOT NULL,
     "SocialSecurityNumber" TEXT,
     "Referral"             TEXT,
+    "Email"                TEXT,
     PRIMARY KEY ("Id")
 );
 
@@ -24,6 +23,8 @@ CREATE TABLE IF NOT EXISTS "Visits"
     "StartTime"   Date    NOT NULL,
     "EndTime"     Date    NOT NULL,
     "Price"       REAL,
+    "Weight"      REAL,
+    "Height"      REAL,
     "Description" TEXT,
     "VisitType"   TEXT,
     "Status"      TEXT,
@@ -40,7 +41,6 @@ CREATE TABLE IF NOT EXISTS "Documents"
     FOREIGN KEY ("VisitId") REFERENCES "Visits" ("Id"),
     PRIMARY KEY ("Id")
 );
-
 
 
 COMMIT;

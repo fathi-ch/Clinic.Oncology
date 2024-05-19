@@ -101,7 +101,7 @@
                 [showNavigationButtons]="true"></dxo-pager>
 
             <ng-container *dxTemplate="let patient of 'dataRowTemplateName'">
-                <tr class="main-row" id="row-{{patient.data.id}}" (click)="this.showRow(patient.data.id)">
+                <tr class="main-row" id="row-{{patient.data.id}}" (click)="this.details(patient.data)">
                     <td class="rowStyle">{{patient.data.firstName}}</td>
                     <td class="rowStyle">{{patient.data.lastName}}</td>
                     <td class="rowStyle">{{patient.data.gender}}</td>
@@ -338,3 +338,15 @@
 
     </div>
 </dx-popup>
+
+
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }"  [showTitle]="true"
+    [position]="'top'" [dragEnabled]="false" title="Dossier Médical" [hideOnOutsideClick]="true"
+    [(visible)]="popupDetVisible"
+    (onShowing)="PopUpPatientDetailonShowing()">
+
+    <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
+        <app-patientsDetail ></app-patientsDetail>
+    </div>
+</dx-popup>
+

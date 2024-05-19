@@ -27,9 +27,9 @@ public class PatientRepository : IPatientRepository
             var sb = new StringBuilder();
             sb.Append("INSERT INTO ");
             sb.Append(
-                "Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Weight, Height, Mobile, SocialSecurityNumber, Referral) ");
+                "Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Mobile, SocialSecurityNumber, Referral,Email) ");
             sb.Append(
-                "VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender,  @Weight, @Height, @Mobile, @SocialSecurityNumber, @Referral); ");
+                "VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender, @Mobile, @SocialSecurityNumber, @Referral,@Email); ");
             sb.Append("SELECT last_insert_rowid();");
             var query = sb.ToString();
 
@@ -41,11 +41,10 @@ public class PatientRepository : IPatientRepository
                     patientDto.BirthDate,
                     patientDto.NextAppointment,
                     patientDto.Gender,
-                    patientDto.Weight,
-                    patientDto.Height,
                     patientDto.Mobile,
                     patientDto.SocialSecurityNumber,
-                    patientDto.Referral
+                    patientDto.Referral,
+                    patientDto.Email
                 });
 
             transaction.Commit();
@@ -69,7 +68,7 @@ public class PatientRepository : IPatientRepository
 
         var query = sb.ToString();
         var result = await connection.QueryAsync<Patient>(query);
-        return result.ToList().Select(x => x.ToPatientResponse());
+        return result.ToPatientResponse();
     }
 
     public async Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string name)
@@ -84,8 +83,7 @@ public class PatientRepository : IPatientRepository
         return (await connection.QueryAsync<Patient>(sb.ToString()))
                .Where(patient =>
                    patient.FirstName.ToLower().Contains(name.ToLower()))
-               .ToList().Select(x =>
-                   x.ToPatientResponse())
+                   .ToPatientResponse()
                ??
                Enumerable.Empty<PatientResponse>();
     }
@@ -144,11 +142,10 @@ public class PatientRepository : IPatientRepository
             sb.Append("BirthDate = @BirthDate, ");
             sb.Append("NextAppointment = @NextAppointment, ");
             sb.Append("Gender = @Gender, ");
-            sb.Append("Weight = @Weight, ");
-            sb.Append("Height = @Height, ");
             sb.Append("Mobile = @Mobile, ");
             sb.Append("SocialSecurityNumber = @SocialSecurityNumber, ");
-            sb.Append("Referral = @Referral ");
+            sb.Append("Referral = @Referral ,");
+            sb.Append("Email = @Email ");
             sb.Append("WHERE Id = @id;");
 
             var query = sb.ToString();
@@ -162,18 +159,17 @@ public class PatientRepository : IPatientRepository
                     BirthDate = patientDto.BirthDate,
                     NextAppointment = patientDto.NextAppointment,
                     Gender = patientDto.Gender,
-                    Weight = patientDto.Weight,
-                    Height = patientDto.Height,
                     Mobile = patientDto.Mobile,
                     SocialSecurityNumber = patientDto.SocialSecurityNumber,
-                    Referral = patientDto.Referral
+                    Referral = patientDto.Referral,
+                    Email= patientDto.Email
                 });
 
             transaction.Commit();
 
             return patientDto.ToPatientResponse(id);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             transaction.Rollback();
             throw;
