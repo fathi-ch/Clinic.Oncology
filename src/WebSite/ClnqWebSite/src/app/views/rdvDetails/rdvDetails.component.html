@@ -1,6 +1,6 @@
 <div fxLayout="column" fxFill style="padding:20px;padding-top: 10px;" fxLayoutGap="8px">
     <div fxFlex="20px" class="titlePage">
-        Rdv Médical > Gestion des Rdv > de : {{currentRdv?.startTime!}} 
+        Visite Médical de : {{currentRdv?.startTime!}} 
     </div>
 
 
@@ -13,16 +13,15 @@
         <div class="colored box" style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
 
             <!-- buttons controle -->
+           
             <div style="box-sizing: border-box; ">
-
                 <div style="float: left;
                 font-size: 14px;
                 color: white;
-                padding-top: 5px; display: none;">
+                padding-top: 5px;">
 
-                    <dx-button stylingMode="outlined" text="Nouveau" type="normal" [width]="130" [icon]="'plus'"
-                        (click)="updateDetailRdv()"></dx-button>
-
+                    <dx-button stylingMode="outlined" text="Enregistrer" type="normal" [width]="150" [icon]="'save'"
+                    (click)="updateDetailRdv()"></dx-button>
 
 
                 </div>
@@ -33,7 +32,7 @@
                 color: white;
                 padding-top: 5px;">
 
-                    <dx-button stylingMode="outlined" text="Enregistrer" type="normal" [width]="150" [icon]="'save'"
+                    <dx-button stylingMode="outlined" text="Terminer" type="normal" [width]="150" [icon]="'check'"
                     (click)="updateDetailRdv()"></dx-button>
 
 
@@ -68,13 +67,13 @@
     <div style="background-color: #ddd7ee; color: black;">
          Consultation
     </div>
-    <div style="padding-bottom: 8px;">
+    <div style="padding-bottom: 8px;height: -webkit-fill-available;">
         <span class="titreCmt">Détail:</span>
 
         <dx-text-area
         #descText
         style="width: 100%;"
-        [height]="150"
+        [height]="350"
       
         [(value)]="currentRdv.description!"
         [autoResizeEnabled]="false"
@@ -92,7 +91,24 @@
     >
     </dx-file-uploader>
     <dx-scroll-view>
-    <div *ngFor="let img of pjListeTemp ; let index=index ">
+
+        <div style=" background-color: #e7e7e7;
+        overflow: auto;
+        white-space: nowrap;
+        padding: 5px;
+        display: flex;
+    ">
+
+        <div *ngFor="let img of pjListeTemp ; let index=index "  style=" padding: 5px;float:left;box-shadow:0 1px 4px 1px rgb(0 0 0 / 5%);background-color: white;">
+            <img  src="data:image/png;base64,{{img.patientDocumentsbase64}}" alt="Forest" (click)="viewImage(img.id)" width="150px" height="200px">
+            <div class="desc" >
+            <i class="dx-icon-trash dx-icon-custom-style" style="cursor: pointer;" (click)="DeletePj(img.id)"></i>
+            </div>
+        </div>
+            
+        </div>
+
+    <!-- <div *ngFor="let img of pjListeTemp ; let index=index ">
 
                                   
 
@@ -102,13 +118,13 @@
                                                     <img src="data:image/png;base64,{{img.patientDocumentsbase64}}" alt="Forest" onclick="window.open('anotherpage.html', '_blank');" width="400px" height="200px">
                                                  
                                                   <div class="desc" >
-                                                   
                                                     <i class="dx-icon-remove dx-icon-custom-style" style="cursor: pointer;" (click)="DeletePj(img.id)"></i>
-                        </div>
+                                                  </div>
                                                 </div>
                                               </div>
 
-    </div>
+    </div> -->
+
 </dx-scroll-view>
     
 
@@ -116,157 +132,23 @@
 
 </div>
 
-<!-- new patinet -->
-
-<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [width]="670" [height]="355" [showTitle]="true"
-    [position]="'top'" [dragEnabled]="false" title="Nouveau rdv. médical" [hideOnOutsideClick]="true"
-    (onShowing)="onPopUpRdvOpen()" [(visible)]="popupVisible">
-
-    <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
-
-        <!-- nom & prenom -->
-        <!-- nom & prenom -->
-        <div style="display: flex; padding-bottom: 8px;">
-
-
-            <div>
-                <span class="titreCmt">Nom ,Prénom Date et de naissance</span>
-
-                <dx-autocomplete #patientRdv [width]="631" placeholder="Nom" [showClearButton]="true" [(value)]="searchText"
-                    [dataSource]="LstPatients" (onValueChanged)="searchPatient()"
-                    (onSelectionChanged)="selectedPatien($event)" valueExpr="autocpmliteValue"></dx-autocomplete>
-
-            </div>
 
 
 
-        </div>
 
-        <!-- Prochain Rdv -->
+       <!-- image preview -->
 
-        <div style="display: flex;padding-bottom: 15px;">
-
-            <div>
-
-                <span class="titreCmt">Prochain Rdv.</span>
-
-                <dx-date-box #dateRdv placeholder="Ex : JJ/MM/AAAA" [min]="pat_date_rdv">
-                </dx-date-box>
-
-
-            </div>
-
-            <div style="padding-left: 5%;">
-
-                <span class="titreCmt">de</span>
-
-                <dx-date-box #startRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15"  [value]="min" [inputAttr]="{ 'aria-label': 'Time' }">
-                </dx-date-box>
-
-            </div>
-
-            <div style="padding-left: 5%;">
-
-                <span class="titreCmt">à</span>
-                <dx-date-box #endRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15"  [value]="min" [inputAttr]="{ 'aria-label': 'Time' }">
-                </dx-date-box>
-
-            </div>
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }"  [showTitle]="true"
+[position]="'top'" [dragEnabled]="false" title="Aperçu" [hideOnOutsideClick]="true"
+[(visible)]="popupVisible">
 
 
 
-        </div>
-        <!-- prix et type -->
-        <div style="display: flex;padding-bottom: 15px;">
-
-            <div>
-
-                <span class="titreCmt">Type rdv.</span>
-
-                <dx-select-box placeholder="Choisez un type ..." [items]="rdvType" [showClearButton]="true"
-                    displayExpr="type" valueExpr="code" [(value)]="selectedType"></dx-select-box>
-
-
-            </div>
-
-            <div style="padding-left: 5%;">
-
-                <span class="titreCmt">Prix (DA)</span>
-                <dx-number-box #prixRdv [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="rdvPrix" [(value)]="rdvPrix"
-                    [stylingMode]="'outlined'" [showClearButton]="true" [width]="295">
-                </dx-number-box>
-
-
-            </div>
-
-            <div style="padding-bottom: 8px;">
-                <span class="titreCmt">Réference & Contact:</span>
-
-                <dx-text-area
-                [height]="65"
-                [width]="631"
-              
-                [autoResizeEnabled]="true"
-                [inputAttr]="{ 'aria-label': 'Notes' }"
-              >
-              </dx-text-area>
-
-            </div>
-
-
-
-        </div>
-
-        <div fxFlex="62px" class="gridReserveOptions" style="width: 631px !important;" fxLayout="row" fxLayoutGap="5px">
-
-
-            <div class="colored box"
-                style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
-
-               
-                <!-- buttons controle -->
-
-
-                <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 25%;display: contents;">
-                    <div style="
-                    font-size: 14px;
-                    color: white;
-                    padding-top: 0px;
-                    width: 100%;">
-<div *ngIf="toAdd" style="float: inline-end;">
-    <dx-button   stylingMode="outlined" text="Ajouter" type="normal" [width]="130" [icon]="'todo'"
-    (click)="newRdv()" ></dx-button>
+<div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
+    <img  src="data:image/png;base64,{{currentImageView}}" style="width: -webkit-fill-available;" >
 
 </div>
-<div *ngIf="!toAdd" style="float: inline-end;">
-                            <dx-button  style="float: right;" stylingMode="outlined" text="Démarer" type="normal" [width]="130" [icon]="'pinleft'"
-                            (click)="updateRdvForm()" ></dx-button>
-                            <dx-button  style="float: right;" stylingMode="outlined" text="Supprimer" type="normal" [width]="130" [icon]="'remove'"
-                            (click)="deleteRdv()" ></dx-button>
-                            <dx-button  style="float: right;" stylingMode="outlined" text="Modifier" type="normal" [width]="130" [icon]="'edit'"
-                            (click)="updateRdvForm()" ></dx-button>
-                         
-</div>
-                     
-                        
-                          
-                           
-                          
-                      
-                          
-
-
-                    </div>
-                </div>
-
-            </div>
-
-
-        </div>
-
-
-
+</dx-popup>
     </div>
 
 
-</dx-popup>

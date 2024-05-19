@@ -1,10 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../app.config";
-import { Pateint } from "src/app/models/patient/PatientModel";
+import { Pateint } from "../../models/patient/PatientModel";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
-import { Rdv } from "src/app/models/rdv/RdvModel";
-import { PieceJointe } from "src/app/models/rdv/piecejointe";
+import { Rdv } from "../../models/rdv/RdvModel";
+import { PieceJointe } from "../../models/rdv/piecejointe";
 
 
 @Injectable()

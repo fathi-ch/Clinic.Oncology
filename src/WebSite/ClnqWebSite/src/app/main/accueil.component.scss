@@ -1,1 +1,16 @@
 
+.box-shadow
+{
+    margin-top: 15px;
+    padding: 5px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.15);
+}
+
+::ng-deep .dx-form-group-caption
+{
+    padding-left: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #8c54ac;
+}

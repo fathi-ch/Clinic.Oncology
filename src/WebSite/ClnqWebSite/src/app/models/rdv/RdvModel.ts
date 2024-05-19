@@ -12,4 +12,7 @@ export class Rdv {
     status?:string;
     patient?:Pateint;
     price?:number;
+    weight?: number;
+    height?: number;
+    visitDateTitel?:string;
 }

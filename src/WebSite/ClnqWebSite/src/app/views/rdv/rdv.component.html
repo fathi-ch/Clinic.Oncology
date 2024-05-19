@@ -1,7 +1,7 @@
 <div fxLayout="column" fxFill style="padding:20px;padding-top: 10px;" fxLayoutGap="8px">
-    <div fxFlex="20px" class="titlePage">
+    <!-- <div fxFlex="20px" class="titlePage">
         Rdv Médical > Gestion des Rdv
-    </div>
+    </div> -->
 
 
 
@@ -68,7 +68,7 @@
 
     
 
-            <div *dxTemplate="let cellData of 'appointmentTemplate'"  style="width: 100%;">
+            <div *dxTemplate="let cellData of 'appointmentTemplate'" [style.background-color]="checkRdvStatu(cellData.appointmentData.status) ? '#78b6d9' : '#60a69f'"  style="width: 100%;">
                 <div >
                     <div class="day-cell">{{cellData.appointmentData.patient?.firstName}}</div>
                     <div class="day-cell">{{cellData.appointmentData.patient?.lastName}}</div>
@@ -229,4 +229,13 @@
     </div>
 
 
+</dx-popup>
+
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }"  [showTitle]="true"
+    [position]="'top'" [dragEnabled]="false" title="Detail visite" [hideOnOutsideClick]="true"
+    [(visible)]="popupRdvDetVisible">
+
+    <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
+        <app-rdvDetails></app-rdvDetails>
+    </div>
 </dx-popup>

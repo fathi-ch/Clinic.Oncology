@@ -29,8 +29,8 @@ public class VisitRepository : IVisitRepository
         try
         {
             var sb = new StringBuilder();
-            sb.Append("INSERT INTO Visits (PatientId, StartTime, EndTime, Price, Description, VisitType, Status) ");
-            sb.Append("VALUES (@PatientId, @StartTime, @EndTime, @Price, @Description, @VisitType, @Status);");
+            sb.Append("INSERT INTO Visits (PatientId, StartTime, EndTime, Price, Description, VisitType, Status,Weight,Height) ");
+            sb.Append("VALUES (@PatientId, @StartTime, @EndTime, @Price, @Description, @VisitType, @Status,@Weight,@Height);");
             sb.Append("SELECT last_insert_rowid();");
             var query = sb.ToString();
 
@@ -44,7 +44,9 @@ public class VisitRepository : IVisitRepository
                     visitDto.Price,
                     visitDto.Description,
                     visitDto.VisitType,
-                    visitDto.Status
+                    visitDto.Status,
+                    visitDto.Weight,
+                    visitDto.Height
                 });
 
             var all = await this.GetAllAsync();
@@ -91,15 +93,7 @@ public class VisitRepository : IVisitRepository
         var query = sb.ToString();
         var result = await connection.QueryAsync<Visit>(query);
 
-        var visitTasks = result.Select(async x =>
-        {
-            var patient = await _patientRepository.GetByIdAsync(x.PatientId);
-            return x.ToVisitResponse(patient);
-        }).ToList();
-
-        var visitResponses = await Task.WhenAll(visitTasks);
-
-        return visitResponses;
+        return result.ToVisitResponse();
     }
 
     public async Task<IEnumerable<VisitResponse>> GetBydDateAsync(DateTime fromDate, DateTime toDate)
@@ -108,21 +102,12 @@ public class VisitRepository : IVisitRepository
 
         var sb = new StringBuilder();
         sb.Append("SELECT * ");
-        sb.Append("FROM Visits ");
+        sb.Append("FROM Visits WHERE StartTime between @StartTime and @EndTime");
 
         var query = sb.ToString();
-        var result = await connection.QueryAsync<Visit>(query);
+        var result = await connection.QueryAsync<Visit>(query, new {StartTime= fromDate , EndTime= toDate });
 
-
-        var visitTasks = result.Select(async x =>
-        {
-            var patient = await _patientRepository.GetByIdAsync(x.PatientId);
-            return x.ToVisitResponse(patient);
-        }).ToList();
-
-        var visitResponses = await Task.WhenAll(visitTasks);
-
-        return visitResponses;
+        return result.ToVisitResponse();
     }
 
     public async Task<VisitResponse> GetByIdAsync(int id)
@@ -138,7 +123,7 @@ public class VisitRepository : IVisitRepository
             query,
             new { VisitId = id });
 
-        return result is null ? null : result.ToVisitResponse(await _patientRepository.GetByIdAsync(result.PatientId));
+        return result.ToVisitResponse();
     }
 
     public async Task<VisitResponse> DeleteByIdAsync(int id)
@@ -216,7 +201,9 @@ public class VisitRepository : IVisitRepository
             sb.Append("Price = @Price, ");
             sb.Append("Description = @Description, ");
             sb.Append("VisitType = @VisitType, ");
-            sb.Append("Status = @Status ");
+            sb.Append("Status = @Status, ");
+            sb.Append("Weight = @Weight, ");
+            sb.Append("Height = @Height ");
             sb.Append("WHERE Id = @id;");
 
             var query = sb.ToString();
@@ -226,42 +213,21 @@ public class VisitRepository : IVisitRepository
                 {
                     id = id,
                     PatientId = visitDto.PatientId,
-                    StartTime = visitDto.StartTime,
-                    EndTime = visitDto.EndTime,
-                    Price = visitDto.Price,
+                    StartTime   = visitDto.StartTime,
+                    EndTime     = visitDto.EndTime,
+                    Price       = visitDto.Price,
                     Description = visitDto.Description,
-                    VisitType = visitDto.VisitType,
-                    Status = visitDto.Status
+                    VisitType   = visitDto.VisitType,
+                    Weight = visitDto.Weight,
+                    Height = visitDto.Height,
+                    Status = visitDto.Status,
                 });
-
-            var all = await this.GetAllAsync();
-            all = all.Where(visit => visit.PatientId == visitDto.PatientId);
-            if(all.Any())
-            {
-                var nextDate = all.Max(visit => visit.StartTime);
-
-                sb = new StringBuilder();
-                sb.Append("UPDATE Patients set ");
-                sb.Append("NextAppointment = @NextAppointment ");
-                sb.Append("WHERE Id = @id;");
-
-                query = sb.ToString();
-
-                await connection.ExecuteAsync(query,
-                    new
-                    {
-                        NextAppointment = nextDate,
-                        id = visitDto.PatientId
-
-                    });
-            }
-          
-
             transaction.Commit();
+           
 
             return visitDto.ToVisitResponse(id);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             transaction.Rollback();
             throw;

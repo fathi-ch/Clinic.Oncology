@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Clinic.Core.Dto;
 
@@ -12,5 +13,8 @@ public class VisitDto
     public string Description { get; set; }
     public string VisitType { get; set; }
     public string Status { get; set; }
+    public float Weight { get; set; }
+    public float Height { get; set; }
+    public string visitDateTitel { get; set; }
     //public IEnumerable<IFormFile?> Documents { get; set; }
 }
