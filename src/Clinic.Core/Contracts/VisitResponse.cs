@@ -11,5 +11,8 @@ public class VisitResponse
     public string Description { get; set; }
     public string VisitType { get; set; }
     public string Status { get; set; }
+    public float Weight { get; set; }
+    public float Height { get; set; }
+    public string visitDateTitel { get { return StartTime.ToString();  }  }
     public IEnumerable<PatientDocumentResponse> Documents { get; set; } 
 }

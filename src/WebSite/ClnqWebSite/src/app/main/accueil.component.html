@@ -1,1 +1,100 @@
-hello main
+<div fxLayout="column" fxFill style="padding:20px;padding-top: 10px;" fxLayoutGap="8px">
+
+    <div id="form-container" class="box-shadow" style="height: fit-content;">
+
+        <dx-form id="form" [formData]="">
+
+            <dxi-item itemType="group" [colCount]="1" caption="Gestionnaire des visites médicales">
+
+                <dxi-item itemType="group" [colCount]="1">
+
+                    <dxi-item>
+
+                   
+                       <app-rdv></app-rdv>
+                     
+                    </dxi-item>
+
+                </dxi-item>
+
+            </dxi-item>
+
+        </dx-form>
+    </div>
+    <div id="form-container" class="box-shadow" style="height: fit-content;">
+
+        <dx-form id="form" [formData]="" style="height: 550px">
+
+            <dxi-item itemType="group" [colCount]="1" caption="Avancement des visites">
+                <dxi-item itemType="group" [colCount]="1">
+                    
+                    <dxi-item>
+                        <dx-select-box [class]="'defaultTextBoxCssClass'"
+                        [searchEnabled]="false"  [acceptCustomValue]="false" [showClearButton]="false"
+                        (onSelectionChanged)="onSelectionChanged($event)" [width]="200"
+                        [value]="chartRang[0]"
+                        placeholder="Séléctionnez" [dataSource]="chartRang">
+                    </dx-select-box>
+                   
+                    <dxo-label template="Par "></dxo-label>
+                    </dxi-item>
+                </dxi-item>
+
+                <dxi-item itemType="group" [colCount]="2">
+
+                        <dxi-item>
+                            <dx-pie-chart
+                            id="pie"
+                            type="doughnut"
+                            [title]="chartTitle"
+                            palette="Soft Pastel"
+                            [dataSource]="dataChart"
+                            
+                          >
+                            <dxi-series argumentField="dataTitle">
+                              <dxo-label [visible]="true" format="">
+                                <dxo-connector [visible]="true"></dxo-connector>
+                              </dxo-label>
+                            </dxi-series>
+                            <dxo-export [enabled]="true"></dxo-export>
+                            <dxo-legend
+                              [margin]="0"
+                              horizontalAlignment="right"
+                              verticalAlignment="top"
+                            ></dxo-legend>
+                            <dxo-tooltip
+                              [enabled]="true"
+                              [customizeTooltip]="customizeTooltip"
+                              format=""
+                            >
+                            </dxo-tooltip>
+                          </dx-pie-chart>
+                         
+                        </dxi-item>
+                       
+                     
+                   
+                    <!-- chart bar -->
+                    <dxi-item>
+                        <dx-chart id="chart" [dataSource]="dataChartBar" title="Visite par semaine">
+                            <dxi-series
+                            argumentField="dataTitle"
+                            valueField="val"
+                            name="Visites"
+                            type="bar"
+                            color="#EFC3CA"
+                            >
+                            </dxi-series>
+                        </dx-chart>
+                    
+                    </dxi-item>
+
+                    
+
+                </dxi-item>
+
+            </dxi-item>
+
+        </dx-form>
+    </div>
+</div>

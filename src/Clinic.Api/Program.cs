@@ -1,3 +1,4 @@
+using Clinic.Api.BusinessService;
 using Clinic.Core.Configurations;
 using Clinic.Core.Data;
 using Clinic.Core.Services;
@@ -20,6 +21,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<ISqliteDbConnectionFactory, SqliteDbConnectionFactory>();
 builder.Services.AddSingleton<DatabaseInitializer>();
 builder.Services.AddSingleton<IPatientRepository, PatientRepository>();
+builder.Services.AddSingleton<IVisitsService, VisitsService>();
+builder.Services.AddSingleton<IPatientService, PatientService>();
 builder.Services.AddSingleton<IDocumentRepository, DocumentRepository>();
 builder.Services.AddSingleton<IVisitRepository, VisitRepository>();
 builder.Services.AddSingleton<IFileRepository, FileRepository>();

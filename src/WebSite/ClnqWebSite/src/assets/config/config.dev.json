@@ -3,7 +3,7 @@
         "name": "string"
     },
     "apiServer": {
-        "clnqApi": "http://localhost:8000/cliniq/v1/api"
+        "clnqApi": "http://localhost:7017/v1/api"
     },
     "logging": {
         "console": "string",

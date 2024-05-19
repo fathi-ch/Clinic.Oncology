@@ -10,8 +10,7 @@ export class Pateint {
     mobile?:string;
     socialSecurityNumber?:string;
     referral?:string;
-    weight?: number;
-    height?: number;
     autocpmliteValue?:string;
+    email?:string;
 
 }

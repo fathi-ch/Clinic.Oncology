@@ -1,4 +1,5 @@
-﻿using Clinic.Core.Contracts;
+﻿using Clinic.Api.BusinessService;
+using Clinic.Core.Contracts;
 using Clinic.Core.Dto;
 using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +10,14 @@ namespace Clinic.Api.Controllers;
 [Route("/v1/api/patients")]
 public class PatientsController : ControllerBase
 {
-    private readonly IPatientRepository _patientRepository;
-    private readonly IVisitRepository _visitRepository;
+    private readonly IPatientService _patientService;
+  
 
-    public PatientsController(IPatientRepository patientRepository, IVisitRepository visitRepository)
+    public PatientsController(IPatientService patientService)
     {
-        this._patientRepository = patientRepository;
+        this._patientService = patientService;
 
-        this._visitRepository = visitRepository;
+
     }
 
     [HttpGet(Name = "GetAllPatientsAsync")]
@@ -24,7 +25,7 @@ public class PatientsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<PatientResponse>>> GetAllAsync()
     {
-        var patients = await _patientRepository.GetAllAsync();
+        var patients = await _patientService.GetAllAsync();
         
         if (!patients.Any()) return Ok(Enumerable.Empty<PatientResponse>()) ;
 
@@ -34,7 +35,7 @@ public class PatientsController : ControllerBase
     [HttpGet,Route("SearchPatients")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string firstName="")
-        => (await _patientRepository.GetAllByNameAsync(firstName));
+        => (await _patientService.GetAllByNameAsync(firstName));
 
 
     [HttpGet("{id}", Name = "GetPatientAsync")]
@@ -42,22 +43,22 @@ public class PatientsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PatientResponse>> GetAsync(int id)
     {
-        var patient = await _patientRepository.GetByIdAsync(id);
+        var patient = await _patientService.GetAsync(id);
         if (patient == null) return NotFound();
 
         return Ok(patient);
     }
 
-    [HttpGet("{id}/visits", Name = "GetVisitsByPateintIdAsync")]
+    [HttpGet("{id}/visits", Name = "GetVisitesByPatientIdAsync")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<IEnumerable<VisitResponse>>> GetByDateAsync(int id)
+    public async Task<ActionResult<IEnumerable<VisitResponse>>> GetVisitesByPatientIdAsync(int id)
     {
-        var visits = await _visitRepository.GetAllAsync();
+        var visits = await _patientService.GetVisitesByPatientIdAsync(id);
 
-        if (!visits.Any() || !visits.Where(visit=> visit.PatientId==id).Any()) return Ok(Enumerable.Empty<VisitResponse>());
+        if (!visits.Any()) return Ok(Enumerable.Empty<VisitResponse>());
 
-        return Ok(visits.Where(visit => visit.PatientId == id));
+        return Ok(visits);
     }
 
     [HttpPost(Name = "CreatePatient")]
@@ -74,7 +75,7 @@ public class PatientsController : ControllerBase
 
         try
         {
-            var patient = await _patientRepository.CreateAsync(patientDto);
+            var patient = await _patientService.CreateAsync(patientDto);
 
             if (patient != null)
             {
@@ -99,14 +100,9 @@ public class PatientsController : ControllerBase
     {
         try
         {
-            var patient = await _patientRepository.DeleteByIdAsync(id);
+             await _patientService.DeleteByIdAsync(id);
 
-            if (patient == null)
-            {
-                return NotFound(new { Message = "Patient not found" });
-            }
-
-            return Ok(patient);
+            return Ok();
         }
         catch (Exception ex)
         {
@@ -121,10 +117,10 @@ public class PatientsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PatientResponse>> UpdateAsync(int id, PatientDto patientDto)
     {
-        var patient = await _patientRepository.GetByIdAsync(id);
+        var patient = await _patientService.GetAsync(id);
         if (patient == null) return NotFound();
 
-        var patientInDb = await _patientRepository.UpdateByIdAsync(id, patientDto);
+        var patientInDb = await _patientService.UpdateAsync(id, patientDto);
         
         return Ok(patientInDb);
     }

@@ -9,12 +9,12 @@ import DataSource from "devextreme/data/data_source";
 import { AppointmentUpdatedEvent } from "devextreme/ui/scheduler";
 import { BehaviorSubject } from "rxjs";
 
-import { Pateint } from "src/app/models/patient/PatientModel";
-import { Rdv } from "src/app/models/rdv/RdvModel";
-import { RdvType } from "src/app/models/rdv/RdvTypeModel";
-import { ServiceCmnObject } from "src/app/services/ServiceCmnObject";
-import { ServicesPatient } from "src/app/services/patient/patient.service";
-import { ServicesRdv } from "src/app/services/rdv/rdv.service";
+import { Pateint } from "../../models/patient/PatientModel";
+import { Rdv } from "../../models/rdv/RdvModel";
+import { RdvType } from "../../models/rdv/RdvTypeModel";
+import { ServiceCmnObject } from "../../services/ServiceCmnObject";
+import { ServicesPatient } from "../../services/patient/patient.service";
+import { ServicesRdv } from "../../services/rdv/rdv.service";
 
 @Component({
   selector: 'app-rdv',
@@ -85,6 +85,7 @@ export class RdvComponent implements OnInit {
 
   // data grid data source 
   LstPatients: Pateint[] = [];
+  popupRdvDetVisible=false;
 
   constructor(
     public readonly PateintService: ServicesPatient,
@@ -132,6 +133,10 @@ export class RdvComponent implements OnInit {
 
   }
 
+  public checkRdvStatu(status:string)
+  {
+    return status=='PLA';
+  }
   public convertDate(date: string) {
     let shortDate = date.split('T')[0];
     return shortDate.split('-')[2] + "-" + shortDate.split('-')[1] + "-" + shortDate.split('-')[0]
@@ -257,7 +262,9 @@ export class RdvComponent implements OnInit {
     _rdv.status = "PLA";
     _rdv.visitType = this.selectedType;
     _rdv.description = "";
-
+    _rdv.weight=0;
+    _rdv.height=0;
+    _rdv.visitDateTitel="";
     await this.RdvService.NewRdv(_rdv);
     this.rdvData.reload();
     this.popupVisible = false;
@@ -268,7 +275,8 @@ export class RdvComponent implements OnInit {
   public getToRdv()
   {
     this.serviceCmnObject.rdvDetail.next(this.currentRdv);
-    this.router.navigate(['/rdvDetails']);
+    this.popupRdvDetVisible=true;
+   // this.router.navigate(['/rdvDetails']);
   }
   public async updateRdvForm() {
     let _rdv = this.currentRdv;
@@ -288,10 +296,12 @@ export class RdvComponent implements OnInit {
     _rdv.startTime = startTime;
     _rdv.endTime = endTime;
     _rdv.price = this.rdvPrix;
+    _rdv.weight=this.currentRdv.weight;
+    _rdv.height=this.currentRdv.height;
     _rdv.status = "PLA";
     _rdv.visitType = this.selectedType;
     _rdv.description = "";
-
+    _rdv.visitDateTitel="";
     await this.RdvService.UpdateRdv(_rdv);
     this.rdvData.reload();
     this.popupVisible = false;

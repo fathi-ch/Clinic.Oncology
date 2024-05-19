@@ -44,7 +44,9 @@ background-color: white;
     }
 } 
 
-
+::ng-deep .dx-scheduler-appointment{
+    margin-left: 5px;
+}
 ::ng-deep .dx-texteditor.dx-editor-filled.dx-state-hover:after {
     border-bottom: none !important;
 }

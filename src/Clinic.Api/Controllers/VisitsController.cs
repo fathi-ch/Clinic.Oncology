@@ -1,4 +1,5 @@
-﻿using Clinic.Core.Contracts;
+﻿using Clinic.Api.BusinessService;
+using Clinic.Core.Contracts;
 using Clinic.Core.Dto;
 using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +10,13 @@ namespace Clinic.Api.Controllers;
 [Route("/v1/api/visits")]
 public class VisitsController : ControllerBase
 {
-    private readonly IVisitRepository _visitRepository;
+    private readonly IVisitsService _visitRepository;
     private readonly IDocumentRepository _documentRepository;
 
 
-    public VisitsController(IVisitRepository _visitRepository, IDocumentRepository documentRepository)
+    public VisitsController(IVisitsService visitRepository, IDocumentRepository documentRepository)
     {
-        this._visitRepository = _visitRepository;
+        this._visitRepository = visitRepository;
         this._documentRepository = documentRepository;
     }
 
@@ -96,37 +97,7 @@ public class VisitsController : ControllerBase
         return Ok(patientDocumentResponse);
     }
 
-    //[HttpPut(Name = "UpdateVisit")]
-    //[ProducesResponseType(StatusCodes.Status201Created)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    //public async Task<IActionResult> UpdateAsync(VisitDto VisitDto)
-    //{
-    //    if (!ModelState.IsValid)
-    //    {
-    //        return BadRequest(new { Message = "Invalid input data", Errors = ModelState });
-    //    }
-
-    //    try
-    //    {
-    //        await _visitRepository.UpdateByIdAsync(VisitDto.Id,VisitDto);
-    //        var visit = await _visitRepository.GetByIdAsync(VisitDto.Id);
-
-    //        if (visit != null)
-    //        {
-    //            return  Accepted("Updated", visit);
-    //        }
-
-    //        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Failed to update visit" });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        // Logging in the future
-    //        return StatusCode(StatusCodes.Status500InternalServerError,
-    //            new { Message = "An error occurred while creating the visit." });
-    //    }
-    //}
-
+   
 
     [HttpDelete("{id}", Name = "DeleteVisit")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -136,14 +107,8 @@ public class VisitsController : ControllerBase
     {
         try
         {
-            var visit = await _visitRepository.DeleteByIdAsync(id);
-
-            if (visit == null)
-            {
-                return NotFound(new { Message = "Visit not found" });
-            }
-
-            return Ok(visit);
+             await _visitRepository.DeleteByIdAsync(id);
+             return Ok();
         }
         catch (Exception ex)
         {

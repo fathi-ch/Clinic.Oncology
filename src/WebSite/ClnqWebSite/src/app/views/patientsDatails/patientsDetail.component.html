@@ -1,33 +1,12 @@
-<div fxLayout="column" fxFill style="padding:20px;padding-top: 10px;" fxLayoutGap="8px">
-    <div fxFlex="20px" class="titlePage">
-        Pateints > Toutes les patients
-    </div>
+<div fxLayout="column" fxFill style="padding:20px;padding-top: 10px;height: max-content;" fxLayoutGap="8px">
 
     <div fxFlex="62px" class="gridReserveOptions" fxLayout="row" fxLayoutGap="5px">
 
 
 
         <div class="colored box" style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
-            <!-- search -->
-            
 
 
-
-
-                <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
-                    <dx-text-box  [class]="'textBoxCssClass'" valueChangeEvent="keyup"
-                        stylingMode="filled" [placeholder]="'Recherchez nom , prénom ... '" mode="search" [(value)]="searchText"
-                        [showClearButton]="true"
-                        (onValueChanged)="searchPatient()">
-                    </dx-text-box>
-                  
-
-                </div>
-               
-            
-            <div fxflex="30" style="flex: 1 1 100%; box-sizing: border-box; max-width: 10%;">
-                
-            </div>
             <div style=" box-sizing: border-box; ">
 
                 <div style="float: left;
@@ -35,28 +14,15 @@
                 color: white;
                 padding-top: 5px;">
 
-                    <dx-button stylingMode="outlined" text="Tous" type="normal" [width]="130" [icon]="'group'"
-                        (click)="GetAllPateintList()"></dx-button>
+                    <dx-button stylingMode="outlined" text="Enregistrer" type="normal" [width]="150" [icon]="'save'"
+                        (click)="SetPateint()"></dx-button>
 
 
 
                 </div>
             </div>
             <!-- buttons controle -->
-            <div style=" box-sizing: border-box; ">
 
-                <div style="float: left;
-                font-size: 14px;
-                color: white;
-                padding-top: 5px;">
-
-                    <dx-button stylingMode="outlined" text="Nouveau" type="normal" [width]="130" [icon]="'plus'"
-                        (click)="newPatientPopUp()"></dx-button>
-
-
-
-                </div>
-            </div>
 
             <div style=" box-sizing: border-box; ">
                 <div style="float: left;
@@ -71,270 +37,169 @@
                 </div>
             </div>
 
+            <div style=" box-sizing: border-box; ">
+                <div style="float: left;
+                font-size: 14px;
+                color: white;
+                padding-top: 5px;">
+
+                    <dx-button stylingMode="outlined" text="Supprimer" type="normal" [width]="130" [icon]="'trash'"
+                        (click)="DeletePatient()"></dx-button>
+
+
+                </div>
+            </div>
+
         </div>
 
 
     </div>
 
-    <div fxFlex="calc(100% - 180px)" style="height: 100%;">
 
-        <dx-data-grid #dataGrid class="gridContainer" [hoverStateEnabled]="true" [rowAlternationEnabled]="true"
-            [showRowLines]="true" noDataText=""   [dataSource]="LstPatients" [height]="'auto'" [showBorders]="false"
-            dataRowTemplate="dataRowTemplateName">
 
-            <dxi-column caption="id" dataField="id" [visible]="false"></dxi-column>
-            <dxi-column [width]="150" caption="Nom" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="Prénom" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="100" caption="Sexe" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="80" caption="Age" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="Date de naissance" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="Prochain RDV" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="N° sécurité sociale" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="Mobile" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="100" caption="Réference" [alignment]="'left'"></dxi-column>
 
-            <dxo-load-panel [enabled]="false"></dxo-load-panel>
-            <dxo-scrolling mode="infinite"></dxo-scrolling>
+    <!-- detail patient -->
+    <div id="form-container" class="box-shadow" style="height: 250;">
 
-            <dxo-paging [pageSize]="20"></dxo-paging>
-            <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[20, 30, 40]" [showInfo]="false"
-                [showNavigationButtons]="true"></dxo-pager>
+        <dx-form id="form" [formData]="currentPatient">
+            <dxi-item itemType="group" [colCount]="3"
+                caption="Details Pateint: {{ currentPatient.firstName}} {{ currentPatient.lastName}} ,{{currentPatient.age}} ans">
+                <!-- Nom -->
+                <dxi-item dataField="firstName" [editorOptions]="textBoxOptions">
+                    <dxi-validation-rule type="required" message="Nom obligatoire"></dxi-validation-rule>
+                    <dxo-label template="Nom "></dxo-label>
+                </dxi-item>
+                <!-- Prenom -->
+                <dxi-item dataField="lastName" [editorOptions]="textBoxOptions">
+                    <dxi-validation-rule type="required" message="Prénom obligatoire"></dxi-validation-rule>
+                    <dxo-label template="Prénom "></dxo-label>
+                </dxi-item>
+                <!-- Sexe -->
+                <dxi-item dataField="gender" editorType="dxSelectBox" [editorOptions]="positionEditorOptions">
+                    <dxi-validation-rule type="required" message="Sexe obligatoire"></dxi-validation-rule>
+                    <dxo-label template="Sexe "></dxo-label>
+                </dxi-item>
 
-            <ng-container *dxTemplate="let patient of 'dataRowTemplateName'">
-                <tr class="main-row" id="row-{{patient.data.id}}" (click)="this.showRow(patient.data.id)">
-                    <td class="rowStyle">{{patient.data.firstName}}</td>
-                    <td class="rowStyle">{{patient.data.lastName}}</td>
-                    <td class="rowStyle">{{patient.data.gender}}</td>
-                    <td class="rowStyle">{{patient.data.age}}</td>
-                    <td class="rowStyle">{{convertDate(patient.data.birthDate)}}</td>
-                    <td class="rowStyle">{{convertDate(patient.data.nextAppointment)}}</td>
-                    <td class="rowStyle">{{patient.data.socialSecurityNumber?patient.data.socialSecurityNumber:"-"}}</td>
-                    <td sclass="rowStyle"> {{patient.data.mobile?patient.data.mobile:"-"}} </td>
-                    <td sclass="rowStyle"> {{patient.data.referral}} </td>
-                    
-                </tr>
-                <tr class="PatientDetail" id="{{patient.data.id}}" style="display: none;">
-                    <td colspan="9" tyle="background-color: #00679a !important;">
 
-                        <div>
-                            <div class="thing">
-                                <div>Nom : <span>{{patient.data.firstName}}</span>, Prénom :
-                                    <span>{{patient.data.lastName}}</span>
-                                </div>
-                                <div></div>
-                                <div>Age : <span>{{patient.data.age}}</span><span> ans</span></div>
+
+                <!-- Date de naissance -->
+                <dxi-item dataField="birthDate" editorType="dxDateBox" [editorOptions]="textBoxOptions">
+                    <dxi-validation-rule type="required" message="Date de naissance obligatoire"></dxi-validation-rule>
+                    <dxo-label template="Date de naissance "></dxo-label>
+                </dxi-item>
+
+
+                <!-- Mobile -->
+                <dxi-item dataField="mobile" [editorOptions]="textBoxOptions">
+                    <dxi-validation-rule type="required" message="Mobile obligatoire"></dxi-validation-rule>
+                    <dxo-label template="Mobile "></dxo-label>
+                </dxi-item>
+
+                <!-- Numéro sécurité sociale -->
+                <dxi-item dataField="socialSecurityNumber" [editorOptions]="textBoxOptions">
+                    <dxo-label template="Numéro sécurité sociale "></dxo-label>
+                </dxi-item>
+
+                <!-- Email -->
+                <dxi-item dataField="email" [editorOptions]="textBoxOptions">
+                    <dxo-label template="Email"></dxo-label>
+                </dxi-item>
+                <dxi-item dataField="nextAppointment" editorType="dxDateBox" [editorOptions]="nextAppointment">
+                    <dxi-validation-rule type="required" message="Date de naissance obligatoire"></dxi-validation-rule>
+                    <dxo-label template="Prochain Rdv "></dxo-label>
+                </dxi-item>
+
+                <dxi-item dataField="referral" editorType="dxTextArea" [editorOptions]="textBoxOptions" [colSpan]="2">
+                    <dxo-label template="Responsable"></dxo-label>
+                </dxi-item>
+
+            </dxi-item>
+
+        </dx-form>
+    </div>
+
+    <!-- Historique médical -->
+    <div id="form-container" class="box-shadow" style="height: fit-content;">
+
+        <dx-form id="form" [formData]="currentRdv">
+
+            <dxi-item itemType="group" [colCount]="1" caption="Dossier médical">
+
+                <dxi-item itemType="group" [colCount]="1">
+
+                    <dxi-item>
+
+                        <dx-select-box [class]="'defaultTextBoxCssClass'" displayExpr="visitDateTitel"
+                            [searchEnabled]="false" valueExpr="id" [acceptCustomValue]="false" [showClearButton]="false"
+                            [(value)]="sexePteint" (onSelectionChanged)="onSelectionChanged($event)" [width]="200"
+                            placeholder="Séléctionnez" [dataSource]="passedRdv">
+                        </dx-select-box>
+                        <div *ngIf="currentRdv.id" ><a style="cursor: pointer;
+                            color: #8c54ac;" (click)="showRdvDetail()"><u>Modifier</u></a> </div>
+                        <dxo-label template="Visite de"></dxo-label>
+                     
+                    </dxi-item>
+
+
+                    <dxi-item dataField="description" editorType="dxTextArea" [editorOptions]="textBoxAeraOptions">
+                        <dxo-label template="Consultation"></dxo-label>
+                    </dxi-item>
+
+                    <!-- photos -->
+
+                    <dxi-item>
+
+                        <span>Pièces Jointes </span>
+
+                        <div style=" background-color: #f5f4f47d;
+                                overflow: auto;
+                                white-space: nowrap;
+                                padding: 5px;
+                                display: flex;
+                            ">
+
+                            <div *ngFor="let img of pjListeTemp ; let index=index "
+                                style=" padding: 5px;float:left;box-shadow:0 1px 4px 1px rgb(0 0 0 / 5%);background-color: white;">
+                                <img src="data:image/png;base64,{{img.patientDocumentsbase64}}" alt="Forest"
+                                    (click)="viewImage(img.id)" width="150px" height="200px">
+                                
                             </div>
 
                         </div>
 
 
-                    </td>
+                    </dxi-item>
 
-                </tr>
+                </dxi-item>
 
-            </ng-container>
-        </dx-data-grid>
+            </dxi-item>
+
+        </dx-form>
+    </div>
+
+    <div fxFlex="calc(100% - 180px)" style="height: 100%;">
+
 
     </div>
 
 
 </div>
 
-<!-- new patinet -->
+<!-- image preview -->
 
-<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [width]="665" [height]="590" [showTitle]="true"
-    [position]="'top'" [dragEnabled]="false" title="Nouveau patient" [hideOnOutsideClick]="true"
-    [(visible)]="popupVisible">
-
-
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [showTitle]="true" [position]="'top'"
+    [dragEnabled]="false" title="Aperçu" [hideOnOutsideClick]="true" [(visible)]="popupVisible">
 
     <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
-
-        <!-- nom & prenom -->
-        <div style="display: flex; padding-bottom: 8px;">
-
-
-            <div>
-                <span class="titreCmt">Nom</span>
-
-                <dx-text-box [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="pat_nom" text=""
-                    [(value)]="pat_nom" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
-                </dx-text-box>
-            </div>
-
-            <div style="padding-left: 5%;">
-                <span class="titreCmt">Prénom</span>
-
-                <dx-text-box [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="pat_prenom" text=""
-                    [(value)]="pat_prenom" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
-                </dx-text-box>
-            </div>
-
-        </div>
-
-        <!-- date de nai & sexe -->
-
-        <div style="display: flex; padding-bottom: 8px;">
-
-
-            <div>
-                <span class="titreCmt">Date de naissance</span>
-
-                <dx-date-box #dateNais placeholder="Ex : JJ/MM/AAAA" [min]="min" [max]="pat_date_n">
-
-                </dx-date-box>
-            </div>
-            <!-- sexe -->
-            <div style="padding-left: 5%;">
-
-                <span class="titreCmt">Sexe</span>
-
-                <dx-select-box [class]="'defaultTextBoxCssClass'" displayExpr="sexe" [searchEnabled]="false" valueExpr="lognomusr"
-                    [acceptCustomValue]="false" [showClearButton]="false" [(value)]="sexePteint" valueExpr="sexe"
-                    placeholder="Séléctionnez" [dataSource]="sexePteintList">
-                </dx-select-box>
-
-
-            </div>
-
-        </div>
-
-           <!-- Sec soc -->
-           <div style="display: flex; padding-bottom: 8px;">
-           
-            <div>
-                <span class="titreCmt">N° sécurité sociale</span>
-
-                <dx-text-box [placeholder]="''"  [width]="631"  [class]="'defaultTextBoxCssClass'" name="pat_num_suc"
-                    text="" [(value)]="pat_num_suc" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
-                </dx-text-box>
-            </div>
-           
-
-        </div>
-
-
-        <!-- Prochain Rdv -->
-
-        <div style="display: flex;padding-bottom: 8px;">
-
-            <div>
-
-                <span class="titreCmt">Prochain Rdv</span>
-
-                <dx-date-box #dateRdv placeholder="Ex : JJ/MM/AAAA" [min]="pat_date_rdv">
-                </dx-date-box>
-
-
-            </div>
-
-            <div style="padding-left: 5%;">
-
-                <span class="titreCmt">de</span>
-                <dx-date-box #startRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15" [min]="min" [max]="max" [value]="min"
-                    [inputAttr]="{ 'aria-label': 'Time' }">
-                </dx-date-box>
-
-            </div>
-
-            <div style="padding-left: 5%;">
-
-                <span class="titreCmt">à</span>
-                <dx-date-box #endRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15" [min]="min" [max]="max" [value]="min"
-                    [inputAttr]="{ 'aria-label': 'Time' }">
-                </dx-date-box>
-
-            </div>
-
-
-
-        </div>
-        <!-- Mobile. & email -->
-        <div style="display: flex; padding-bottom: 8px;">
-           
-            <div>
-                <span class="titreCmt">Mobile</span>
-
-                <dx-text-box [placeholder]="''"  [class]="'defaultTextBoxCssClass'" name="pat_prenom"
-                    text="" [(value)]="pat_mobile" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
-                </dx-text-box>
-
-            </div>
-
-          
-            <div style="padding-bottom: 15px;padding-left: 5%;">
-                <span class="titreCmt">Email</span>
-
-                <dx-text-box [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="pat_prenom" text=""
-                    [(value)]="pat_email" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
-                    <dx-validator>
-                        <dxi-validation-rule type="email" message="e-mail icorrect">
-                        </dxi-validation-rule>
-                    </dx-validator>
-                </dx-text-box>
-
-            </div>
-        </div>
-
-         <!-- Mobile. & email -->
-         <div style="display: flex; padding-bottom: 8px;">
-           
-            <div style="padding-bottom: 8px;">
-                <span class="titreCmt">Réference & Contact:</span>
-
-                <dx-text-area
-                [height]="65"
-                [width]="631"
-                [(value)]="pat_ref"
-                [autoResizeEnabled]="true"
-                [inputAttr]="{ 'aria-label': 'Notes' }"
-              >
-              </dx-text-area>
-
-            </div>
-
-          
-           
-        </div>
-
-
-        <div fxFlex="62px" class="gridReserveOptions" style="width: 631px !important;" fxLayout="row" fxLayoutGap="5px">
-
-
-            <div class="colored box"
-                style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
-              
-                <div fxflex="60" style="flex: 1 1 100%; box-sizing: border-box; max-width: 73%;">
-                    <div fxFlex fxLayout="row">
-                        <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
-
-
-                        </div>
-                    </div>
-                </div>
-                <!-- buttons controle -->
-
-
-                <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 25%;">
-                    <div style="float: left;
-                    font-size: 14px;
-                    color: white;
-                    padding-top: 0px;
-                    padding-left: 22px;">
-
-                        <dx-button stylingMode="outlined" text="Ajouter" type="normal" [width]="130" [icon]="'todo'"
-                            (click)="newPatient()"></dx-button>
-
-
-                    </div>
-                </div>
-
-            </div>
-
-
-        </div>
-
-
-
+        <img src="data:image/png;base64,{{currentImageView}}" style="width: -webkit-fill-available;">
+    </div>
+</dx-popup>
+
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }"  [showTitle]="true"
+    [position]="'top'" [dragEnabled]="false" title="Detail visite" [hideOnOutsideClick]="true"
+    [(visible)]="popupRdvDetVisible">
+
+    <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
+        <app-rdvDetails></app-rdvDetails>
     </div>
 </dx-popup>
