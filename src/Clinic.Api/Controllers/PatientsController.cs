@@ -1,7 +1,6 @@
 ﻿using Clinic.Api.BusinessService;
 using Clinic.Core.Contracts;
 using Clinic.Core.Dto;
-using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
@@ -11,13 +10,12 @@ namespace Clinic.Api.Controllers;
 public class PatientsController : ControllerBase
 {
     private readonly IPatientService _patientService;
-  
+    private readonly IPatientReportRepository _patientReportRepo;
 
-    public PatientsController(IPatientService patientService)
+    public PatientsController(IPatientService patientService, IPatientReportRepository patientReportRepo)
     {
-        this._patientService = patientService;
-
-
+        _patientService = patientService;
+        _patientReportRepo = patientReportRepo;
     }
 
     [HttpGet(Name = "GetAllPatientsAsync")]
@@ -26,15 +24,15 @@ public class PatientsController : ControllerBase
     public async Task<ActionResult<IEnumerable<PatientResponse>>> GetAllAsync()
     {
         var patients = await _patientService.GetAllAsync();
-        
-        if (!patients.Any()) return Ok(Enumerable.Empty<PatientResponse>()) ;
+
+        if (!patients.Any()) return Ok(Enumerable.Empty<PatientResponse>());
 
         return Ok(patients);
     }
 
-    [HttpGet,Route("SearchPatients")]
+    [HttpGet, Route("SearchPatients")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string firstName="")
+    public async Task<IEnumerable<PatientResponse>> GetAllByNameAsync(string firstName = "")
         => (await _patientService.GetAllByNameAsync(firstName));
 
 
@@ -59,6 +57,23 @@ public class PatientsController : ControllerBase
         if (!visits.Any()) return Ok(Enumerable.Empty<VisitResponse>());
 
         return Ok(visits);
+    }
+
+    [HttpGet("{id}/documents/export")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ExportDocumentsAsPdf(int id)
+    {
+
+        var report = await _patientReportRepo.GeneratePatientReportPdfAsync(id);
+
+        if (report == null || report.Length == 0)
+        {
+            return NotFound("No report available for the specified patient.");
+        }
+
+        return File(report, "application/pdf",  $"Patient_{id}_Report.pdf");
+
     }
 
     [HttpPost(Name = "CreatePatient")]
@@ -100,7 +115,7 @@ public class PatientsController : ControllerBase
     {
         try
         {
-             await _patientService.DeleteByIdAsync(id);
+            await _patientService.DeleteByIdAsync(id);
 
             return Ok();
         }
@@ -111,7 +126,7 @@ public class PatientsController : ControllerBase
                 new { Message = "An error occurred while deleting the patient" });
         }
     }
-    
+
     [HttpPut("{id}", Name = "UpdatePatientAsync")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -121,7 +136,7 @@ public class PatientsController : ControllerBase
         if (patient == null) return NotFound();
 
         var patientInDb = await _patientService.UpdateAsync(id, patientDto);
-        
+
         return Ok(patientInDb);
     }
 }
