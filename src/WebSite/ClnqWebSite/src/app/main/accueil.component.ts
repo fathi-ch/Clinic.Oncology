@@ -5,6 +5,7 @@ import { ServicesRdv } from "../services/rdv/rdv.service";
 import { ServiceCmnObject } from "../services/ServiceCmnObject";
 import { DatePipe, PercentPipe } from "@angular/common";
 import { DataChartDaugh } from "../models/charts/DataChartDaugh";
+import { DxChartTypes } from "devextreme-angular/ui/chart";
 
 @Component({
   selector: 'app-accueil',
@@ -17,6 +18,10 @@ import { DataChartDaugh } from "../models/charts/DataChartDaugh";
  
 
   export class AcceuilComponent implements OnInit {
+    
+    highAverage = 77;
+
+    lowAverage = 58;
     pipe = new PercentPipe('en-US');
     
     allRdvData: Rdv[]=[];
@@ -25,6 +30,8 @@ import { DataChartDaugh } from "../models/charts/DataChartDaugh";
     chartRang:string[]=["Aujourd'hui","Semaine","Mois"];
     daysOfTheWeek:string[]= ['Samedi','Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vandredi'];
     chartTitle:string="Avancement des visites d'aujourd'hui";
+
+    customizeText: DxChartTypes.ValueAxisLabel['customizeText'] = ({ valueText }) => `${valueText}&#176F`;
 
     customizeTooltip = ({ valueText, percent }: { valueText: string, percent: number }) => ({
       text: `${valueText} - ${this.pipe.transform(percent, '1.2-2')}`,
@@ -41,8 +48,9 @@ import { DataChartDaugh } from "../models/charts/DataChartDaugh";
       this.chartTitle="Avancement des visites d'aujourd'hui";
       
     }
-    
 
+  
+    
     public onSelectionChanged(e:any)
     {
      
