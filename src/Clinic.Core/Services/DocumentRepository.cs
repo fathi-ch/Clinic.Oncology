@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata;
+﻿using System.Dynamic;
+using System.Reflection.Metadata;
 using System.Text;
 using Clinic.Core.Configurations;
 using Clinic.Core.Contracts;
@@ -36,38 +37,33 @@ public class DocumentRepository : IDocumentRepository
             var documentsResponse = new List<PatientDocumentResponse>();
             if (!string.IsNullOrEmpty(patientDocumentDto.File64))
             {
-             
-                    var sb = new StringBuilder();
-                    sb.Append("INSERT INTO ");
-                    sb.Append("Documents (VisitId, Name, DocumentType) ");
-                    sb.Append("VALUES (@VisitId, @Name, @DocumentType); ");
-                    sb.Append("SELECT last_insert_rowid();");
 
-                    var query = sb.ToString();
-                    var originalFileExtension = Path.GetExtension(patientDocumentDto.FileName);
-                    var documentsFullName = GenerateDocumentPath(patientDocumentDto.VisitId, originalFileExtension);
-                    newId = await connection.ExecuteScalarAsync<int>(query,
-                        new
-                        {
-                            VisitId = patientDocumentDto.VisitId,
-                            Name = documentsFullName,
-                            DocumentType = originalFileExtension
-                        });
+                var sb = new StringBuilder();
+                sb.Append("INSERT INTO ");
+                sb.Append("Documents (VisitId, Name, DocumentType) ");
+                sb.Append("VALUES (@VisitId, @Name, @DocumentType); ");
+                sb.Append("SELECT last_insert_rowid();");
 
-                    await _fileRepository.SaveFilesAsync(patientDocumentDto.File64, documentsFullName, patientDocumentDto.VisitId.ToString());
+                var query = sb.ToString();
+                var originalFileExtension = Path.GetExtension(patientDocumentDto.FileName);
+                var documentsFullName = GenerateDocumentPath(patientDocumentDto.VisitId, originalFileExtension);
+                newId = await connection.ExecuteScalarAsync<int>(query,
+                    new
+                    {
+                        VisitId = patientDocumentDto.VisitId,
+                        Name = documentsFullName,
+                        DocumentType = originalFileExtension
+                    });
 
-                    var documentResponse = patientDocumentDto.ToDocumentResponse(newId, documentsFullName,
-                        Path.Combine(_dbConfigs.DocumentsPath));
+                await _fileRepository.SaveFilesAsync(patientDocumentDto.File64, documentsFullName, patientDocumentDto.VisitId.ToString());
 
-                    documentsResponse.Add(documentResponse);
+                var documentResponse = patientDocumentDto.ToDocumentResponse(newId, documentsFullName,
+                    Path.Combine(_dbConfigs.DocumentsPath));
 
-              
-
-
+                documentsResponse.Add(documentResponse);
 
                 transaction.Commit();
             }
-
 
             return documentsResponse;
         }
@@ -210,7 +206,7 @@ public class DocumentRepository : IDocumentRepository
             {
                 Id = id,
                 // VisitId = patientDocumentDto.VisitId,
-                DocumentType =Path.GetExtension(patientDocumentDto.FileName)
+                DocumentType = Path.GetExtension(patientDocumentDto.FileName)
             };
         }
         catch (Exception e)
@@ -227,5 +223,29 @@ public class DocumentRepository : IDocumentRepository
         var fileName = $"{visitId}_{timeStamp}_{currentTimeMs}";
 
         return Path.Combine(fileName + originalFileExtension);
+    }
+
+    public async Task<IEnumerable<PatientDocumentResponse>> GetByPatientIdAsync(int patientId)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+
+        try
+        {
+            var sb = new StringBuilder();
+            sb.Append("SELECT d.*  ");
+            sb.Append("FROM Documents d ");
+            sb.Append("INNER JOIN Visits v ON d.VisitId = v.Id ");
+            sb.Append(" WHERE v.PatientId = @PatientId;");
+
+            var query = sb.ToString();
+
+            return (await connection.QueryAsync<PatientDocument>(query, new { PatientId = patientId })).Select(d =>
+             d.ToDocumentResponse(_dbConfigs.GetFullSaveFolderPathForDocuments(d.Name)));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
     }
 }

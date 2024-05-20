@@ -26,7 +26,7 @@ builder.Services.AddSingleton<IPatientService, PatientService>();
 builder.Services.AddSingleton<IDocumentRepository, DocumentRepository>();
 builder.Services.AddSingleton<IVisitRepository, VisitRepository>();
 builder.Services.AddSingleton<IFileRepository, FileRepository>();
-
+builder.Services.AddSingleton<IPatientReportRepository, PatientReportRepository>();
 
 builder.Services.AddCors(options =>
 {

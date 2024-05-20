@@ -101,7 +101,8 @@ public class DocumentsController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState); }
+            return BadRequest(ModelState);
+        }
 
         var document = await _documentRepository.GetByIdAsync(id);
         if (document == null) return NotFound();
