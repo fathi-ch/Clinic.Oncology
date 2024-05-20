@@ -2,11 +2,6 @@
 using Clinic.Core.Dto;
 using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using QuestPDF.Infrastructure;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Previewer;
-using System.IO;
 
 namespace Clinic.Api.Controllers;
 
@@ -115,38 +110,5 @@ public class DocumentsController : ControllerBase
         var documentInDb = await _documentRepository.UpdateByIdAsync(id, patientDocumentDto);
 
         return Ok(documentInDb);
-    }
-
-    private Document GeneratePdfDocument(PatientDocumentResponse documentData)
-    {
-        return null;
-
-        // return Document.Create(container =>
-        // {
-        //     container.Page(page =>
-        //     {
-        //         page.Size(PageSizes.A4);
-        //         page.Margin(2, Unit.Centimetre);
-        //         page.DefaultTextStyle(x => x.FontSize(20));
-
-        //         page.Content()
-        //             .Column(column =>
-        //             {
-        //                 column.Item().Text($"Exported Document: {documentData.Name}").Bold().FontSize(24);
-        //                 column.Item().Text($"Visit ID: {documentData.VisitId}");
-        //                 column.Item().Text($"Document Type: {documentData.DocumentType}");
-
-        //                 if (!string.IsNullOrEmpty(documentData.PatientDocumentsbase64))
-        //                 {
-        //                     byte[] documentBytes = Convert.FromBase64String(documentData.PatientDocumentsbase64);
-        //                     using (var documentStream = new MemoryStream(documentBytes))
-        //                     {
-        //                         var image = ImageSource.FromStream(documentStream);
-        //                         column.Item().Image(image);
-        //                     }
-        //                 }
-        //             });
-        //     });
-        // });
-    }
+   }    
 }
