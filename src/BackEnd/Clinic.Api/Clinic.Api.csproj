@@ -16,4 +16,8 @@
         <ProjectReference Include="..\Clinic.Core\Clinic.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="BackEnd\" />
+    </ItemGroup>
+
 </Project>
