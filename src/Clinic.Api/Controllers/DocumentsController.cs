@@ -110,5 +110,5 @@ public class DocumentsController : ControllerBase
         var documentInDb = await _documentRepository.UpdateByIdAsync(id, patientDocumentDto);
 
         return Ok(documentInDb);
-   }    
+    }
 }
