@@ -79,15 +79,23 @@ import { Router } from "@angular/router";
 
     public convertDate(date:string)
     {
-      let shortDate=date.split('T')[0];
-      return shortDate.split('-')[2]+"-"+shortDate.split('-')[1]+"-"+shortDate.split('-')[0]
+        if(date)
+        {
+          let shortDate=date?.split('T')[0];
+          return shortDate?.split('-')[2]+"-"+shortDate?.split('-')[1]+"-"+shortDate?.split('-')[0]
+        }
+        return "-";
+    
     }
 
     public convertDateWithTime(date:string)
-    {
-      let shortDate=date.split('T')[0];
-
-      return shortDate.split('-')[2]+"-"+shortDate.split('-')[1]+"-"+shortDate.split('-')[0]+ " à "+date.split('T')[1];
+    {  if(date)
+      {
+        let shortDate=date.split('T')[0];
+        return shortDate.split('-')[2]+"-"+shortDate.split('-')[1]+"-"+shortDate.split('-')[0]+ " à "+date.split('T')[1];
+      }
+      return "-";
+    
     }
 
 // go to datail 
