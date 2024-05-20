@@ -62,13 +62,8 @@ public class DocumentRepository : IDocumentRepository
 
                 documentsResponse.Add(documentResponse);
 
-
-
-
-
                 transaction.Commit();
             }
-
 
             return documentsResponse;
         }
@@ -243,9 +238,9 @@ public class DocumentRepository : IDocumentRepository
             sb.Append(" WHERE v.PatientId = @PatientId;");
 
             var query = sb.ToString();
-
-             return (await connection.QueryAsync<PatientDocument>(query, new { PatientId = patientId })).Select(d =>
-            d.ToDocumentResponse(_dbConfigs.GetFullSaveFolderPathForDocuments(d.Name)));
+           
+        return (await connection.QueryAsync<PatientDocument>(query, new { PatientId = patientId })).Select(d =>
+         d.ToDocumentResponse(_dbConfigs.GetFullSaveFolderPathForDocuments(d.Name)));
 
         }
         catch (Exception ex)
