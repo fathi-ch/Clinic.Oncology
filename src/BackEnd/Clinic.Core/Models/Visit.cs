@@ -13,6 +13,6 @@ public class Visit
     public string Status { get; set; }
     public float Weight { get; set; }
     public float Height { get; set; }
-    public string visitDateTitel { get; set; }
+    public string visitDateTitle { get; set; }
     //public List<PatientDocument> Documents { get; set; } 
 }

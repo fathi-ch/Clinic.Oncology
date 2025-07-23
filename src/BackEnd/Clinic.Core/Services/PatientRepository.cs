@@ -27,9 +27,9 @@ public class PatientRepository : IPatientRepository
             var sb = new StringBuilder();
             sb.Append("INSERT INTO ");
             sb.Append(
-                "Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Mobile, SocialSecurityNumber, Referral,Email) ");
+                "Patients (FirstName, LastName, BirthDate, NextAppointment, Gender, Mobile, SocialSecurityNumber, Referral, Email) ");
             sb.Append(
-                "VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender, @Mobile, @SocialSecurityNumber, @Referral,@Email); ");
+                "VALUES (@FirstName, @LastName, @BirthDate, @NextAppointment, @Gender, @Mobile, @SocialSecurityNumber, @Referral, @Email); ");
             sb.Append("SELECT last_insert_rowid();");
             var query = sb.ToString();
 
