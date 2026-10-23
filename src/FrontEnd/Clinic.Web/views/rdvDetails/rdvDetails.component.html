@@ -1,0 +1,42 @@
+<div class="visit">
+    <header class="visit-head">
+        <div class="visit-who">
+            <span class="accent-bar"></span>
+            <h2 class="visit-patient">{{ currentRdv.patient?.firstName }} {{ currentRdv.patient?.lastName }}</h2>
+            <p class="visit-meta">{{ visitTimeLabel }}</p>
+            <p class="visit-meta" *ngIf="currentRdv.patient?.age">{{ currentRdv.patient?.age }} ans, né(e) le {{ birthDateLabel }}</p>
+        </div>
+        <div class="visit-side">
+            <span class="status" [class.status--done]="currentRdv.status === 'TRM'">
+                {{ currentRdv.status === 'TRM' ? 'Visite terminée' : 'Visite planifiée' }}
+            </span>
+            <div class="visit-actions">
+                <dx-button stylingMode="outlined" type="normal" text="Exporter le dossier PDF" icon="exportpdf"
+                    [disabled]="exporting" (onClick)="exportPdf()"></dx-button>
+                <dx-button *ngIf="!finished" stylingMode="outlined" type="normal" text="Enregistrer" icon="save"
+                    (onClick)="updateDetailRdv()"></dx-button>
+                <dx-button *ngIf="!finished" stylingMode="contained" type="default"
+                    text="Terminer la visite" icon="check" (onClick)="terminerDetailRdv()"></dx-button>
+            </div>
+        </div>
+    </header>
+
+    <section class="visit-block">
+        <h3 class="block-title">Notes de consultation</h3>
+        <dx-text-area #descText [width]="'100%'" [height]="200" [readOnly]="finished" [(value)]="currentRdv.description!" [autoResizeEnabled]="false"
+            placeholder="Observations, traitement, suite à donner…" [inputAttr]="{ 'aria-label': 'Notes de consultation' }">
+        </dx-text-area>
+    </section>
+
+    <section class="visit-block">
+        <div class="block-head">
+            <h3 class="block-title">Documents</h3>
+            <dx-file-uploader *ngIf="!finished" class="uploader" selectButtonText="Ajouter des documents" labelText="" uploadMode="useForm"
+                [multiple]="true" [showFileList]="false" accept="image/png,image/jpeg,application/pdf"
+                [allowedFileExtensions]="['.pdf', '.jpeg', '.png', '.jpg']" (onValueChanged)="filesUploaded($event)">
+            </dx-file-uploader>
+        </div>
+        <p class="block-hint">{{ finished ? 'Visite terminée : les notes et les documents ne peuvent plus être modifiés.' : 'Photos PNG ou JPEG et documents PDF. Ils sont enregistrés dès leur ajout.' }}</p>
+        <app-document-gallery [documents]="pjListeTemp" [readonly]="finished" (remove)="DeletePj($event)"></app-document-gallery>
+    </section>
+</div>

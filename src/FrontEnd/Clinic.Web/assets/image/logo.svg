@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Cabinet médical">
+  <!-- The original mark's "D" and crescent, drawn as one letter: the crescent is the bowl of the D. -->
+  <rect width="48" height="48" rx="12" fill="#6E3A8C"/>
+  <rect x="15" y="12" width="6" height="24" rx="1.5" fill="#FFFFFF"/>
+  <path d="M21 12 A12 12 0 0 1 21 36 A7.5 12 0 0 0 21 12 Z" fill="#E2C8F0"/>
+</svg>

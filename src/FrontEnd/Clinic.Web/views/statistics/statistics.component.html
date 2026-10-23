@@ -1,0 +1,179 @@
+<section class="page-hero page-hero--compact">
+    <img class="hero-mark" src="assets/image/hero-mark.svg" alt="">
+    <div class="hero-inner">
+        <nav class="crumbs" aria-label="Fil d'Ariane">
+            <a routerLink="/accueil">Accueil</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Statistiques</span>
+        </nav>
+        <span class="accent-bar"></span>
+        <h1 class="hero-title">Statistiques</h1>
+        <p class="hero-lead">Revenus des visites terminées et avancement des visites.</p>
+    </div>
+</section>
+
+<div class="page">
+    <section class="section-card">
+        <div class="income-head">
+            <h2 class="section-title">Revenus</h2>
+            <dx-button-group [items]="periods" keyExpr="key" [selectedItemKeys]="[period]" stylingMode="outlined"
+                (onItemClick)="setPeriod($event.itemData.key)"></dx-button-group>
+        </div>
+        <div class="income-range" *ngIf="period === 'custom'">
+            <span>Du</span>
+            <dx-date-box [value]="from" [width]="170" (onValueChanged)="onRangeChanged('from', $event)"
+                [inputAttr]="{ 'aria-label': 'Début de la période' }"></dx-date-box>
+            <span>au</span>
+            <dx-date-box [value]="to" [width]="170" (onValueChanged)="onRangeChanged('to', $event)"
+                [inputAttr]="{ 'aria-label': 'Fin de la période' }"></dx-date-box>
+        </div>
+        <p class="income-period">{{ periodLabel }}</p>
+
+        <ng-container *ngIf="income">
+            <div class="summary-cards summary-cards--compact summary-cards--four">
+                <article class="summary-card">
+                    <span class="icon-circle"><i class="dx-icon dx-icon-money"></i></span>
+                    <p class="summary-label">Période</p>
+                    <p class="summary-title">{{ da(income.period.income) }}</p>
+                    <p class="summary-note">{{ income.period.finishedVisits }} visite{{ income.period.finishedVisits > 1 ? 's' : '' }} terminée{{ income.period.finishedVisits > 1 ? 's' : '' }}</p>
+                </article>
+                <article class="summary-card">
+                    <span class="icon-circle"><i class="dx-icon dx-icon-event"></i></span>
+                    <p class="summary-label">Aujourd'hui</p>
+                    <p class="summary-title">{{ da(income.today) }}</p>
+                </article>
+                <article class="summary-card">
+                    <span class="icon-circle"><i class="dx-icon dx-icon-chart"></i></span>
+                    <p class="summary-label">Ce mois</p>
+                    <p class="summary-title">{{ da(income.thisMonth) }}</p>
+                </article>
+                <article class="summary-card">
+                    <span class="icon-circle"><i class="dx-icon dx-icon-datafield"></i></span>
+                    <p class="summary-label">Cette année</p>
+                    <p class="summary-title">{{ da(income.thisYear) }}</p>
+                </article>
+            </div>
+
+            <dl class="income-split">
+                <div><dt>Payant</dt><dd>{{ da(income.period.paid) }}</dd></div>
+                <div><dt>Promotion</dt><dd>{{ da(income.period.promo) }}</dd></div>
+                <div><dt>Gratuit</dt><dd>{{ income.period.freeVisits }} visite{{ income.period.freeVisits > 1 ? 's' : '' }}</dd></div>
+                <div><dt>Prévu (visites à venir)</dt><dd>{{ da(income.period.planned) }}</dd></div>
+            </dl>
+
+            <dx-chart class="income-chart" [dataSource]="chartData" [title]="incomeChartTitle">
+                <dxo-common-series-settings argumentField="label" type="stackedbar"></dxo-common-series-settings>
+                <dxi-series valueField="paid" name="Payant" color="#8e4ec6"></dxi-series>
+                <dxi-series valueField="promo" name="Promotion" color="#12a594"></dxi-series>
+                <dxo-legend verticalAlignment="bottom" horizontalAlignment="center"></dxo-legend>
+                <dxo-tooltip [enabled]="true" [customizeTooltip]="chartTooltip"></dxo-tooltip>
+                <dxo-value-axis><dxo-label [customizeText]="axisDa"></dxo-label></dxo-value-axis>
+            </dx-chart>
+
+            <h3 class="income-subtitle">Revenus par patient</h3>
+            <p class="income-empty" *ngIf="!income.byPatient.length">Aucune visite sur cette période.</p>
+            <table class="income-table" *ngIf="income.byPatient.length">
+                <thead>
+                    <tr>
+                        <th scope="col">Patient</th>
+                        <th scope="col">Visites terminées</th>
+                        <th scope="col">Dont gratuites</th>
+                        <th scope="col">Prévu</th>
+                        <th scope="col">Revenus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let p of income.byPatient">
+                        <td><a [routerLink]="['/patients', p.patientId]">{{ p.name || 'Patient ' + p.patientId }}</a></td>
+                        <td>{{ p.finishedVisits }}</td>
+                        <td>{{ p.freeVisits }}</td>
+                        <td>{{ da(p.planned) }}</td>
+                        <td class="income-amount">{{ da(p.income) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </ng-container>
+    </section>
+
+    <section class="section-card">
+        <h2 class="section-title">Avancement des visites</h2>
+        <dx-form id="form" [formData]="" style="height: 550px">
+
+            <dxi-item itemType="group" [colCount]="1">
+                <dxi-item itemType="group" [colCount]="1">
+                    
+                    <dxi-item>
+                        <dx-select-box [class]="'defaultTextBoxCssClass'"
+                        [searchEnabled]="false"  [acceptCustomValue]="false" [showClearButton]="false"
+                        (onSelectionChanged)="onSelectionChanged($event)" [width]="200"
+                        [value]="chartRang[0]"
+                        placeholder="Séléctionnez" [dataSource]="chartRang">
+                    </dx-select-box>
+                   
+                    <dxo-label template="Par "></dxo-label>
+                    </dxi-item>
+                </dxi-item>
+
+                <dxi-item itemType="group" [colCount]="2">
+
+                        <dxi-item>
+                            <dx-pie-chart
+                            id="pie"
+                            type="doughnut"
+                            [title]="chartTitle"
+                            [palette]="['#8e4ec6', '#12a594', '#be93e4']"
+                            [dataSource]="dataChart"
+                            
+                          >
+                            <dxi-series argumentField="dataTitle">
+                              <dxo-label [visible]="true" format="">
+                                <dxo-connector [visible]="true"></dxo-connector>
+                              </dxo-label>
+                            </dxi-series>
+                            <dxo-export [enabled]="true"></dxo-export>
+                            <dxo-legend
+                              [margin]="0"
+                              horizontalAlignment="right"
+                              verticalAlignment="top"
+                            ></dxo-legend>
+                            <dxo-tooltip
+                              [enabled]="true"
+                              [customizeTooltip]="customizeTooltip"
+                              format=""
+                            >
+                            </dxo-tooltip>
+                          </dx-pie-chart>
+                         
+                        </dxi-item>
+                       
+                     
+                   
+                    <!-- chart bar -->
+                    <dxi-item>
+                        <dx-chart id="chart" [dataSource]="dataChartBar" title="Visite par semaine">
+                           
+                            <dxi-series
+                            argumentField="dataTitle"
+                            valueField="val"
+                            name="Visites"
+                            type="bar"
+                            color="#be93e4"
+                            ></dxi-series>
+                           
+
+                        </dx-chart>
+
+                     
+
+                    
+                    </dxi-item>
+
+                    
+
+                </dxi-item>
+
+            </dxi-item>
+
+        </dx-form>
+    </section>
+</div>

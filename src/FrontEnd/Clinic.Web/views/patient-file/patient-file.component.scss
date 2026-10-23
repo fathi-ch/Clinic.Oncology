@@ -1,0 +1,239 @@
+// the patient's photos, top right of the hero, in place of the decorative mark
+.hero-photos {
+    position: absolute;
+    top: 40px;
+    right: 32px;
+    width: min(460px, 38vw);
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--panel);
+    box-shadow: var(--shadow-raised);
+}
+
+.hero-photo {
+    position: relative;
+    height: 100%;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.hero-photo-caption {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 24px 16px 28px;
+    background: linear-gradient(transparent, rgba(33, 31, 38, 0.72));
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.hero-photo-caption::first-letter {
+    text-transform: uppercase;
+}
+
+// tall enough that the summary cards, which overlap the hero, do not cover the carousel
+.page-hero--photos {
+    min-height: 424px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+    .page-hero--photos {
+        min-height: 0;
+    }
+
+    .hero-photos {
+        position: static;
+        width: auto;
+        margin-top: 24px;
+    }
+}
+
+.facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin: 0;
+
+    dt {
+        color: var(--ink-muted);
+        font-size: 13px;
+    }
+
+    dd {
+        margin: 4px 0 0;
+        color: var(--ink);
+        font-size: 15px;
+        overflow-wrap: anywhere;
+    }
+}
+
+.empty-line {
+    margin: 0;
+    color: var(--ink-muted);
+}
+
+// visits, newest first, on a vertical line
+.timeline {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0 28px;
+    list-style: none;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 6px;
+        bottom: 6px;
+        left: 7px;
+        width: 2px;
+        background: var(--line);
+    }
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+
+    &:last-child {
+        padding-bottom: 0;
+    }
+}
+
+.timeline-dot {
+    position: absolute;
+    top: 6px;
+    left: -28px;
+    width: 16px;
+    height: 16px;
+    border: 3px solid var(--panel);
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 1px var(--purple-6);
+}
+
+.timeline-dot--done {
+    background: var(--teal-11);
+    box-shadow: 0 0 0 1px #a1ded2; // Radix teal-6
+}
+
+.timeline-body {
+    padding: 16px 20px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+}
+
+.timeline-head,
+.timeline-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.timeline-title {
+    margin: 0;
+    color: var(--heading);
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.timeline-title::first-letter {
+    text-transform: uppercase;
+}
+
+.timeline-notes {
+    margin: 10px 0 0;
+    color: var(--ink);
+    white-space: pre-line;
+}
+
+.timeline-foot {
+    margin-top: 12px;
+}
+
+.timeline-docs {
+    color: var(--ink-muted);
+    font-size: 14px;
+}
+
+.status {
+    padding: 4px 12px;
+    border-radius: 50px;
+    background: var(--purple-3);
+    color: var(--accent-strong);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.status--done {
+    background: var(--teal-3);
+    color: var(--teal-11);
+}
+
+@media (max-width: 900px) {
+    .facts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.booking {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 4px 4px 8px;
+}
+
+.booking-for {
+    margin: 0;
+    color: var(--heading);
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+// minmax(0, ...) lets the columns shrink below the fields' built-in minimum width
+.booking-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+}
+
+.booking-grid--two {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.booking-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.booking-label {
+    color: var(--ink-muted);
+    font-size: 13px;
+}
+
+.booking-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+@media (max-width: 640px) {
+    .booking-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .booking-field--date {
+        grid-column: 1 / -1;
+    }
+}

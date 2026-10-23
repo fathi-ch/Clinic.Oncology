@@ -1,0 +1,280 @@
+<section class="page-hero page-hero--compact">
+    <img class="hero-mark" src="assets/image/hero-mark.svg" alt="">
+    <div class="hero-inner">
+        <nav class="crumbs" aria-label="Fil d'Ariane">
+            <a routerLink="/accueil">Accueil</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Patients</span>
+        </nav>
+        <span class="accent-bar"></span>
+        <h1 class="hero-title">Patients</h1>
+        <p class="hero-lead">{{ LstPatients.length }} patient{{ LstPatients.length > 1 ? 's' : '' }} dans la liste</p>
+        <div class="hero-actions">
+            <dx-button stylingMode="outlined" text="Retour à l'accueil" type="normal" icon="home"
+                (onClick)="goHome()"></dx-button>
+            <dx-button stylingMode="contained" text="Nouveau patient" type="default" icon="plus"
+                (click)="newPatientPopUp()"></dx-button>
+            <dx-button stylingMode="outlined" text="Actualiser" type="normal" icon="refresh"
+                (click)="GetAllPateintList()"></dx-button>
+        </div>
+    </div>
+</section>
+
+<div class="page">
+    <section class="section-card">
+        <div class="list-search">
+            <dx-text-box class="patient-search" valueChangeEvent="keyup" stylingMode="filled"
+                placeholder="Rechercher par nom" mode="search" [(value)]="searchText" [showClearButton]="true"
+                (onValueChanged)="searchPatient()">
+            </dx-text-box>
+        </div>
+
+        <!-- DevExtreme master-detail grid: sort on any column (Shift-click for several), click a row for its visits and documents -->
+        <dx-data-grid #dataGrid class="gridContainer" [dataSource]="LstPatients" keyExpr="id" [showBorders]="false"
+            [showRowLines]="true" [rowAlternationEnabled]="false" [hoverStateEnabled]="true" [allowColumnResizing]="true"
+            [columnAutoWidth]="true" noDataText="Aucun patient pour le moment." (onRowClick)="toggleRow($event)"
+            (onRowUpdating)="saveRow($event)">
+            <dxo-sorting mode="multiple"></dxo-sorting>
+            <!-- pencil on each row: edit in place, then save or cancel -->
+            <dxo-editing mode="row" [allowUpdating]="true" [useIcons]="true"></dxo-editing>
+            <dxo-search-panel [visible]="false"></dxo-search-panel>
+            <dxo-load-panel [enabled]="false"></dxo-load-panel>
+
+            <dxi-column dataField="firstName" caption="Nom" cellTemplate="nameCell" sortOrder="asc">
+                <dxi-validation-rule type="required" message="Le nom est obligatoire"></dxi-validation-rule>
+            </dxi-column>
+            <dxi-column dataField="lastName" caption="Prénom">
+                <dxi-validation-rule type="required" message="Le prénom est obligatoire"></dxi-validation-rule>
+            </dxi-column>
+            <dxi-column dataField="gender" caption="Sexe"></dxi-column>
+            <!-- computed by the server -->
+            <dxi-column dataField="age" caption="Âge" dataType="number" alignment="left" [allowEditing]="false"></dxi-column>
+            <dxi-column dataField="birthDate" caption="Date de naissance" dataType="date" format="dd/MM/yyyy">
+                <dxi-validation-rule type="required" message="La date de naissance est obligatoire"></dxi-validation-rule>
+            </dxi-column>
+            <!-- follows the patient's visits -->
+            <dxi-column dataField="nextAppointment" caption="Prochain RDV" dataType="date" format="dd/MM/yyyy" [allowEditing]="false"></dxi-column>
+            <dxi-column dataField="socialSecurityNumber" caption="N° sécurité sociale"></dxi-column>
+            <dxi-column dataField="mobile" caption="Mobile">
+                <dxi-validation-rule type="required" message="Le mobile est obligatoire"></dxi-validation-rule>
+            </dxi-column>
+            <dxi-column dataField="referral" caption="Référence"></dxi-column>
+
+            <dxo-master-detail [enabled]="true" template="detail"></dxo-master-detail>
+
+            <dxo-paging [pageSize]="20"></dxo-paging>
+            <dxo-pager [visible]="true" [showInfo]="true" infoText="Page {0} sur {1} ({2} patients)"
+                [showNavigationButtons]="true"></dxo-pager>
+
+            <div *dxTemplate="let cell of 'nameCell'">
+                <a class="patient-link" [routerLink]="['/patients', cell.data.id]" (click)="$event.stopPropagation()">{{ cell.value }}</a>
+            </div>
+            <div *dxTemplate="let detail of 'detail'">
+                <app-patient-row-detail [patientId]="detail.data.id"></app-patient-row-detail>
+            </div>
+        </dx-data-grid>
+    </section>
+</div>
+
+<!-- new patinet -->
+
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [width]="665" [height]="'auto'" [showTitle]="true"
+    [position]="'top'" [dragEnabled]="false" title="Nouveau patient" [hideOnOutsideClick]="true"
+    [(visible)]="popupVisible">
+
+
+
+    <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
+
+        <!-- nom & prenom -->
+        <div style="display: flex; padding-bottom: 8px;">
+
+
+            <div>
+                <span class="titreCmt">Nom</span>
+
+                <dx-text-box [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="pat_nom" text=""
+                    [(value)]="pat_nom" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
+                </dx-text-box>
+            </div>
+
+            <div style="padding-left: 5%;">
+                <span class="titreCmt">Prénom</span>
+
+                <dx-text-box [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="pat_prenom" text=""
+                    [(value)]="pat_prenom" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
+                </dx-text-box>
+            </div>
+
+        </div>
+
+        <!-- date de nai & sexe -->
+
+        <div style="display: flex; padding-bottom: 8px;">
+
+
+            <div>
+                <span class="titreCmt">Date de naissance</span>
+
+                <dx-date-box #dateNais placeholder="Ex : JJ/MM/AAAA" [min]="min" [max]="pat_date_n">
+
+                </dx-date-box>
+            </div>
+            <!-- sexe -->
+            <div style="padding-left: 5%;">
+
+                <span class="titreCmt">Sexe</span>
+
+                <dx-select-box [class]="'defaultTextBoxCssClass'" displayExpr="sexe" [searchEnabled]="false" valueExpr="lognomusr"
+                    [acceptCustomValue]="false" [showClearButton]="false" [(value)]="sexePteint" valueExpr="sexe"
+                    placeholder="Séléctionnez" [dataSource]="sexePteintList">
+                </dx-select-box>
+
+
+            </div>
+
+        </div>
+
+           <!-- Sec soc -->
+           <div style="display: flex; padding-bottom: 8px;">
+           
+            <div>
+                <span class="titreCmt">N° sécurité sociale</span>
+
+                <dx-text-box [placeholder]="''"  [width]="631"  [class]="'defaultTextBoxCssClass'" name="pat_num_suc"
+                    text="" [(value)]="pat_num_suc" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
+                </dx-text-box>
+            </div>
+           
+
+        </div>
+
+
+        <!-- Prochain Rdv -->
+
+        <div style="display: flex;padding-bottom: 8px;">
+
+            <div>
+
+                <span class="titreCmt">Prochain Rdv</span>
+
+                <dx-date-box #dateRdv placeholder="Ex : JJ/MM/AAAA" [min]="pat_date_rdv" (onValueChanged)="onDateRdvChanged($event)">
+                </dx-date-box>
+
+
+            </div>
+
+            <div style="padding-left: 5%;">
+
+                <span class="titreCmt">de</span>
+                <dx-select-box [width]="133" placeholder="HH:mm" [items]="slots.startOptions" valueExpr="value"
+                    displayExpr="text" [(value)]="slots.startValue" (onValueChanged)="slots.onStartChanged($event)"
+                    noDataText="Choisissez d'abord la date" [inputAttr]="{ 'aria-label': 'Heure de début' }">
+                </dx-select-box>
+
+            </div>
+
+            <div style="padding-left: 5%;">
+
+                <span class="titreCmt">à</span>
+                <dx-select-box [width]="133" placeholder="HH:mm" [items]="slots.endOptions" valueExpr="value"
+                    displayExpr="text" [(value)]="slots.endValue" noDataText="Choisissez d'abord l'heure de début"
+                    [inputAttr]="{ 'aria-label': 'Heure de fin' }">
+                </dx-select-box>
+
+            </div>
+
+
+
+        </div>
+        <!-- Mobile. & email -->
+        <div style="display: flex; padding-bottom: 8px;">
+           
+            <div>
+                <span class="titreCmt">Mobile</span>
+
+                <dx-text-box [placeholder]="''"  [class]="'defaultTextBoxCssClass'" name="pat_prenom"
+                    text="" [(value)]="pat_mobile" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
+                </dx-text-box>
+
+            </div>
+
+          
+            <div style="padding-bottom: 15px;padding-left: 5%;">
+                <span class="titreCmt">Email</span>
+
+                <dx-text-box [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="pat_prenom" text=""
+                    [(value)]="pat_email" mode="text" [stylingMode]="'outlined'" [showClearButton]="true">
+                    <dx-validator>
+                        <dxi-validation-rule type="email" message="e-mail icorrect">
+                        </dxi-validation-rule>
+                    </dx-validator>
+                </dx-text-box>
+
+            </div>
+        </div>
+
+         <!-- Mobile. & email -->
+         <div style="display: flex; padding-bottom: 8px;">
+           
+            <div style="padding-bottom: 8px;">
+                <span class="titreCmt">Réference & Contact:</span>
+
+                <dx-text-area
+                [height]="65"
+                [width]="631"
+                [(value)]="pat_ref"
+                [autoResizeEnabled]="true"
+                [inputAttr]="{ 'aria-label': 'Notes' }"
+              >
+              </dx-text-area>
+
+            </div>
+
+          
+           
+        </div>
+
+
+        <div fxFlex="62px" class="gridReserveOptions" style="width: 631px !important;" fxLayout="row" fxLayoutGap="5px">
+
+
+            <div class="colored box"
+                style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
+              
+                <div fxflex="60" style="flex: 1 1 100%; box-sizing: border-box; max-width: 73%;">
+                    <div fxFlex fxLayout="row">
+                        <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
+
+
+                        </div>
+                    </div>
+                </div>
+                <!-- buttons controle -->
+
+
+                <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 25%;">
+                    <div style="float: left;
+                    font-size: 14px;
+                    color: white;
+                    padding-top: 0px;
+                    padding-left: 22px;">
+
+                        <dx-button stylingMode="contained" text="Ajouter" type="default" [icon]="'todo'"
+                            (click)="newPatient()"></dx-button>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+</dx-popup>
+
+

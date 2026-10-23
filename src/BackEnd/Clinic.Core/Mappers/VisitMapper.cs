@@ -8,6 +8,10 @@ namespace Clinic.Core.Mappers;
 
 public static class VisitMapper
 {
+    // Visit times arrive from the UI as UTC and SQLite stores them without a zone.
+    // Mark them UTC again so the JSON carries a "Z" and browsers convert them to local time.
+    private static DateTime AsUtc(DateTime value) => DateTime.SpecifyKind(value, DateTimeKind.Utc);
+
     public static VisitResponse ToVisitResponse(this VisitDto visitDto)
     {
         if (visitDto == null)
@@ -27,7 +31,8 @@ public static class VisitMapper
             VisitType = visitDto.VisitType,
             Status = visitDto.Status,
             Weight = visitDto.Weight,
-            Height = visitDto.Height
+            Height = visitDto.Height,
+            BillingType = visitDto.BillingType
         };
     }
 
@@ -50,7 +55,8 @@ public static class VisitMapper
             VisitType = visitDto.VisitType,
             Status = visitDto.Status,
             Weight = visitDto.Weight,
-            Height = visitDto.Height
+            Height = visitDto.Height,
+            BillingType = visitDto.BillingType
         };
     }
 
@@ -66,14 +72,15 @@ public static class VisitMapper
             Id = visit.Id,
             PatientId = visit.PatientId,
             Patient = visit.Patient.ToPatientResponse(),
-            StartTime = visit.StartTime,
-            EndTime = visit.EndTime,
+            StartTime = AsUtc(visit.StartTime),
+            EndTime = AsUtc(visit.EndTime),
             Price = visit.Price,
             Description = visit.Description,
             VisitType = visit.VisitType,
             Status = visit.Status,
             Weight = visit.Weight,
-            Height = visit.Height
+            Height = visit.Height,
+            BillingType = visit.BillingType
         };
     }
     public static IEnumerable<VisitResponse> ToVisitResponse(this IEnumerable<Visit> visits)
@@ -92,14 +99,15 @@ public static class VisitMapper
                 Id = visit.Id,
                 PatientId = visit.PatientId,
                 Patient = visit.Patient.ToPatientResponse(),
-                StartTime = visit.StartTime,
-                EndTime = visit.EndTime,
+                StartTime = AsUtc(visit.StartTime),
+                EndTime = AsUtc(visit.EndTime),
                 Price = visit.Price,
                 Description = visit.Description,
                 VisitType = visit.VisitType,
                 Status = visit.Status,
                 Weight = visit.Weight,
-                Height = visit.Height
+                Height = visit.Height,
+            BillingType = visit.BillingType
             });
         }
         return result;
@@ -117,14 +125,15 @@ public static class VisitMapper
             Id = visit.Id,
             PatientId = visit.PatientId,
             Patient = patient,
-            StartTime = visit.StartTime,
-            EndTime = visit.EndTime,
+            StartTime = AsUtc(visit.StartTime),
+            EndTime = AsUtc(visit.EndTime),
             Price = visit.Price,
             Description = visit.Description,
             VisitType = visit.VisitType,
             Status = visit.Status,
             Weight = visit.Weight,
-            Height = visit.Height
+            Height = visit.Height,
+            BillingType = visit.BillingType
         };
     }
 }

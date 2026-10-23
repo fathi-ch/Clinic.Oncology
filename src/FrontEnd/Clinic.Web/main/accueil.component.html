@@ -1,0 +1,44 @@
+<section class="page-hero page-hero--slim">
+    <div class="hero-inner hero-row">
+        <div>
+            <h1 class="hero-title">Agenda du cabinet</h1>
+            <p class="hero-lead">{{ todayLabel }}. {{ todaySummary }}</p>
+        </div>
+        <div class="hero-actions">
+            <dx-button stylingMode="contained" type="default" text="Nouveau rdv" icon="plus"
+                (onClick)="agenda.openNewBooking()"></dx-button>
+            <dx-button stylingMode="outlined" type="normal" text="Actualiser" icon="refresh"
+                (onClick)="agenda.RdvRefresh()"></dx-button>
+            <dx-button stylingMode="outlined" type="normal" text="Voir les patients" icon="group"
+                (onClick)="goToPatients()"></dx-button>
+        </div>
+    </div>
+</section>
+
+<div class="page">
+    <div class="summary-cards summary-cards--compact">
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-event"></i></span>
+            <p class="summary-label">Aujourd'hui</p>
+            <p class="summary-title">{{ todayCount }} rendez-vous</p>
+            <p class="summary-note">{{ nextVisitNote }}</p>
+        </article>
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-chart"></i></span>
+            <p class="summary-label">Cette semaine</p>
+            <p class="summary-title">{{ weekCount }} rendez-vous</p>
+            <p class="summary-note">{{ weekDone === 0 ? 'Aucun terminé pour l\'instant' : weekDone + ' terminé' + (weekDone > 1 ? 's' : '') }}.
+                <a routerLink="/statistiques">Voir les statistiques</a></p>
+        </article>
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-clock"></i></span>
+            <p class="summary-label">Horaires</p>
+            <p class="summary-title">08:00 à 17:00</p>
+            <p class="summary-note">Créneaux de 15 minutes</p>
+        </article>
+    </div>
+
+    <section class="section-card section-card--agenda" aria-label="Rendez-vous de la semaine">
+        <app-rdv #agenda (calendarLoaded)="loadSummary()"></app-rdv>
+    </section>
+</div>

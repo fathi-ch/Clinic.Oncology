@@ -1,0 +1,179 @@
+.stage {
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--page);
+}
+
+.slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+// fills the frame either way: large photos shrink, small ones grow, the aspect ratio is kept
+.slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+}
+
+.slide-pdf {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: var(--heading);
+
+    .dx-icon {
+        font-size: 56px;
+        width: 56px;
+        height: 56px;
+        color: var(--red-11);
+    }
+
+    p {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+
+.caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 2px;
+}
+
+.caption-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+        color: var(--heading);
+        font-family: var(--font-display);
+        font-weight: 600;
+    }
+
+    span {
+        color: var(--ink-muted);
+        font-size: 13px;
+    }
+}
+
+.caption-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.dx-button.danger {
+    border-color: #fdbdbe; // Radix red-6
+    color: var(--red-11);
+}
+
+.thumbs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 2px 2px 6px;
+}
+
+.thumb {
+    flex: 0 0 auto;
+    width: 76px;
+    height: 76px;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: var(--page);
+    cursor: pointer;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &:hover {
+        border-color: var(--purple-6);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+    }
+}
+
+.thumb--active {
+    border-color: var(--accent);
+}
+
+.thumb-pdf {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--red-11);
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px;
+    border: 1px dashed var(--purple-6);
+    border-radius: 12px;
+    background: var(--purple-2);
+    text-align: center;
+
+    .dx-icon {
+        font-size: 36px;
+        width: 36px;
+        height: 36px;
+        color: var(--accent);
+    }
+}
+
+.empty-title {
+    margin: 12px 0 4px;
+    color: var(--heading);
+    font-family: var(--font-display);
+    font-weight: 600;
+}
+
+.empty-hint {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 14px;
+}
+
+.viewer {
+    height: 100%;
+    background: var(--mauve-12);
+}
+
+.viewer-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .slide-pdf {
+        color: #ffffff;
+    }
+}

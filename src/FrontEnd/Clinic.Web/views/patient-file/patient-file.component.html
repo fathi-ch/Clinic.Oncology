@@ -1,0 +1,175 @@
+<section class="page-hero page-hero--compact" [class.page-hero--photos]="photos.length">
+    <img *ngIf="!photos.length" class="hero-mark" src="assets/image/hero-mark.svg" alt="">
+    <div class="hero-inner">
+        <nav class="crumbs" aria-label="Fil d'Ariane">
+            <a routerLink="/accueil">Accueil</a>
+            <span aria-hidden="true">›</span>
+            <a routerLink="/patients">Patients</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">{{ patient ? fullName : 'Dossier' }}</span>
+        </nav>
+        <span class="accent-bar"></span>
+
+        <ng-container *ngIf="patient; else missing">
+            <h1 class="hero-title">{{ fullName }}</h1>
+            <p class="hero-lead">
+                {{ patient.age }} ans<ng-container *ngIf="birthLabel">, né(e) le {{ birthLabel }}</ng-container><ng-container *ngIf="patient.mobile">. Mobile {{ patient.mobile }}</ng-container>
+            </p>
+            <div class="hero-actions">
+                <dx-button stylingMode="outlined" type="normal" text="Retour aux patients" icon="back"
+                    (onClick)="router.navigate(['/patients'])"></dx-button>
+                <dx-button stylingMode="contained" type="default" text="Nouveau rendez-vous" icon="plus"
+                    (onClick)="openBooking()"></dx-button>
+                <dx-button stylingMode="outlined" type="normal" text="Exporter le dossier PDF" icon="exportpdf"
+                    [disabled]="exporting" (onClick)="exportPdf()"></dx-button>
+                <dx-button stylingMode="outlined" type="normal" text="Modifier le patient" icon="edit"
+                    (onClick)="editPatient()"></dx-button>
+            </div>
+        </ng-container>
+        <ng-template #missing>
+            <h1 class="hero-title">{{ notFound ? 'Patient introuvable' : 'Chargement du dossier…' }}</h1>
+            <p class="hero-lead" *ngIf="notFound">Ce patient n'existe plus ou a été supprimé.</p>
+            <div class="hero-actions" *ngIf="notFound">
+                <dx-button stylingMode="contained" type="default" text="Retour aux patients" icon="back"
+                    (onClick)="router.navigate(['/patients'])"></dx-button>
+            </div>
+        </ng-template>
+    </div>
+    <div *ngIf="photos.length" class="hero-photos">
+        <dx-gallery [dataSource]="photos" [height]="280" [loop]="photos.length > 1" [showNavButtons]="photos.length > 1"
+            [showIndicator]="photos.length > 1" [swipeEnabled]="photos.length > 1" [focusStateEnabled]="true">
+            <div *dxTemplate="let photo of 'item'" class="hero-photo">
+                <img [src]="photo.src" [alt]="'Photo. ' + photo.label">
+                <span class="hero-photo-caption">{{ photo.label }}</span>
+            </div>
+        </dx-gallery>
+    </div>
+</section>
+
+<div class="page" *ngIf="patient">
+    <div class="summary-cards">
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-event"></i></span>
+            <p class="summary-label">Visites</p>
+            <p class="summary-title">{{ rows.length }} visite{{ rows.length > 1 ? 's' : '' }}</p>
+            <p class="summary-note">{{ doneCount }} terminée{{ doneCount > 1 ? 's' : '' }}</p>
+        </article>
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-clock"></i></span>
+            <p class="summary-label">Prochain rendez-vous</p>
+            <p class="summary-title">{{ nextVisitDay || 'Aucun' }}</p>
+            <p class="summary-note">{{ nextVisitDay ? nextVisitTime : 'Aucun rendez-vous à venir' }}</p>
+        </article>
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-photo"></i></span>
+            <p class="summary-label">Documents</p>
+            <p class="summary-title">{{ documents.length }} document{{ documents.length > 1 ? 's' : '' }}</p>
+            <p class="summary-note">Photos et PDF de toutes les visites</p>
+        </article>
+    </div>
+
+    <section class="section-card">
+        <h2 class="section-title">Informations</h2>
+        <dl class="facts">
+            <div><dt>Nom</dt><dd>{{ patient.firstName || '-' }}</dd></div>
+            <div><dt>Prénom</dt><dd>{{ patient.lastName || '-' }}</dd></div>
+            <div><dt>Sexe</dt><dd>{{ patient.gender || '-' }}</dd></div>
+            <div><dt>Date de naissance</dt><dd>{{ birthLabel || '-' }}</dd></div>
+            <div><dt>Mobile</dt><dd>{{ patient.mobile || '-' }}</dd></div>
+            <div><dt>Email</dt><dd>{{ patient.email || '-' }}</dd></div>
+            <div><dt>N° sécurité sociale</dt><dd>{{ patient.socialSecurityNumber || '-' }}</dd></div>
+            <div><dt>Référence</dt><dd>{{ patient.referral || '-' }}</dd></div>
+        </dl>
+    </section>
+
+    <section class="section-card">
+        <h2 class="section-title">Tous les documents</h2>
+        <app-document-gallery [documents]="documents" [readonly]="true" [visitLabels]="visitLabels"></app-document-gallery>
+    </section>
+
+    <section class="section-card">
+        <h2 class="section-title">Visites</h2>
+        <p class="empty-line" *ngIf="!rows.length">Aucune visite enregistrée pour ce patient.</p>
+        <ol class="timeline" *ngIf="rows.length">
+            <li class="timeline-item" *ngFor="let row of rows">
+                <span class="timeline-dot" [class.timeline-dot--done]="row.done"></span>
+                <div class="timeline-body">
+                    <div class="timeline-head">
+                        <h3 class="timeline-title">{{ row.when }}</h3>
+                        <span class="status" [class.status--done]="row.done">{{ row.done ? 'Terminée' : 'Planifiée' }}</span>
+                    </div>
+                    <p class="timeline-notes" *ngIf="row.visit.description">{{ row.visit.description }}</p>
+                    <div class="timeline-foot">
+                        <span class="timeline-docs">{{ row.documents }} document{{ row.documents > 1 ? 's' : '' }}</span>
+                        <dx-button stylingMode="outlined" type="normal" text="Ouvrir la visite" icon="chevronright"
+                            (onClick)="openVisit(row)"></dx-button>
+                    </div>
+                </div>
+            </li>
+        </ol>
+    </section>
+</div>
+
+<dx-popup [showTitle]="true" [width]="600" [maxWidth]="'96vw'" [height]="'auto'" [position]="'top'"
+    [dragEnabled]="false" title="Nouveau rendez-vous" [hideOnOutsideClick]="true" [(visible)]="bookingVisible">
+    <div class="booking">
+        <p class="booking-for">Pour {{ fullName }}</p>
+        <div class="booking-grid">
+            <div class="booking-field booking-field--date">
+                <span class="booking-label">Date</span>
+                <dx-date-box [width]="'100%'" [value]="bookingDay" [min]="today" (onValueChanged)="onBookingDayChanged($event)"
+                    [inputAttr]="{ 'aria-label': 'Date du rendez-vous' }"></dx-date-box>
+            </div>
+            <div class="booking-field">
+                <span class="booking-label">De</span>
+                <dx-select-box [width]="'100%'" placeholder="HH:mm" [items]="slots.startOptions" valueExpr="value" displayExpr="text"
+                    [(value)]="slots.startValue" (onValueChanged)="slots.onStartChanged($event)"
+                    noDataText="Aucun créneau libre" [inputAttr]="{ 'aria-label': 'Heure de début' }"></dx-select-box>
+            </div>
+            <div class="booking-field">
+                <span class="booking-label">À</span>
+                <dx-select-box [width]="'100%'" placeholder="HH:mm" [items]="slots.endOptions" valueExpr="value" displayExpr="text"
+                    [(value)]="slots.endValue" noDataText="Choisissez d'abord l'heure de début"
+                    [inputAttr]="{ 'aria-label': 'Heure de fin' }"></dx-select-box>
+            </div>
+        </div>
+        <div class="booking-field">
+            <span class="booking-label">Facturation</span>
+            <dx-radio-group [items]="billingOptions" valueExpr="value" displayExpr="text" layout="horizontal"
+                [(value)]="bookingBilling" (onValueChanged)="$event.value === 'FREE' && (bookingPrice = 0)"></dx-radio-group>
+        </div>
+        <div class="booking-grid booking-grid--two">
+            <div class="booking-field">
+                <span class="booking-label">Type</span>
+                <dx-select-box [width]="'100%'" [items]="visitTypes" displayExpr="type" valueExpr="code" [(value)]="bookingType"
+                    [inputAttr]="{ 'aria-label': 'Type de rendez-vous' }"></dx-select-box>
+            </div>
+            <div class="booking-field">
+                <span class="booking-label">Prix (DA)</span>
+                <dx-number-box [width]="'100%'" [(value)]="bookingPrice" [min]="0" [disabled]="bookingBilling === 'FREE'"
+                    [inputAttr]="{ 'aria-label': 'Prix en dinars' }"></dx-number-box>
+            </div>
+        </div>
+        <div class="booking-actions">
+            <dx-button stylingMode="outlined" type="normal" text="Annuler" (onClick)="bookingVisible = false"></dx-button>
+            <dx-button stylingMode="contained" type="default" text="Réserver" icon="check" [disabled]="booking"
+                (onClick)="book()"></dx-button>
+        </div>
+    </div>
+</dx-popup>
+
+<dx-popup [showTitle]="true" [width]="1000" [maxWidth]="'96vw'" [height]="'90vh'" [position]="'top'"
+    [dragEnabled]="false" title="Modifier le patient" [hideOnOutsideClick]="true" [(visible)]="editVisible"
+    (onHidden)="load()">
+    <dx-scroll-view [height]="'100%'">
+        <app-patientsDetail [editOnly]="true" (deleted)="onPatientDeleted()"></app-patientsDetail>
+    </dx-scroll-view>
+</dx-popup>
+
+<dx-popup [showTitle]="true" [width]="1000" [maxWidth]="'96vw'" [height]="'90vh'" [position]="'top'"
+    [dragEnabled]="false" title="Détail de la visite" [hideOnOutsideClick]="true" [(visible)]="visitVisible"
+    (onHidden)="load()">
+    <dx-scroll-view [height]="'100%'">
+        <app-rdvDetails (saved)="load()"></app-rdvDetails>
+    </dx-scroll-view>
+</dx-popup>

@@ -1,0 +1,168 @@
+:host {
+  display: block;
+}
+
+.infobar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  padding: 0 32px;
+  background: var(--heading);
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.infobar-contact {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+}
+
+.infobar-phone,
+.infobar-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+
+  .dx-icon {
+    font-size: 14px;
+    color: var(--purple-7);
+  }
+}
+
+.infobar-phone {
+  color: #ffffff;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.infobar-address {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  height: 72px;
+  padding: 0 32px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--heading);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 8px;
+
+  img {
+    display: block;
+    flex: none;
+  }
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-doctor {
+  color: var(--ink-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.tabs {
+  display: flex;
+  align-self: stretch;
+  gap: 8px;
+  margin-left: auto;
+
+  // Hover and active styles live on the link itself, so moving the cursor
+  // between two links never makes another element jump.
+  a {
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: inset 0 -3px 0 transparent;
+    transition: color 0.12s, box-shadow 0.12s;
+
+    &:hover {
+      color: var(--accent);
+    }
+
+    &.active {
+      color: var(--accent);
+      box-shadow: inset 0 -3px 0 var(--accent);
+    }
+  }
+}
+
+.brand:focus-visible,
+.tabs a:focus-visible,
+.infobar-phone:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+@media (max-width: 640px) {
+  .infobar,
+  .topbar {
+    padding: 0 16px;
+  }
+
+  .topbar {
+    gap: 16px;
+  }
+
+  .brand-text,
+  .infobar-address,
+  .infobar-hours {
+    display: none;
+  }
+
+  // four tabs must fit a phone; if they still do not, they scroll sideways instead of widening the page
+  .tabs {
+    gap: 0;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    a {
+      padding: 0 6px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabs a {
+    transition: none;
+  }
+}

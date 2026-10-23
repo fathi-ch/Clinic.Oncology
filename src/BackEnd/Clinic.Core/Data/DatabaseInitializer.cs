@@ -26,12 +26,22 @@ public class DatabaseInitializer
         try
         {
             await connection.ExecuteAsync(await GetDataBaseConfigsFromFileAsync(Path.Combine(AppContext.BaseDirectory, _databaseConfig.DatabaseConfigFilePath)));
+            await AddMissingColumnsAsync(connection);
         }
         catch (Exception e)
         {
             
             throw;
         }
+    }
+
+    // CREATE TABLE IF NOT EXISTS never changes a table that already exists, so columns added after
+    // the first release are added here. Existing visits become "PAID", as they were before billing types.
+    private static async Task AddMissingColumnsAsync(System.Data.IDbConnection connection)
+    {
+        var visitColumns = (await connection.QueryAsync<string>("SELECT name FROM pragma_table_info('Visits');")).ToHashSet();
+        if (!visitColumns.Contains("BillingType"))
+            await connection.ExecuteAsync("ALTER TABLE Visits ADD COLUMN BillingType TEXT NOT NULL DEFAULT 'PAID';");
     }
 
     private static async Task<string?> GetDataBaseConfigsFromFileAsync(string filePath)

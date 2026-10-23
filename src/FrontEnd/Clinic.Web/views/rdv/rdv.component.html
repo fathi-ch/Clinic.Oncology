@@ -1,0 +1,216 @@
+<div fxLayout="column" fxFill fxLayoutGap="8px">
+    <!-- <div fxFlex="20px" class="titlePage">
+        Rdv Médical > Gestion des Rdv
+    </div> -->
+
+
+
+
+    <!-- list patiens -->
+
+
+
+    <!-- rdv -->
+    <div>
+
+        <dx-scheduler #scheduler_ges id="scheduler_ges" textExpr="title" allDayExpr="dayLong"
+            [height]="calendarHeight" [adaptivityEnabled]="true"
+            [showCurrentTimeIndicator]='true' [shadeUntilCurrentTime]='true' [firstDayOfWeek]="6"
+            [currentDate]="currentDate" [dataSource]="rdvData" startDateExpr="startTime" endDateExpr="endTime"
+            currentView="week" [allDayPanelMode]="'hidden'" (onContentReady)="onContentReady($event)"
+            (onAppointmentClick)="onAppointmentClick($event)"
+            (onAppointmentUpdating)="onAppointmentUpdating($event)"
+            (onAppointmentFormOpening)="onAppointmentFormOpening($event)"
+            (onAppointmentDeleting)="onAppointmentDeleting($event)" (onOptionChanged)="handlePropertyChange($event)"
+            appointmentTemplate="appointmentTemplate">
+            >
+
+            <dxi-resource fieldExpr="Id" [allowMultiple]="false" [dataSource]="rdvData" label="patient.firstName">
+            </dxi-resource>
+
+    
+
+            <div *dxTemplate="let cellData of 'appointmentTemplate'" class="appt"
+                [class.appt--done]="!checkRdvStatu(cellData.appointmentData.status)">
+                <div class="appt-name">{{cellData.appointmentData.patient?.firstName}} {{cellData.appointmentData.patient?.lastName}}</div>
+                <div class="appt-time">{{cellData.appointmentData.startTime | date:'HH:mm'}} – {{cellData.appointmentData.endTime | date:'HH:mm'}}
+                    <span *ngIf="cellData.appointmentData.billingType === 'FREE'" class="appt-tag">Gratuit</span>
+                    <span *ngIf="cellData.appointmentData.billingType === 'PROMO'" class="appt-tag">Promo</span>
+                </div>
+            </div>
+            <dxi-view type="week" [startDayHour]="8" [endDayHour]="17">
+            </dxi-view>
+            <dxi-view type="day" [startDayHour]="8" [endDayHour]="17">
+            </dxi-view>
+
+
+        </dx-scheduler>
+
+    </div>
+
+
+</div>
+
+<!-- new patinet -->
+
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [width]="670" [height]="'auto'" [showTitle]="true"
+    [position]="'top'" [dragEnabled]="false" title="Nouveau rdv. médical" [hideOnOutsideClick]="true"
+    (onShowing)="onPopUpRdvOpen()" [(visible)]="popupVisible">
+
+    <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
+
+        <!-- nom & prenom -->
+        <!-- nom & prenom -->
+        <div style="display: flex; padding-bottom: 8px;">
+
+
+            <div>
+                <span class="titreCmt">Nom ,Prénom Date et de naissance</span>
+
+                <dx-autocomplete #patientRdv [width]="631" placeholder="Nom" [showClearButton]="true" [(value)]="searchText"
+                    [dataSource]="LstPatients" (onValueChanged)="searchPatient()"
+                    (onSelectionChanged)="selectedPatien($event)" valueExpr="autocpmliteValue"></dx-autocomplete>
+
+            </div>
+
+
+
+        </div>
+
+        <!-- Prochain Rdv -->
+
+        <div style="display: flex;padding-bottom: 15px;">
+
+            <div>
+
+                <span class="titreCmt">Prochain Rdv.</span>
+
+                <dx-date-box #dateRdv placeholder="Ex : JJ/MM/AAAA" [min]="pat_date_rdv" (onValueChanged)="onDateChanged($event)">
+                </dx-date-box>
+
+
+            </div>
+
+            <div style="padding-left: 5%;">
+
+                <span class="titreCmt">de</span>
+
+                <dx-select-box [width]="133" placeholder="HH:mm" [items]="slots.startOptions" valueExpr="value"
+                    displayExpr="text" [(value)]="slots.startValue" (onValueChanged)="slots.onStartChanged($event)"
+                    noDataText="Aucun créneau libre" [inputAttr]="{ 'aria-label': 'Heure de début' }">
+                </dx-select-box>
+
+            </div>
+
+            <div style="padding-left: 5%;">
+
+                <span class="titreCmt">à</span>
+                <dx-select-box [width]="133" placeholder="HH:mm" [items]="slots.endOptions" valueExpr="value"
+                    displayExpr="text" [(value)]="slots.endValue" noDataText="Choisissez d'abord l'heure de début"
+                    [inputAttr]="{ 'aria-label': 'Heure de fin' }">
+                </dx-select-box>
+
+            </div>
+
+
+
+        </div>
+        <!-- facturation: decided at booking, shown in the statistics -->
+        <div class="billing-row">
+            <span class="titreCmt">Facturation</span>
+            <dx-radio-group [items]="billingOptions" valueExpr="value" displayExpr="text" layout="horizontal"
+                [(value)]="billingType" (onValueChanged)="onBillingChanged($event.value)"></dx-radio-group>
+        </div>
+
+        <!-- prix et type -->
+        <div style="display: flex;padding-bottom: 15px;">
+
+            <div>
+
+                <span class="titreCmt">Type rdv.</span>
+
+                <dx-select-box placeholder="Choisez un type ..." [items]="rdvType" [showClearButton]="true"
+                    displayExpr="type" valueExpr="code" [(value)]="selectedType"></dx-select-box>
+
+
+            </div>
+
+            <div style="padding-left: 5%;">
+
+                <span class="titreCmt">Prix (DA)</span>
+                <dx-number-box #prixRdv [placeholder]="''" [class]="'defaultTextBoxCssClass'" name="rdvPrix" [(value)]="rdvPrix"
+                    [stylingMode]="'outlined'" [showClearButton]="true" [width]="295" [disabled]="billingType === 'FREE'"
+                    [min]="0">
+                </dx-number-box>
+
+
+            </div>
+
+
+
+
+
+        </div>
+
+        <div fxFlex="62px" class="gridReserveOptions" style="width: 631px !important;" fxLayout="row" fxLayoutGap="5px">
+
+
+            <div class="colored box"
+                style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
+
+               
+                <!-- buttons controle -->
+
+
+                <div style="flex: 1 1 100%; box-sizing: border-box; max-width: 25%;display: contents;">
+                    <div style="
+                    font-size: 14px;
+                    color: white;
+                    padding-top: 0px;
+                    width: 100%;">
+<div *ngIf="toAdd" style="float: inline-end;">
+    <dx-button   stylingMode="contained" text="Ajouter" type="default" [icon]="'todo'"
+    (click)="newRdv()" ></dx-button>
+
+</div>
+<div *ngIf="!toAdd" style="float: inline-end;">
+                            <dx-button  style="float: right;" stylingMode="outlined" [text]="isFinished ? 'Voir la visite' : 'Démarer'" type="normal" [icon]="isFinished ? 'find' : 'pinleft'"
+                            (click)="getToRdv()" ></dx-button>
+                            <dx-button  style="float: right;" stylingMode="outlined" text="Supprimer" type="normal" [icon]="'remove'"
+                            (click)="deleteRdv()" ></dx-button>
+                            <dx-button *ngIf="!isFinished" style="float: right;" stylingMode="contained" text="Modifier" type="default" [icon]="'edit'"
+                            (click)="updateRdvForm()" ></dx-button>
+                         
+</div>
+                     
+                        
+                          
+                           
+                          
+                      
+                          
+
+
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+
+
+</dx-popup>
+
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [showTitle]="true" [width]="1000" [maxWidth]="'96vw'"
+    [height]="'90vh'" [position]="'top'" [dragEnabled]="false" title="Détail de la visite" [hideOnOutsideClick]="true"
+    [(visible)]="popupRdvDetVisible">
+
+    <dx-scroll-view [height]="'100%'">
+        <app-rdvDetails (saved)="RdvRefresh()"></app-rdvDetails>
+    </dx-scroll-view>
+</dx-popup>

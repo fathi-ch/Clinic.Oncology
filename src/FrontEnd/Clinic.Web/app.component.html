@@ -1,0 +1,27 @@
+<app-spinner [visible]="spinnerVisible"></app-spinner>
+<div fxLayout="column" fxFill>
+    <div fxLayout="row">
+        <app-header style="position: relative; width: 100%;"></app-header>
+    </div>
+    <div fxLayout="row" fxLayoutAlign="center" style="display: flex;">
+        <div  fxFlex="calc(100% - 75px)" style="width: 100%;">
+          <router-outlet></router-outlet>
+        </div>
+    </div>
+    
+</div>
+
+<footer class="site-footer">
+    <div class="site-footer-inner">
+        <div>
+            <p class="site-footer-name">{{ clinic.practice }}</p>
+            <p>{{ clinic.doctor }}, {{ clinic.specialty | lowercase }}</p>
+            <p>{{ clinic.address }}</p>
+            <p><a [href]="clinic.phoneHref">Tél. {{ clinic.phone }}</a></p>
+        </div>
+        <div class="site-footer-ar" lang="ar" dir="rtl">
+            <p class="site-footer-name">{{ clinic.doctorArabic }}</p>
+            <p>{{ clinic.specialtyArabic }}</p>
+        </div>
+    </div>
+</footer>

@@ -1,0 +1,22 @@
+<div class="infobar">
+    <div class="infobar-contact">
+        <a class="infobar-phone" [href]="clinic.phoneHref"><i class="dx-icon dx-icon-tel"></i>{{ clinic.phone }}</a>
+        <span class="infobar-address"><i class="dx-icon dx-icon-map"></i>{{ clinic.address }}</span>
+    </div>
+    <span class="infobar-hours">{{ clinic.hours }}</span>
+</div>
+<header class="topbar">
+    <a class="brand" routerLink="/accueil" [attr.aria-label]="clinic.practice + ', accueil'">
+        <img src="assets/image/logo.svg" alt="" width="40" height="40">
+        <span class="brand-text">
+            <span class="brand-name">{{ clinic.practice }}</span>
+            <span class="brand-doctor">{{ clinic.doctor }}, {{ clinic.specialty | lowercase }}</span>
+        </span>
+    </a>
+    <nav class="tabs" aria-label="Navigation principale">
+        <a routerLink="/accueil" routerLinkActive="active" ariaCurrentWhenActive="page">Accueil</a>
+        <a routerLink="/patients" routerLinkActive="active" ariaCurrentWhenActive="page">Patients</a>
+        <a routerLink="/statistiques" routerLinkActive="active" ariaCurrentWhenActive="page">Statistiques</a>
+        <a routerLink="/contact" routerLinkActive="active" ariaCurrentWhenActive="page">Contact</a>
+    </nav>
+</header>

@@ -1,0 +1,49 @@
+<section class="page-hero page-hero--compact">
+    <img class="hero-mark" src="assets/image/hero-mark.svg" alt="">
+    <div class="hero-inner">
+        <span class="accent-bar"></span>
+        <h1 class="hero-title">Contact</h1>
+        <p class="hero-lead">{{ clinic.practice }}, {{ clinic.doctor }}, {{ clinic.specialty | lowercase }}.</p>
+        <div class="hero-actions">
+            <dx-button stylingMode="contained" type="default" text="Appeler le cabinet" icon="tel"
+                (onClick)="call()"></dx-button>
+            <dx-button stylingMode="outlined" type="normal" text="Voir sur la carte" icon="map"
+                (onClick)="openMap()"></dx-button>
+        </div>
+    </div>
+</section>
+
+<div class="page">
+    <div class="summary-cards">
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-tel"></i></span>
+            <p class="summary-label">Téléphone</p>
+            <p class="summary-title"><a class="contact-link" [href]="clinic.phoneHref">{{ clinic.phone }}</a></p>
+            <p class="summary-note">Pour prendre ou déplacer un rendez-vous</p>
+        </article>
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-map"></i></span>
+            <p class="summary-label">Adresse</p>
+            <p class="summary-title">Tébessa</p>
+            <p class="summary-note">{{ clinic.address }}</p>
+        </article>
+        <article class="summary-card">
+            <span class="icon-circle"><i class="dx-icon dx-icon-clock"></i></span>
+            <p class="summary-label">Horaires</p>
+            <p class="summary-title">08:00 à 17:00</p>
+            <p class="summary-note">Créneaux de 15 minutes</p>
+        </article>
+    </div>
+
+    <section class="section-card doctor">
+        <div class="doctor-fr">
+            <h2 class="section-title">{{ clinic.doctor }}</h2>
+            <p>{{ clinic.specialty }}</p>
+            <p>{{ clinic.practice }}</p>
+        </div>
+        <div class="doctor-ar" lang="ar" dir="rtl">
+            <h2 class="section-title">{{ clinic.doctorArabic }}</h2>
+            <p>{{ clinic.specialtyArabic }}</p>
+        </div>
+    </section>
+</div>

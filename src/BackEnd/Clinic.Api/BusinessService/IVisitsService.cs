@@ -13,6 +13,7 @@ namespace Clinic.Api.BusinessService
         Task<IEnumerable<PatientDocumentResponse>> GetDocumentsByVisitIdAsync(int visitid);
         Task DeleteByIdAsync(int id);
         Task<VisitResponse> UpdateByIdAsync(int id, VisitDto visitDto);
+        Task<bool> HasOverlapAsync(DateTime start, DateTime end, int exceptVisitId = 0);
 
 
     }

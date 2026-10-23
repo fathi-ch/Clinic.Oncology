@@ -1,0 +1,44 @@
+<div class="row-detail">
+    <p class="row-detail-state" *ngIf="loading">Chargement…</p>
+    <p class="row-detail-state" *ngIf="failed">Les visites et documents n'ont pas pu être chargés.</p>
+
+    <ng-container *ngIf="!loading && !failed">
+        <dx-tab-panel [swipeEnabled]="false" [animationEnabled]="true" [deferRendering]="false">
+            <dxi-item [title]="'Visites (' + visits.length + ')'">
+                <p class="row-detail-state" *ngIf="!visits.length">Aucune visite pour ce patient.</p>
+                <table class="mini-table" *ngIf="visits.length">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Statut</th>
+                            <th scope="col">Facturation</th>
+                            <th scope="col">Prix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let v of visits">
+                            <td>{{ v.when }}</td>
+                            <td><span class="status" [class.status--done]="v.done">{{ v.done ? 'Terminée' : 'Planifiée' }}</span></td>
+                            <td>{{ v.billing }}</td>
+                            <td>{{ v.price }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </dxi-item>
+            <dxi-item [title]="'Documents (' + documentCount + ')'">
+                <p class="row-detail-state" *ngIf="!documentCount">Aucun document pour ce patient.</p>
+                <div class="mini-thumbs" *ngIf="documentCount">
+                    <ng-container *ngFor="let t of thumbs">
+                        <img *ngIf="!t.pdf" [src]="t.src" alt="">
+                        <span *ngIf="t.pdf" class="mini-pdf">PDF</span>
+                    </ng-container>
+                    <span class="mini-more" *ngIf="documentCount > thumbs.length">+{{ documentCount - thumbs.length }}</span>
+                </div>
+            </dxi-item>
+        </dx-tab-panel>
+    </ng-container>
+
+    <div class="row-detail-actions">
+        <a class="open-file" [routerLink]="['/patients', patientId]">Ouvrir le dossier du patient</a>
+    </div>
+</div>
