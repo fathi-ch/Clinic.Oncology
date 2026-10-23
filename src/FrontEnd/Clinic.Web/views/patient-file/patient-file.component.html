@@ -19,7 +19,7 @@
                 <dx-button stylingMode="outlined" type="normal" text="Retour aux patients" icon="back"
                     (onClick)="router.navigate(['/patients'])"></dx-button>
                 <dx-button stylingMode="contained" type="default" text="Nouveau rendez-vous" icon="plus"
-                    (onClick)="openBooking()"></dx-button>
+                    (onClick)="bookingDialog.open(patient)"></dx-button>
                 <dx-button stylingMode="outlined" type="normal" text="Exporter le dossier PDF" icon="exportpdf"
                     [disabled]="exporting" (onClick)="exportPdf()"></dx-button>
                 <dx-button stylingMode="outlined" type="normal" text="Modifier le patient" icon="edit"
@@ -110,53 +110,7 @@
     </section>
 </div>
 
-<dx-popup [showTitle]="true" [width]="600" [maxWidth]="'96vw'" [height]="'auto'" [position]="'top'"
-    [dragEnabled]="false" title="Nouveau rendez-vous" [hideOnOutsideClick]="true" [(visible)]="bookingVisible">
-    <div class="booking">
-        <p class="booking-for">Pour {{ fullName }}</p>
-        <div class="booking-grid">
-            <div class="booking-field booking-field--date">
-                <span class="booking-label">Date</span>
-                <dx-date-box [width]="'100%'" [value]="bookingDay" [min]="today" (onValueChanged)="onBookingDayChanged($event)"
-                    [inputAttr]="{ 'aria-label': 'Date du rendez-vous' }"></dx-date-box>
-            </div>
-            <div class="booking-field">
-                <span class="booking-label">De</span>
-                <dx-select-box [width]="'100%'" placeholder="HH:mm" [items]="slots.startOptions" valueExpr="value" displayExpr="text"
-                    [(value)]="slots.startValue" (onValueChanged)="slots.onStartChanged($event)"
-                    noDataText="Aucun créneau libre" [inputAttr]="{ 'aria-label': 'Heure de début' }"></dx-select-box>
-            </div>
-            <div class="booking-field">
-                <span class="booking-label">À</span>
-                <dx-select-box [width]="'100%'" placeholder="HH:mm" [items]="slots.endOptions" valueExpr="value" displayExpr="text"
-                    [(value)]="slots.endValue" noDataText="Choisissez d'abord l'heure de début"
-                    [inputAttr]="{ 'aria-label': 'Heure de fin' }"></dx-select-box>
-            </div>
-        </div>
-        <div class="booking-field">
-            <span class="booking-label">Facturation</span>
-            <dx-radio-group [items]="billingOptions" valueExpr="value" displayExpr="text" layout="horizontal"
-                [(value)]="bookingBilling" (onValueChanged)="$event.value === 'FREE' && (bookingPrice = 0)"></dx-radio-group>
-        </div>
-        <div class="booking-grid booking-grid--two">
-            <div class="booking-field">
-                <span class="booking-label">Type</span>
-                <dx-select-box [width]="'100%'" [items]="visitTypes" displayExpr="type" valueExpr="code" [(value)]="bookingType"
-                    [inputAttr]="{ 'aria-label': 'Type de rendez-vous' }"></dx-select-box>
-            </div>
-            <div class="booking-field">
-                <span class="booking-label">Prix (DA)</span>
-                <dx-number-box [width]="'100%'" [(value)]="bookingPrice" [min]="0" [disabled]="bookingBilling === 'FREE'"
-                    [inputAttr]="{ 'aria-label': 'Prix en dinars' }"></dx-number-box>
-            </div>
-        </div>
-        <div class="booking-actions">
-            <dx-button stylingMode="outlined" type="normal" text="Annuler" (onClick)="bookingVisible = false"></dx-button>
-            <dx-button stylingMode="contained" type="default" text="Réserver" icon="check" [disabled]="booking"
-                (onClick)="book()"></dx-button>
-        </div>
-    </div>
-</dx-popup>
+<app-booking-dialog #bookingDialog (booked)="load()"></app-booking-dialog>
 
 <dx-popup [showTitle]="true" [width]="1000" [maxWidth]="'96vw'" [height]="'90vh'" [position]="'top'"
     [dragEnabled]="false" title="Modifier le patient" [hideOnOutsideClick]="true" [(visible)]="editVisible"

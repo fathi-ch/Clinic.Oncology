@@ -1,0 +1,47 @@
+<dx-popup [showTitle]="true" [width]="600" [maxWidth]="'96vw'" [height]="'auto'" [position]="'top'"
+    [dragEnabled]="false" title="Nouveau rendez-vous" [hideOnOutsideClick]="true" [(visible)]="visible">
+    <div class="booking">
+        <p class="booking-for">Pour {{ patientName }}</p>
+        <div class="booking-grid">
+            <div class="booking-field booking-field--date">
+                <span class="booking-label">Date</span>
+                <dx-date-box [width]="'100%'" [value]="day" [min]="today" (onValueChanged)="onDayChanged($event)"
+                    [inputAttr]="{ 'aria-label': 'Date du rendez-vous' }"></dx-date-box>
+            </div>
+            <div class="booking-field">
+                <span class="booking-label">De</span>
+                <dx-select-box [width]="'100%'" placeholder="HH:mm" [items]="slots.startOptions" valueExpr="value" displayExpr="text"
+                    [(value)]="slots.startValue" (onValueChanged)="slots.onStartChanged($event)"
+                    noDataText="Aucun créneau libre" [inputAttr]="{ 'aria-label': 'Heure de début' }"></dx-select-box>
+            </div>
+            <div class="booking-field">
+                <span class="booking-label">À</span>
+                <dx-select-box [width]="'100%'" placeholder="HH:mm" [items]="slots.endOptions" valueExpr="value" displayExpr="text"
+                    [(value)]="slots.endValue" noDataText="Choisissez d'abord l'heure de début"
+                    [inputAttr]="{ 'aria-label': 'Heure de fin' }"></dx-select-box>
+            </div>
+        </div>
+        <div class="booking-field">
+            <span class="booking-label">Facturation</span>
+            <dx-radio-group [items]="billingOptions" valueExpr="value" displayExpr="text" layout="horizontal"
+                [(value)]="billing" (onValueChanged)="$event.value === 'FREE' && (price = 0)"></dx-radio-group>
+        </div>
+        <div class="booking-grid booking-grid--two">
+            <div class="booking-field">
+                <span class="booking-label">Type</span>
+                <dx-select-box [width]="'100%'" [items]="visitTypes" displayExpr="type" valueExpr="code" [(value)]="visitType"
+                    [inputAttr]="{ 'aria-label': 'Type de rendez-vous' }"></dx-select-box>
+            </div>
+            <div class="booking-field">
+                <span class="booking-label">Prix (DA)</span>
+                <dx-number-box [width]="'100%'" [(value)]="price" [min]="0" [disabled]="billing === 'FREE'"
+                    [inputAttr]="{ 'aria-label': 'Prix en dinars' }"></dx-number-box>
+            </div>
+        </div>
+        <div class="booking-actions">
+            <dx-button stylingMode="outlined" type="normal" text="Annuler" (onClick)="visible = false"></dx-button>
+            <dx-button stylingMode="contained" type="default" text="Réserver" icon="check" [disabled]="saving"
+                (onClick)="book()"></dx-button>
+        </div>
+    </div>
+</dx-popup>

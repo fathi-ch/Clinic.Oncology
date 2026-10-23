@@ -60,6 +60,14 @@
             </dxi-column>
             <dxi-column dataField="referral" caption="Référence"></dxi-column>
 
+            <!-- next to the pencil: book a visit for this patient without leaving the list -->
+            <dxi-column type="buttons" [width]="96">
+                <dxi-button name="edit"></dxi-button>
+                <dxi-button name="save"></dxi-button>
+                <dxi-button name="cancel"></dxi-button>
+                <dxi-button hint="Nouveau rendez-vous" icon="event" [visible]="notEditing" [onClick]="bookFromRow"></dxi-button>
+            </dxi-column>
+
             <dxo-master-detail [enabled]="true" template="detail"></dxo-master-detail>
 
             <dxo-paging [pageSize]="20"></dxo-paging>
@@ -73,6 +81,7 @@
                 <app-patient-row-detail [patientId]="detail.data.id"></app-patient-row-detail>
             </div>
         </dx-data-grid>
+        <app-booking-dialog #bookingDialog (booked)="GetAllPateintList()"></app-booking-dialog>
     </section>
 </div>
 

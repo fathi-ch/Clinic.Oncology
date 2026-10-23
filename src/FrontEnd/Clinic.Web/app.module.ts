@@ -22,6 +22,7 @@ import { PatientFileComponent } from './views/patient-file/patient-file.componen
 import { ContactComponent } from './views/contact/contact.component';
 import { StatisticsComponent } from './views/statistics/statistics.component';
 import { PatientRowDetailComponent } from './views/patients/patient-row-detail.component';
+import { BookingDialogComponent } from './views/rdv/booking-dialog.component';
 
 export function initializeApp(appConfig: AppConfig) {
   return () => appConfig.load();
@@ -42,7 +43,8 @@ export function initializeApp(appConfig: AppConfig) {
     PatientFileComponent,
     ContactComponent,
     StatisticsComponent,
-    PatientRowDetailComponent
+    PatientRowDetailComponent,
+    BookingDialogComponent
   
   ],
   imports: [
