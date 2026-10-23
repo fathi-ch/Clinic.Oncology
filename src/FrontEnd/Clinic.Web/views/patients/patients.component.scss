@@ -873,3 +873,13 @@ border: none !important;
         text-decoration: underline;
     }
 }
+
+// fields of a row being edited: outlined like the rest of the forms
+::ng-deep .section-card .gridContainer .dx-edit-row > td > .dx-texteditor {
+    border: 1px solid var(--purple-6) !important;
+    border-radius: 8px;
+}
+
+::ng-deep .section-card .gridContainer .dx-edit-row > td > .dx-texteditor.dx-state-focused {
+    border-color: var(--accent) !important;
+}

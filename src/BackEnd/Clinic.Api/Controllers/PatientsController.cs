@@ -150,8 +150,22 @@ public class PatientsController : ControllerBase
         var patient = await _patientService.GetAsync(id);
         if (patient == null) return NotFound();
 
+        var invalid = Validate(patientDto);
+        if (invalid != null) return BadRequest(new { Message = invalid });
+
         var patientInDb = await _patientService.UpdateAsync(id, patientDto);
 
         return Ok(patientInDb);
+    }
+
+    // The same fields the patient form marks as required, checked here so no client can skip them.
+    private static string? Validate(PatientDto patient)
+    {
+        if (string.IsNullOrWhiteSpace(patient.FirstName)) return "Le nom est obligatoire.";
+        if (string.IsNullOrWhiteSpace(patient.LastName)) return "Le prénom est obligatoire.";
+        if (string.IsNullOrWhiteSpace(patient.Mobile)) return "Le mobile est obligatoire.";
+        if (patient.BirthDate == default || patient.BirthDate.Date > DateTime.Today)
+            return "La date de naissance est invalide.";
+        return null;
     }
 }

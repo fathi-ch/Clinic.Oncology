@@ -32,19 +32,32 @@
         <!-- DevExtreme master-detail grid: sort on any column (Shift-click for several), click a row for its visits and documents -->
         <dx-data-grid #dataGrid class="gridContainer" [dataSource]="LstPatients" keyExpr="id" [showBorders]="false"
             [showRowLines]="true" [rowAlternationEnabled]="false" [hoverStateEnabled]="true" [allowColumnResizing]="true"
-            [columnAutoWidth]="true" noDataText="Aucun patient pour le moment." (onRowClick)="toggleRow($event)">
+            [columnAutoWidth]="true" noDataText="Aucun patient pour le moment." (onRowClick)="toggleRow($event)"
+            (onRowUpdating)="saveRow($event)">
             <dxo-sorting mode="multiple"></dxo-sorting>
+            <!-- pencil on each row: edit in place, then save or cancel -->
+            <dxo-editing mode="row" [allowUpdating]="true" [useIcons]="true"></dxo-editing>
             <dxo-search-panel [visible]="false"></dxo-search-panel>
             <dxo-load-panel [enabled]="false"></dxo-load-panel>
 
-            <dxi-column dataField="firstName" caption="Nom" cellTemplate="nameCell" sortOrder="asc"></dxi-column>
-            <dxi-column dataField="lastName" caption="Prénom"></dxi-column>
+            <dxi-column dataField="firstName" caption="Nom" cellTemplate="nameCell" sortOrder="asc">
+                <dxi-validation-rule type="required" message="Le nom est obligatoire"></dxi-validation-rule>
+            </dxi-column>
+            <dxi-column dataField="lastName" caption="Prénom">
+                <dxi-validation-rule type="required" message="Le prénom est obligatoire"></dxi-validation-rule>
+            </dxi-column>
             <dxi-column dataField="gender" caption="Sexe"></dxi-column>
-            <dxi-column dataField="age" caption="Âge" dataType="number" alignment="left"></dxi-column>
-            <dxi-column dataField="birthDate" caption="Date de naissance" dataType="date" format="dd/MM/yyyy"></dxi-column>
-            <dxi-column dataField="nextAppointment" caption="Prochain RDV" dataType="date" format="dd/MM/yyyy"></dxi-column>
+            <!-- computed by the server -->
+            <dxi-column dataField="age" caption="Âge" dataType="number" alignment="left" [allowEditing]="false"></dxi-column>
+            <dxi-column dataField="birthDate" caption="Date de naissance" dataType="date" format="dd/MM/yyyy">
+                <dxi-validation-rule type="required" message="La date de naissance est obligatoire"></dxi-validation-rule>
+            </dxi-column>
+            <!-- follows the patient's visits -->
+            <dxi-column dataField="nextAppointment" caption="Prochain RDV" dataType="date" format="dd/MM/yyyy" [allowEditing]="false"></dxi-column>
             <dxi-column dataField="socialSecurityNumber" caption="N° sécurité sociale"></dxi-column>
-            <dxi-column dataField="mobile" caption="Mobile"></dxi-column>
+            <dxi-column dataField="mobile" caption="Mobile">
+                <dxi-validation-rule type="required" message="Le mobile est obligatoire"></dxi-validation-rule>
+            </dxi-column>
             <dxi-column dataField="referral" caption="Référence"></dxi-column>
 
             <dxo-master-detail [enabled]="true" template="detail"></dxo-master-detail>

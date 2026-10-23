@@ -8,6 +8,7 @@ import { ServiceCmnObject } from "../../services/ServiceCmnObject"
 import { ServicesPatient } from "../../services/patient/patient.service";
 import { Router } from "@angular/router";
 import notify from "devextreme/ui/notify";
+import { firstValueFrom } from "rxjs";
 import { Rdv } from "../../models/rdv/RdvModel";
 import { ServicesRdv } from "../../services/rdv/rdv.service";
 import { BookingSlots } from "../rdv/booking-slots";
@@ -154,6 +155,22 @@ public details(pateint:Pateint)
         });
     }
 
+    // Saves an edited row before the grid accepts it; on refusal the row stays in edit mode with the reason shown.
+    public saveRow(e: any)
+    {
+      const patient = { ...e.oldData, ...e.newData };
+      e.cancel = firstValueFrom(this.PateintService.SetPatient(patient))
+        .then(() => {
+          notify("Patient enregistré", "success", 2500);
+          this.GetAllPateintList(); // the server recomputes the age
+          return false;
+        })
+        .catch(err => {
+          notify(err?.error?.message ?? "L'enregistrement du patient a échoué.", "error", 4000);
+          return true;
+        });
+    }
+
     // Search runs on the loaded list, across every column (nom, prénom, mobile...).
     public searchPatient()
     {
@@ -163,8 +180,9 @@ public details(pateint:Pateint)
     // A click on a row opens or closes its detail; the name link and the expand arrow handle themselves.
     public toggleRow(e: any)
     {
-      // the arrow cell already toggles the row itself
-      if (e.rowType !== 'data' || e.event?.target?.closest?.('.dx-command-expand')) return;
+      // the arrow and the edit buttons handle their own clicks, and a row being edited stays put
+      if (e.rowType !== 'data' || e.isEditing) return;
+      if (e.event?.target?.closest?.('.dx-command-expand, .dx-command-edit')) return;
       if (e.component.isRowExpanded(e.key)) e.component.collapseRow(e.key);
       else e.component.expandRow(e.key);
     }
