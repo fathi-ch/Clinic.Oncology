@@ -23,6 +23,7 @@ import { BookingSlots } from "../rdv/booking-slots";
   export class PatientsComponent implements OnInit {
 
     @ViewChild("dateNais", { static: false })dateNais!: DxDateBoxComponent;
+    @ViewChild("dataGrid", { static: false }) dataGrid?: DxDataGridComponent;
     @ViewChild("dateRdv", { static: false }) dateRdv!: DxTextBoxComponent;
     // the "Prochain Rdv" de / à lists offer only free slots of the chosen day
     slots = new BookingSlots(day => this.RdvService.GetRdvByDate(day, day));
@@ -153,23 +154,19 @@ public details(pateint:Pateint)
         });
     }
 
+    // Search runs on the loaded list, across every column (nom, prénom, mobile...).
     public searchPatient()
     {
-      if(this.searchText && this.searchText.length>0)
-      {
-      //  this.serviceCmnObject.spinnerLoading.next(true);
-        this.lastRowOpned = "";
-        // calling all pateints end point 
-        this.PateintService.SearchPateints(this.searchText).subscribe(lstPatients => {
-          this.LstPatients = lstPatients;
-        //  this.serviceCmnObject.spinnerLoading.next(false);
-        });
-      }
-      else
-      {
-        this.GetAllPateintList();
-      }
-   
+      this.dataGrid?.instance.searchByText(this.searchText ?? "");
+    }
+
+    // A click on a row opens or closes its detail; the name link and the expand arrow handle themselves.
+    public toggleRow(e: any)
+    {
+      // the arrow cell already toggles the row itself
+      if (e.rowType !== 'data' || e.event?.target?.closest?.('.dx-command-expand')) return;
+      if (e.component.isRowExpanded(e.key)) e.component.collapseRow(e.key);
+      else e.component.expandRow(e.key);
     }
 
     public goHome()

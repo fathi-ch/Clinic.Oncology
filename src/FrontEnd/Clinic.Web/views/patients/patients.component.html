@@ -29,42 +29,36 @@
             </dx-text-box>
         </div>
 
-        <dx-data-grid #dataGrid class="gridContainer" [hoverStateEnabled]="true" [rowAlternationEnabled]="true"
-            [showRowLines]="true" noDataText="Aucun patient pour le moment."   [dataSource]="LstPatients" [height]="'auto'" [showBorders]="false"
-            dataRowTemplate="dataRowTemplateName">
-
-            <dxi-column caption="id" dataField="id" [visible]="false"></dxi-column>
-            <dxi-column [width]="150" caption="Nom" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="Prénom" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="100" caption="Sexe" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="80" caption="Age" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="Date de naissance" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="Prochain RDV" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="N° sécurité sociale" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="150" caption="Mobile" [alignment]="'left'"></dxi-column>
-            <dxi-column [width]="100" caption="Réference" [alignment]="'left'"></dxi-column>
-
+        <!-- DevExtreme master-detail grid: sort on any column (Shift-click for several), click a row for its visits and documents -->
+        <dx-data-grid #dataGrid class="gridContainer" [dataSource]="LstPatients" keyExpr="id" [showBorders]="false"
+            [showRowLines]="true" [rowAlternationEnabled]="false" [hoverStateEnabled]="true" [allowColumnResizing]="true"
+            [columnAutoWidth]="true" noDataText="Aucun patient pour le moment." (onRowClick)="toggleRow($event)">
+            <dxo-sorting mode="multiple"></dxo-sorting>
+            <dxo-search-panel [visible]="false"></dxo-search-panel>
             <dxo-load-panel [enabled]="false"></dxo-load-panel>
-            <dxo-scrolling mode="infinite"></dxo-scrolling>
+
+            <dxi-column dataField="firstName" caption="Nom" cellTemplate="nameCell" sortOrder="asc"></dxi-column>
+            <dxi-column dataField="lastName" caption="Prénom"></dxi-column>
+            <dxi-column dataField="gender" caption="Sexe"></dxi-column>
+            <dxi-column dataField="age" caption="Âge" dataType="number" alignment="left"></dxi-column>
+            <dxi-column dataField="birthDate" caption="Date de naissance" dataType="date" format="dd/MM/yyyy"></dxi-column>
+            <dxi-column dataField="nextAppointment" caption="Prochain RDV" dataType="date" format="dd/MM/yyyy"></dxi-column>
+            <dxi-column dataField="socialSecurityNumber" caption="N° sécurité sociale"></dxi-column>
+            <dxi-column dataField="mobile" caption="Mobile"></dxi-column>
+            <dxi-column dataField="referral" caption="Référence"></dxi-column>
+
+            <dxo-master-detail [enabled]="true" template="detail"></dxo-master-detail>
 
             <dxo-paging [pageSize]="20"></dxo-paging>
-            <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[20, 30, 40]" [showInfo]="false"
+            <dxo-pager [visible]="true" [showInfo]="true" infoText="Page {0} sur {1} ({2} patients)"
                 [showNavigationButtons]="true"></dxo-pager>
 
-            <ng-container *dxTemplate="let patient of 'dataRowTemplateName'">
-                <tr class="rowStyle"  id="row-{{patient.data.id}}" (click)="this.details(patient.data)">
-                    <td>{{patient.data.firstName}}</td>
-                    <td>{{patient.data.lastName}}</td>
-                    <td>{{patient.data.gender}}</td>
-                    <td>{{patient.data.age}}</td>
-                    <td>{{convertDate(patient.data.birthDate)}}</td>
-                    <td>{{convertDate(patient.data.nextAppointment)}}</td>
-                    <td>{{patient.data.socialSecurityNumber?patient.data.socialSecurityNumber:"-"}}</td>
-                    <td> {{patient.data.mobile?patient.data.mobile:"-"}} </td>
-                    <td> {{patient.data.referral}} </td>
-                </tr>
-                
-            </ng-container>
+            <div *dxTemplate="let cell of 'nameCell'">
+                <a class="patient-link" [routerLink]="['/patients', cell.data.id]" (click)="$event.stopPropagation()">{{ cell.value }}</a>
+            </div>
+            <div *dxTemplate="let detail of 'detail'">
+                <app-patient-row-detail [patientId]="detail.data.id"></app-patient-row-detail>
+            </div>
         </dx-data-grid>
     </section>
 </div>

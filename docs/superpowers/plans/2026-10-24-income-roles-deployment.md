@@ -59,7 +59,7 @@ Finished visits are read-only in the UI and refused by the API (409); "Modifier"
 - Keep the existing "Avancement des visites" charts below.
 - **Check:** unit test for the grouping (a visit at 23:30 local belongs to its own day); API totals match a hand count on test data; page renders with 0 DA when nothing is finished.
 
-## Task 2c: Patients table as a DevExtreme master-detail grid (added 2026-10-24)
+## Task 2c: Patients table as a DevExtreme master-detail grid (added 2026-10-24) - done
 
 Following DevExtreme's "Advanced Master-Detail View" demo.
 

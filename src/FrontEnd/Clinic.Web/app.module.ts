@@ -21,6 +21,7 @@ import { DocumentGalleryComponent } from './views/documents/document-gallery.com
 import { PatientFileComponent } from './views/patient-file/patient-file.component';
 import { ContactComponent } from './views/contact/contact.component';
 import { StatisticsComponent } from './views/statistics/statistics.component';
+import { PatientRowDetailComponent } from './views/patients/patient-row-detail.component';
 
 export function initializeApp(appConfig: AppConfig) {
   return () => appConfig.load();
@@ -40,7 +41,8 @@ export function initializeApp(appConfig: AppConfig) {
     DocumentGalleryComponent,
     PatientFileComponent,
     ContactComponent,
-    StatisticsComponent
+    StatisticsComponent,
+    PatientRowDetailComponent
   
   ],
   imports: [
