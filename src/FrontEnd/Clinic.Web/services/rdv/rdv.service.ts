@@ -5,6 +5,11 @@ import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { Rdv } from "../../models/rdv/RdvModel";
 import { PieceJointe } from "../../models/rdv/Piecejointe";
+import { firstValueFrom } from "rxjs";
+import { IncomeReport } from "../../models/statistics/income";
+
+// yyyy-MM-dd in local time, the format the statistics endpoint expects
+const isoDay = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 
 @Injectable()
@@ -19,6 +24,10 @@ export class ServicesRdv {
 
   public async GetAllRdv(){
     return await this.http.get<Rdv[]>(`${this._apiUrl}/visits`).toPromise();
+  }
+
+  public GetIncome(from: Date, to: Date): Promise<IncomeReport> {
+    return firstValueFrom(this.http.get<IncomeReport>(`${this._apiUrl}/statistics/income?from=${isoDay(from)}&to=${isoDay(to)}`));
   }
 
   public async GetRdvByDate(dateFrom:Date,toDate:Date){

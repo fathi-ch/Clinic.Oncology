@@ -1,4 +1,6 @@
 import { Component, OnInit } from "@angular/core";
+import notify from "devextreme/ui/notify";
+import { IncomeReport } from "../../models/statistics/income";
 import { PercentPipe } from "@angular/common";
 import { DxChartTypes } from "devextreme-angular/ui/chart";
 import { DataChartDaugh } from "../../models/charts/DataChartDaugh";
@@ -9,6 +11,7 @@ import { ServicesRdv } from "../../services/rdv/rdv.service";
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
+  styleUrls: ['./statistics.component.scss'],
 })
 export class StatisticsComponent implements OnInit {
     highAverage = 77;
@@ -29,7 +32,83 @@ export class StatisticsComponent implements OnInit {
       text: `${valueText} - ${this.pipe.transform(percent, '1.2-2')}`,
     });
 
+    // income section
+    readonly periods = [
+      { key: 'today', text: "Aujourd'hui" },
+      { key: 'week', text: 'Cette semaine' },
+      { key: 'month', text: 'Ce mois' },
+      { key: 'year', text: 'Cette année' },
+      { key: 'custom', text: 'Période' },
+    ];
+    period = 'month';
+    from = new Date();
+    to = new Date();
+    income: IncomeReport | null = null;
+    chartData: { label: string; paid: number; promo: number }[] = [];
+    incomeChartTitle = '';
+    periodLabel = '';
+
+    readonly da = (amount: number) => `${Math.round(amount).toLocaleString('fr-FR')} DA`;
+    readonly axisDa = ({ value }: { value: number }) => this.da(value);
+    readonly chartTooltip = ({ seriesName, value }: { seriesName: string; value: number }) => ({ text: `${seriesName} : ${this.da(value)}` });
+
     constructor(public readonly RdvService: ServicesRdv) {
+    }
+
+    public setPeriod(key: string) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      this.period = key;
+      if (key === 'custom') {
+        this.loadIncome();
+        return;
+      }
+      const start = new Date(today), end = new Date(today);
+      if (key === 'week') {
+        start.setDate(today.getDate() - ((today.getDay() + 1) % 7)); // weeks start on Saturday
+        end.setDate(start.getDate() + 6);
+      } else if (key === 'month') {
+        start.setDate(1);
+        end.setMonth(today.getMonth() + 1, 0);
+      } else if (key === 'year') {
+        start.setMonth(0, 1);
+        end.setMonth(11, 31);
+      }
+      this.from = start;
+      this.to = end;
+      this.loadIncome();
+    }
+
+    public onRangeChanged(which: 'from' | 'to', e: { value?: Date | string | number | null; event?: unknown }) {
+      if (!e.event || !e.value) return;
+      this[which] = new Date(e.value);
+      this.loadIncome();
+    }
+
+    public async loadIncome() {
+      if (this.to < this.from) {
+        notify("La date de fin doit être après la date de début.", 'warning', 3000);
+        return;
+      }
+      const dateLabel = (d: Date) => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      this.periodLabel = this.from.toDateString() === this.to.toDateString()
+        ? `Le ${dateLabel(this.from)}` : `Du ${dateLabel(this.from)} au ${dateLabel(this.to)}`;
+      try {
+        this.income = await this.RdvService.GetIncome(this.from, this.to);
+      } catch (err: any) {
+        notify(err?.error?.message ?? "Les revenus n'ont pas pu être chargés.", 'error', 4000);
+        return;
+      }
+      // by day for short periods, by month otherwise
+      const byDay = this.income.byDay.length > 0 && this.income.byDay.length <= 62;
+      this.incomeChartTitle = byDay ? 'Revenus par jour' : 'Revenus par mois';
+      this.chartData = (byDay ? this.income.byDay : this.income.byMonth).map(b => ({
+        label: byDay
+          ? new Date(b.key + 'T00:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+          : new Date(b.key + '-01T00:00:00').toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }),
+        paid: b.paid,
+        promo: b.promo,
+      }));
     }
 
     public onSelectionChanged(e:any)
@@ -145,5 +224,6 @@ export class StatisticsComponent implements OnInit {
     ngOnInit(): void {
         // the period selector loads the doughnut chart itself when it starts on "Aujourd'hui"
         this.loadChartDaunData();
+        this.setPeriod('month');
     }
 }

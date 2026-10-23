@@ -50,7 +50,7 @@ Finished visits are read-only in the UI and refused by the API (409); "Modifier"
 - "Nouveau rendez-vous" on the patient page opens the booking form for that patient (same free-slot lists and billing choice), without going through the calendar.
 - **Check:** book from the patient page, the visit appears in the timeline and on the calendar.
 
-## Task 2: Income statistics (D14)
+## Task 2: Income statistics (D14) - done 2026-10-24
 
 - Totals also split by billing type: paid income, promoted income, and the number of free visits.
 
@@ -58,6 +58,15 @@ Finished visits are read-only in the UI and refused by the API (409); "Modifier"
 - Statistiques page: period picker (this month by default, presets: today, this week, this month, this year), four total badges (période, aujourd'hui, ce mois, cette année), a bar chart by day or month, a table "Revenus par patient" sorted by amount with visit count, each row linking to the patient page.
 - Keep the existing "Avancement des visites" charts below.
 - **Check:** unit test for the grouping (a visit at 23:30 local belongs to its own day); API totals match a hand count on test data; page renders with 0 DA when nothing is finished.
+
+## Task 2c: Patients table as a DevExtreme master-detail grid (added 2026-10-24)
+
+Following DevExtreme's "Advanced Master-Detail View" demo.
+
+- The patients list becomes a regular `dx-data-grid` with real columns instead of the custom row template: sorting on every column (click a header, Shift-click for several), the grid's own search panel replacing the separate search box, column resizing and a row count.
+- Expanding a row shows the patient's detail inside the grid: a tab "Visites" (date, status, billing, price) and a tab "Documents" (thumbnails), with "Ouvrir le dossier" going to the patient page.
+- Search covers nom and prénom (today only the first name is searched).
+- **Check:** sort by each column, search by last name, expand a row and see its visits and documents, open the patient page from it.
 
 ## Task 3: Accounts and roles (F3, D15, D16)
 
@@ -69,6 +78,15 @@ Finished visits are read-only in the UI and refused by the API (409); "Modifier"
 - Angular: login page, route guard, the Statistiques tab and route only for Admin, the user's name and "Se déconnecter" in the header, an "Utilisateurs" admin page (add assistant, reset password).
 - Dev: Angular dev-server proxy for `/v1/api` so the cookie is same-origin in development as in production.
 - **Check:** API tests in a new `Clinic.Api.Tests` project (xUnit + WebApplicationFactory): anonymous gets 401, assistant gets 403 on statistics, admin gets 200, lockout after 5 failures; browser: assistant never sees Statistiques.
+
+## Task 3b: Clinic settings panel for the admin (added 2026-10-24)
+
+- **Settings:** practice name, doctor's name and specialty (French and Arabic), address, phone, opening hours, default consultation price (DA), Google Maps link.
+- **Storage:** a `Settings` table (one row per key) seeded on first start with today's values from `clinic-info.ts` and `ClinicLetterhead.cs`; those two files stop holding the details.
+- **API:** `GET /v1/api/settings` for any signed-in user, `PUT /v1/api/settings` for the admin only, with validation (phone digits, positive price, Maps link must be an https Google Maps address).
+- **Frontend:** an admin-only "Paramètres" page with the form and a live preview of the header; header, footer, contact page and "Voir sur la carte" read the settings; the booking forms prefill the price with the default consultation price for "Payant".
+- **PDF:** the letterhead reads the same settings, so a change shows on the next export.
+- **Check:** change the phone number as admin, it updates in the header, contact page and the next PDF; the assistant gets 403 on PUT and does not see the page.
 
 ## Task 4: Printing
 
@@ -89,6 +107,7 @@ A patient has any number of prescriptions; each one is written during a visit, p
 
 ## Task 5: Local deployment for the clinic (F4, D17, D18)
 
+- Replace the `C:\Program Files\dotnet\...` DLL references in `Clinic.Core.csproj` with `<FrameworkReference Include="Microsoft.AspNetCore.App" />` (they only resolve on a Windows machine with that exact runtime).
 - Remove the duplicate `AddJsonFile` in `Program.cs` so each machine can set its data folder by environment variables or `appsettings.Production.json`.
 - The API serves the Angular build (`wwwroot`) with a fallback to `index.html`; the frontend calls `/v1/api` on its own address.
 - Fonts served from the app itself (download the Exo, Roboto and Noto Naskh Arabic files into `assets/fonts`), so it works without internet.

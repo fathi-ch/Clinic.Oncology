@@ -87,6 +87,13 @@ body,
   box-shadow: 0 8px 18px rgba(142, 78, 198, 0.28);
 }
 
+/* Selected option in button groups (calendar view, statistics period) */
+.dx-buttongroup .dx-buttongroup-item.dx-item-selected {
+  background-color: var(--purple-3);
+  border-color: var(--purple-6);
+  color: var(--accent-strong);
+}
+
 /* Popups and dropdown lists */
 .dx-popup-wrapper:not(.dx-dropdowneditor-overlay) > .dx-overlay-content {
   border: none;
@@ -388,6 +395,16 @@ body,
 .summary-cards--compact .summary-note {
   margin: 2px 0 0;
   font-size: 13px;
+}
+
+.summary-cards--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .summary-cards--four {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .summary-note a {

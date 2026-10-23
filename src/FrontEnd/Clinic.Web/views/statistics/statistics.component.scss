@@ -1,0 +1,117 @@
+.income-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    .section-title {
+        margin: 0;
+    }
+}
+
+.income-range {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+    color: var(--ink-muted);
+}
+
+.income-period {
+    margin: 12px 0 16px;
+    color: var(--ink-muted);
+}
+
+.income-split {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+    padding: 16px 20px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+
+    dt {
+        color: var(--ink-muted);
+        font-size: 13px;
+    }
+
+    dd {
+        margin: 4px 0 0;
+        color: var(--heading);
+        font-family: var(--font-display);
+        font-size: 18px;
+        font-weight: 600;
+    }
+}
+
+.income-chart {
+    display: block;
+    height: 320px;
+}
+
+.income-subtitle {
+    margin: 28px 0 12px;
+    color: var(--heading);
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.income-empty {
+    margin: 0;
+    color: var(--ink-muted);
+}
+
+.income-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+
+    th {
+        padding: 10px 12px;
+        background: var(--page);
+        color: var(--ink-muted);
+        font-weight: 500;
+        text-align: left;
+    }
+
+    td {
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink);
+    }
+
+    a {
+        color: var(--accent-strong);
+        font-weight: 500;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .income-amount {
+        color: var(--heading);
+        font-weight: 600;
+        text-align: right;
+    }
+
+    th:last-child {
+        text-align: right;
+    }
+}
+
+@media (max-width: 900px) {
+    .income-split {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .income-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
