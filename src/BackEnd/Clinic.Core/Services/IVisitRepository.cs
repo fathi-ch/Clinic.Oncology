@@ -12,6 +12,7 @@ public interface IVisitRepository
     // Task UpdateAsync(VisitDto visitDto);
     Task<IEnumerable<VisitResponse>> GetBydDateAsync(DateTime fromDate, DateTime toDate);
     Task<VisitResponse> UpdateByIdAsync(int id, VisitDto visitDto);
+    Task<bool> HasOverlapAsync(DateTime start, DateTime end, int exceptVisitId = 0);
 
 
 }

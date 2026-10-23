@@ -13,6 +13,8 @@ public class VisitResponse
     public string Status { get; set; }
     public float Weight { get; set; }
     public float Height { get; set; }
+    // PAID, PROMO (reduced price) or FREE
+    public string BillingType { get; set; } = "PAID";
     public string visitDateTitel { get { return StartTime.ToString();  }  }
     public IEnumerable<PatientDocumentResponse> Documents { get; set; } 
 }

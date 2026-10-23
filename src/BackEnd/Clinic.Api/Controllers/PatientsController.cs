@@ -1,6 +1,7 @@
 ﻿using Clinic.Api.BusinessService;
 using Clinic.Core.Contracts;
 using Clinic.Core.Dto;
+using Clinic.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Api.Controllers;
@@ -11,11 +12,14 @@ public class PatientsController : ControllerBase
 {
     private readonly IPatientService _patientService;
     private readonly IPatientReportRepository _patientReportRepo;
+    private readonly IDocumentRepository _documentRepository;
 
-    public PatientsController(IPatientService patientService, IPatientReportRepository patientReportRepo)
+    public PatientsController(IPatientService patientService, IPatientReportRepository patientReportRepo,
+        IDocumentRepository documentRepository)
     {
         _patientService = patientService;
         _patientReportRepo = patientReportRepo;
+        _documentRepository = documentRepository;
     }
 
     [HttpGet(Name = "GetAllPatientsAsync")]
@@ -59,6 +63,17 @@ public class PatientsController : ControllerBase
         return Ok(visits);
     }
 
+    // Every document of every visit of the patient, for the patient page.
+    [HttpGet("{id}/documents", Name = "GetPatientDocumentsAsync")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<PatientDocumentResponse>>> GetDocumentsAsync(int id)
+    {
+        if (await _patientService.GetAsync(id) == null) return NotFound();
+
+        return Ok(await _documentRepository.GetByPatientIdAsync(id));
+    }
+
     [HttpGet("{id}/documents/export")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -67,12 +82,12 @@ public class PatientsController : ControllerBase
 
         var report = await _patientReportRepo.GeneratePatientReportPdfAsync(id);
 
-        if (report == null || report.Length == 0)
+        if (report == null)
         {
-            return NotFound("No report available for the specified patient.");
+            return NotFound(new { Message = "Patient introuvable." });
         }
 
-        return File(report, "application/pdf",  $"Patient_{id}_Report.pdf");
+        return File(report, "application/pdf", $"Dossier_patient_{id}.pdf");
 
     }
 

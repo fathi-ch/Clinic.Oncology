@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS "Visits"
     "Description" TEXT,
     "VisitType"   TEXT,
     "Status"      TEXT,
+    "BillingType" TEXT    NOT NULL DEFAULT 'PAID',
     FOREIGN KEY ("PatientId") REFERENCES "Patients" ("Id"),
     PRIMARY KEY ("Id")
 );

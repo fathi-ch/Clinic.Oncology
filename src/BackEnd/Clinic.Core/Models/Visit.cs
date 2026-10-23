@@ -13,6 +13,8 @@ public class Visit
     public string Status { get; set; }
     public float Weight { get; set; }
     public float Height { get; set; }
+    // PAID, PROMO (reduced price) or FREE
+    public string BillingType { get; set; } = "PAID";
     public string visitDateTitle { get; set; }
     //public List<PatientDocument> Documents { get; set; } 
 }

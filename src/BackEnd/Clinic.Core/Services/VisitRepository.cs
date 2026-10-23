@@ -29,8 +29,8 @@ public class VisitRepository : IVisitRepository
         try
         {
             var sb = new StringBuilder();
-            sb.Append("INSERT INTO Visits (PatientId, StartTime, EndTime, Price, Description, VisitType, Status,Weight,Height) ");
-            sb.Append("VALUES (@PatientId, @StartTime, @EndTime, @Price, @Description, @VisitType, @Status,@Weight,@Height);");
+            sb.Append("INSERT INTO Visits (PatientId, StartTime, EndTime, Price, Description, VisitType, Status,Weight,Height,BillingType) ");
+            sb.Append("VALUES (@PatientId, @StartTime, @EndTime, @Price, @Description, @VisitType, @Status,@Weight,@Height,@BillingType);");
             sb.Append("SELECT last_insert_rowid();");
             var query = sb.ToString();
 
@@ -46,7 +46,8 @@ public class VisitRepository : IVisitRepository
                     visitDto.VisitType,
                     visitDto.Status,
                     visitDto.Weight,
-                    visitDto.Height
+                    visitDto.Height,
+                    visitDto.BillingType
                 });
 
             var all = await this.GetAllAsync();
@@ -186,6 +187,21 @@ public class VisitRepository : IVisitRepository
         return visitToDelete;
     }
 
+    // True when another visit shares part of [start, end). Back-to-back visits do not overlap.
+    public async Task<bool> HasOverlapAsync(DateTime start, DateTime end, int exceptVisitId = 0)
+    {
+        using var connection = await _connectionFactory.CreateDbConnectionAsync();
+
+        var sb = new StringBuilder();
+        sb.Append("SELECT COUNT(1) FROM Visits ");
+        sb.Append("WHERE StartTime < @End AND EndTime > @Start AND Id <> @ExceptVisitId;");
+
+        var count = await connection.ExecuteScalarAsync<int>(sb.ToString(),
+            new { Start = start, End = end, ExceptVisitId = exceptVisitId });
+
+        return count > 0;
+    }
+
     public async Task<VisitResponse> UpdateByIdAsync(int id, VisitDto visitDto)
     {
         using var connection = await _connectionFactory.CreateDbConnectionAsync();
@@ -203,7 +219,8 @@ public class VisitRepository : IVisitRepository
             sb.Append("VisitType = @VisitType, ");
             sb.Append("Status = @Status, ");
             sb.Append("Weight = @Weight, ");
-            sb.Append("Height = @Height ");
+            sb.Append("Height = @Height, ");
+            sb.Append("BillingType = @BillingType ");
             sb.Append("WHERE Id = @id;");
 
             var query = sb.ToString();
@@ -221,6 +238,7 @@ public class VisitRepository : IVisitRepository
                     Weight = visitDto.Weight,
                     Height = visitDto.Height,
                     Status = visitDto.Status,
+                    BillingType = visitDto.BillingType,
                 });
             transaction.Commit();
            

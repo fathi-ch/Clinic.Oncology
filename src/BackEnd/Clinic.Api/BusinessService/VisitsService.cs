@@ -114,6 +114,9 @@ namespace Clinic.Api.BusinessService
            
         }
 
+        public async Task<bool> HasOverlapAsync(DateTime start, DateTime end, int exceptVisitId = 0)
+        => await _visitRepository.HasOverlapAsync(start, end, exceptVisitId);
+
         public async Task<VisitResponse> UpdateByIdAsync(int id, VisitDto visitDto)
         {
             var rdv = await _visitRepository.UpdateByIdAsync(id, visitDto);

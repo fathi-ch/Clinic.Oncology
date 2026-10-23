@@ -1,4 +1,4 @@
 public interface IPatientReportRepository
 {
-    Task<byte[]> GeneratePatientReportPdfAsync(int id);
+    Task<byte[]?> GeneratePatientReportPdfAsync(int id);
 }

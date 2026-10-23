@@ -15,6 +15,8 @@ public class VisitDto
     public string Status { get; set; }
     public float Weight { get; set; }
     public float Height { get; set; }
+    // PAID, PROMO (reduced price) or FREE
+    public string BillingType { get; set; } = "PAID";
     public string visitDateTitel { get; set; }
     //public IEnumerable<IFormFile?> Documents { get; set; }
 }
