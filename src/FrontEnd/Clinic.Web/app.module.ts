@@ -17,6 +17,10 @@ import { ServicesRdv } from './services/rdv/rdv.service';
 import { RdvDetailsComponent } from './views/rdvDetails/rdvDetails.component';
 import { patientsDetailComponent } from './views/patientsDatails/patientsDetail.component';
 import { FileUploaderComponent } from './views/fileUploader/file-uploader.component';
+import { DocumentGalleryComponent } from './views/documents/document-gallery.component';
+import { PatientFileComponent } from './views/patient-file/patient-file.component';
+import { ContactComponent } from './views/contact/contact.component';
+import { StatisticsComponent } from './views/statistics/statistics.component';
 
 export function initializeApp(appConfig: AppConfig) {
   return () => appConfig.load();
@@ -32,7 +36,11 @@ export function initializeApp(appConfig: AppConfig) {
     RdvComponent,
     RdvDetailsComponent,
     patientsDetailComponent,
-    FileUploaderComponent
+    FileUploaderComponent,
+    DocumentGalleryComponent,
+    PatientFileComponent,
+    ContactComponent,
+    StatisticsComponent
   
   ],
   imports: [

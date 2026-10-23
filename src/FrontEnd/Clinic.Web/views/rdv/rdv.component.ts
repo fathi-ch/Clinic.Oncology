@@ -1,4 +1,4 @@
-import { Component, NgModule, OnInit, ViewChild } from "@angular/core";
+import { Component, EventEmitter, NgModule, OnInit, Output, ViewChild } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { Router } from "@angular/router";
 import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxSchedulerComponent, DxTemplateModule, DxTextBoxComponent, DxContextMenuComponent, DxAutocompleteComponent, DxNumberBoxComponent } from "devextreme-angular";
@@ -15,6 +15,9 @@ import { RdvType } from "../../models/rdv/RdvTypeModel";
 import { ServiceCmnObject } from "../../services/ServiceCmnObject";
 import { ServicesPatient } from "../../services/patient/patient.service";
 import { ServicesRdv } from "../../services/rdv/rdv.service";
+import notify from "devextreme/ui/notify";
+import { BookingSlots } from "./booking-slots";
+import { BILLING_OPTIONS, BillingType } from "./billing";
 
 @Component({
   selector: 'app-rdv',
@@ -28,8 +31,6 @@ export class RdvComponent implements OnInit {
 
   @ViewChild("dateNais", { static: false }) dateNais!: DxDateBoxComponent;
   @ViewChild("dateRdv", { static: false }) dateRdv!: DxDateBoxComponent;
-  @ViewChild("startRdv", { static: false }) startRdv!: DxDateBoxComponent;
-  @ViewChild("endRdv", { static: false }) endRdv!: DxDateBoxComponent;
   @ViewChild("scheduler_ges", { static: false }) scheduler_ges!: DxSchedulerComponent;
   @ViewChild('contextMenu', { static: false }) contextMenu!: DxContextMenuComponent;
   @ViewChild('patientRdv', { static: false }) patientRdv!: DxAutocompleteComponent;
@@ -37,6 +38,13 @@ export class RdvComponent implements OnInit {
   
 
 
+
+  // fires after each calendar load, so the home page cards can follow new bookings
+  @Output() calendarLoaded = new EventEmitter<void>();
+
+  // 08:00-17:00 in 30-minute rows of 36px (see rdv.component.scss), plus toolbar, day headers and the
+  // work space padding: the whole working day fits without scrolling inside the calendar.
+  readonly calendarHeight = 18 * 36 + 166;
 
   toAdd: boolean = true;
   rdvData: DataSource;
@@ -58,6 +66,8 @@ export class RdvComponent implements OnInit {
 
   selectedType: string = ""
   rdvPrix: number = 0;
+  readonly billingOptions = BILLING_OPTIONS;
+  billingType: BillingType = 'PAID';
   pat_nom: string = "";
   pat_prenom: string = "";
   pat_mobile: string = "";
@@ -70,6 +80,8 @@ export class RdvComponent implements OnInit {
   firstWorkDay2017: Date = new Date(2017, 0, 3);
   min: Date = new Date(1900, 0, 1, 7);
   max: Date = new Date(1900, 0, 1, 22);
+  // the booking form's "de" / "à" lists, built from the selected day's free slots
+  slots = new BookingSlots(day => this.RdvService.GetRdvByDate(day, day));
   dateClear = new Date(2015, 11, 1, 6);
 
   timeMin: Date = new Date(0, 0, 0, 7, 0, 0);
@@ -107,6 +119,7 @@ export class RdvComponent implements OnInit {
             that.allRdvData = data as Rdv[];
           });
 
+          that.calendarLoaded.emit();
           return that.allRdvData;
 
         },
@@ -200,12 +213,12 @@ export class RdvComponent implements OnInit {
   public newPatientPopUp() {
     this.toAdd = true;
     this.dateRdv.instance.reset();
-    this.startRdv.value = this.min;
-    this.endRdv.value = this.min;
+    this.slots.load(null, null, null);
     this.popupVisible = true;
     this.patientRdv.value = "";
     this.newRdvSelectedPatien = new Pateint();
     this.prixRdv.value=0;
+    this.billingType = 'PAID';
   }
 
   public getValueDisplay(data: any) {
@@ -234,8 +247,7 @@ export class RdvComponent implements OnInit {
       this.patientRdv.value = "";
       this.searchText = "";
       this.dateRdv.instance.reset();
-      this.startRdv.value = this.min;
-      this.endRdv.value = this.min;
+      this.slots.load(null, null, null);
       this.prixRdv.value=0;
     }
 
@@ -243,14 +255,13 @@ export class RdvComponent implements OnInit {
   }
 
   public async newRdv() {
-    // date début
-    let startTime = new Date(this.dateRdv.value)
-    startTime.setHours(new Date(this.startRdv.value).getHours());
-    startTime.setMinutes(new Date(this.startRdv.value).getMinutes());
-    // date fin       
-    let endTime = new Date(this.dateRdv.value);
-    endTime.setHours(new Date(this.endRdv.value).getHours());
-    endTime.setMinutes(new Date(this.endRdv.value).getMinutes());
+    const chosen = this.slots.chosen();
+    if (!chosen) {
+      notify("Choisissez l'heure de début et de fin.", 'warning', 3000);
+      return;
+    }
+    const startTime = chosen.start;
+    const endTime = chosen.end;
     let _patien = this.newRdvSelectedPatien;
     let _selectedType = this.selectedType;
 
@@ -258,36 +269,41 @@ export class RdvComponent implements OnInit {
     _rdv.patientId = this.newRdvSelectedPatien.id;
     _rdv.startTime = startTime;
     _rdv.endTime = endTime;
-    _rdv.price = this.rdvPrix;
+    _rdv.price = this.billingType === 'FREE' ? 0 : this.rdvPrix;
+    _rdv.billingType = this.billingType;
     _rdv.status = "PLA";
     _rdv.visitType = this.selectedType;
     _rdv.description = "";
     _rdv.weight=0;
     _rdv.height=0;
     _rdv.visitDateTitel="";
-    await this.RdvService.NewRdv(_rdv);
+    if (!(await this.saved(this.RdvService.NewRdv(_rdv)))) return;
     this.rdvData.reload();
     this.popupVisible = false;
 
 
   }
 
+  get isFinished(): boolean {
+    return this.currentRdv?.status === 'TRM';
+  }
+
   public getToRdv()
   {
     this.serviceCmnObject.rdvDetail.next(this.currentRdv);
+    this.popupVisible = false; // the visit details replace the booking form
     this.popupRdvDetVisible=true;
    // this.router.navigate(['/rdvDetails']);
   }
   public async updateRdvForm() {
     let _rdv = this.currentRdv;
-    // date début
-    let startTime = new Date(this.dateRdv.value)
-    startTime.setHours(new Date(this.startRdv.value).getHours());
-    startTime.setMinutes(new Date(this.startRdv.value).getMinutes());
-    // date fin       
-    let endTime = new Date(this.dateRdv.value);
-    endTime.setHours(new Date(this.endRdv.value).getHours());
-    endTime.setMinutes(new Date(this.endRdv.value).getMinutes());
+    const chosen = this.slots.chosen();
+    if (!chosen) {
+      notify("Choisissez l'heure de début et de fin.", 'warning', 3000);
+      return;
+    }
+    const startTime = chosen.start;
+    const endTime = chosen.end;
     let _patien = this.newRdvSelectedPatien;
     let _selectedType = this.selectedType;
 
@@ -295,14 +311,15 @@ export class RdvComponent implements OnInit {
     _rdv.patientId = this.newRdvSelectedPatien.id;
     _rdv.startTime = startTime;
     _rdv.endTime = endTime;
-    _rdv.price = this.rdvPrix;
+    _rdv.price = this.billingType === 'FREE' ? 0 : this.rdvPrix;
+    _rdv.billingType = this.billingType;
     _rdv.weight=this.currentRdv.weight;
     _rdv.height=this.currentRdv.height;
-    _rdv.status = "PLA";
+    // rescheduling keeps what the visit already holds: its status and its consultation notes
+    _rdv.status = _rdv.status ?? "PLA";
     _rdv.visitType = this.selectedType;
-    _rdv.description = "";
     _rdv.visitDateTitel="";
-    await this.RdvService.UpdateRdv(_rdv);
+    if (!(await this.saved(this.RdvService.UpdateRdv(_rdv)))) return;
     this.rdvData.reload();
     this.popupVisible = false;
 
@@ -312,7 +329,7 @@ export class RdvComponent implements OnInit {
   public async updateRdv(rdv: Rdv) {
 
 
-    await this.RdvService.UpdateRdv(rdv);
+    await this.saved(this.RdvService.UpdateRdv(rdv));
     this.rdvData.reload();
 
 
@@ -352,76 +369,64 @@ export class RdvComponent implements OnInit {
   }
 
   public onAppointmentFormOpening(e: any) {
-    this.toAdd = true;
+    e.cancel = true;
+    const rdv = e.appointmentData as Rdv;
+    this.currentRdv = rdv;
+    this.toAdd = !rdv.id;
     this.dateRdv.instance.reset();
-    this.startRdv.value = this.min;
-    this.endRdv.value = this.min;
-    this.popupVisible = true;
     this.patientRdv.value = "";
     this.newRdvSelectedPatien = new Pateint();
-    this.prixRdv.value=0;
-  
+    this.prixRdv.value = 0;
 
-    e.cancel = true;
-    let rdv = e.appointmentData as Rdv;
-    this.currentRdv = rdv;
-    this.newRdvSelectedPatien = new Pateint();
     if (rdv.id) {
       if (rdv.patient) {
         this.newRdvSelectedPatien = rdv.patient;
         this.patientRdv.value = rdv.patient.autocpmliteValue ? rdv.patient.autocpmliteValue : "";
       }
-
-      if (rdv.startTime) {
-
-        this.dateRdv.value = new Date(rdv.startTime);
-        this.startRdv.value = new Date(rdv.startTime);
-      }
-
-      if (rdv.endTime)
-        this.endRdv.value = new Date(rdv.endTime);
-
-      if (rdv.startTime) {
-
-        this.dateRdv.value = new Date(rdv.startTime);
-        this.startRdv.value = new Date(rdv.startTime);
-
-      }
-      if (rdv.endTime) {
-        this.endRdv.value = new Date(rdv.endTime);
-      }
-
-
       if (rdv.price)
         this.prixRdv.value = rdv.price;
-
-      this.toAdd = false;
-      
     }
-    else {
-      if (rdv.startTime) {
+    this.selectedType = rdv.visitType ?? "";
+    this.billingType = rdv.billingType ?? 'PAID';
 
-        this.dateRdv.value = new Date(rdv.startTime);
-        this.startRdv.value = new Date(rdv.startTime);
-      }
-
-      if (rdv.endTime)
-        this.endRdv.value = new Date(rdv.endTime);
-
-      if (rdv.startTime) {
-
-        this.dateRdv.value = new Date(rdv.startTime);
-        this.startRdv.value = new Date(rdv.startTime);
-
-      }
-      if (rdv.endTime) {
-        this.endRdv.value = new Date(rdv.endTime);
-      }
-
-      this.prixRdv.value =0;
-      this.toAdd = true;
-    }
+    const start = rdv.startTime ? new Date(rdv.startTime) : null;
+    if (start)
+      this.dateRdv.value = start;
+    this.slots.load(start, start, rdv.endTime ? new Date(rdv.endTime) : null, rdv.id);
     this.popupVisible = true;
+  }
+
+  // "Nouveau rdv" from the home page: today, first free slot from now on
+  public openNewBooking() {
+    const rdv = new Rdv();
+    rdv.startTime = new Date();
+    this.onAppointmentFormOpening({ appointmentData: rdv });
+  }
+
+  // a free visit is booked at 0 DA; the price box is locked while "Gratuit" is chosen
+  public onBillingChanged(type: BillingType) {
+    if (type === 'FREE') this.prixRdv.value = 0;
+  }
+
+  public onDateChanged(e: any) {
+    // dates set by code (opening a visit or a cell) load their slots themselves
+    if (!e.event) return;
+    const keep = (v: number | null) => (v === null ? null : new Date(v));
+    this.slots.load(e.value ? new Date(e.value) : null, keep(this.slots.startValue), keep(this.slots.endValue), this.currentRdv?.id);
+  }
+
+  // Waits for a save and reports a refusal from the API instead of failing silently.
+  private async saved(request: Promise<unknown>): Promise<boolean> {
+    try {
+      await request;
+      return true;
+    } catch (err: any) {
+      const message = err?.status === 409
+        ? "Ce créneau vient d'être réservé. Choisissez un autre horaire."
+        : err?.error?.message ?? "L'enregistrement du rdv a échoué.";
+      notify(message, 'error', 4000);
+      return false;
+    }
   }
 
   public handlePropertyChange(e: any) {

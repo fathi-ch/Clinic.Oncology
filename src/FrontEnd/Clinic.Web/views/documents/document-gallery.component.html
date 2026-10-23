@@ -1,0 +1,71 @@
+<div class="docs" *ngIf="slides.length; else empty">
+    <div class="stage">
+        <dx-gallery [dataSource]="slides" [(selectedIndex)]="index" [height]="400" [loop]="slides.length > 1"
+            [showNavButtons]="slides.length > 1" [showIndicator]="false" [swipeEnabled]="slides.length > 1"
+            [focusStateEnabled]="true">
+            <div *dxTemplate="let slide of 'item'" class="slide">
+                <img *ngIf="!slide.pdf" class="slide-image" [src]="slide.src" [alt]="slide.label + '. ' + slide.added"
+                    (click)="viewerVisible = true">
+                <div *ngIf="slide.pdf" class="slide-pdf">
+                    <i class="dx-icon dx-icon-pdffile"></i>
+                    <p>Document PDF</p>
+                    <dx-button stylingMode="contained" type="default" text="Ouvrir le PDF" icon="export"
+                        (onClick)="openPdf(slide)"></dx-button>
+                </div>
+            </div>
+        </dx-gallery>
+    </div>
+
+    <div class="caption" *ngIf="current as slide">
+        <div class="caption-text">
+            <strong>{{ slide.label }} {{ index + 1 }} sur {{ slides.length }}</strong>
+            <span *ngIf="slide.context">{{ slide.context }}</span>
+            <span>{{ slide.added }}</span>
+        </div>
+        <div class="caption-actions">
+            <dx-button *ngIf="!slide.pdf" stylingMode="outlined" type="normal" text="Agrandir" icon="fullscreen"
+                (onClick)="viewerVisible = true"></dx-button>
+            <dx-button *ngIf="slide.pdf" stylingMode="outlined" type="normal" text="Ouvrir" icon="export"
+                (onClick)="openPdf(slide)"></dx-button>
+            <dx-button *ngIf="!readonly" class="danger" stylingMode="outlined" type="normal" text="Supprimer"
+                icon="trash" (onClick)="confirmRemove(slide)"></dx-button>
+        </div>
+    </div>
+
+    <div class="thumbs" *ngIf="slides.length > 1">
+        <button type="button" *ngFor="let slide of slides; let i = index" class="thumb"
+            [class.thumb--active]="i === index" [attr.aria-current]="i === index"
+            [attr.aria-label]="slide.label + ' ' + (i + 1)" (click)="index = i">
+            <img *ngIf="!slide.pdf" [src]="slide.src" alt="">
+            <span *ngIf="slide.pdf" class="thumb-pdf">PDF</span>
+        </button>
+    </div>
+</div>
+
+<ng-template #empty>
+    <div class="empty">
+        <i class="dx-icon dx-icon-photo"></i>
+        <p class="empty-title">Aucun document pour cette visite</p>
+        <p *ngIf="!readonly" class="empty-hint">Ajoutez des photos ou des PDF avec le bouton « Ajouter des documents ».</p>
+    </div>
+</ng-template>
+
+<dx-popup [(visible)]="viewerVisible" [fullScreen]="true" [showTitle]="true" [hideOnOutsideClick]="true"
+    [title]="current ? current.label + ' ' + (index + 1) + ' sur ' + slides.length : ''"
+    [wrapperAttr]="{ class: 'doc-viewer' }" (onShown)="viewerReady = true" (onHiding)="viewerReady = false">
+    <div *dxTemplate="let data of 'content'" class="viewer">
+        <dx-gallery *ngIf="viewerReady" [dataSource]="slides" [(selectedIndex)]="index" [height]="'100%'" [loop]="slides.length > 1"
+            [showNavButtons]="slides.length > 1" [showIndicator]="false" [swipeEnabled]="slides.length > 1"
+            [focusStateEnabled]="true">
+            <div *dxTemplate="let slide of 'item'" class="viewer-slide">
+                <img *ngIf="!slide.pdf" [src]="slide.src" [alt]="slide.label + '. ' + slide.added">
+                <div *ngIf="slide.pdf" class="slide-pdf">
+                    <i class="dx-icon dx-icon-pdffile"></i>
+                    <p>Document PDF</p>
+                    <dx-button stylingMode="contained" type="default" text="Ouvrir le PDF" icon="export"
+                        (onClick)="openPdf(slide)"></dx-button>
+                </div>
+            </div>
+        </dx-gallery>
+    </div>
+</dx-popup>

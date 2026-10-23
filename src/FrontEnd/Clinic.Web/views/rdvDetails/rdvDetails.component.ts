@@ -1,4 +1,4 @@
-import { Component, EventEmitter, NgModule, OnInit, ViewChild } from "@angular/core";
+import { Component, EventEmitter, NgModule, OnInit, Output, ViewChild } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxSchedulerComponent, DxTemplateModule, DxTextBoxComponent, DxContextMenuComponent, DxAutocompleteComponent, DxNumberBoxComponent, DxTextAreaComponent } from "devextreme-angular";
 import { DxSchedulerTypes } from "devextreme-angular/ui/scheduler";
@@ -16,6 +16,14 @@ import { ServiceCmnObject } from "../../services/ServiceCmnObject";
 import { ServicesPatient } from "../../services/patient/patient.service";
 import { ServicesRdv } from "../../services/rdv/rdv.service";
 import notify from "devextreme/ui/notify";
+import { VisitDocument } from "../documents/document-info";
+
+const readAsDataUrl = (file: File): Promise<string> => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onload = () => resolve(String(reader.result));
+  reader.onerror = () => reject(reader.error);
+  reader.readAsDataURL(file);
+});
 
 @Component({
   selector: 'app-rdvDetails',
@@ -44,9 +52,17 @@ export class RdvDetailsComponent implements OnInit {
   onContextMenuItemClick: any;
   cellContextMenuItems: any[] | undefined;
   appointmentContextMenuItems: any[] | undefined;
-  pjListeTemp:any[]=[];
-  viewpj:string="";
-  public pjListe : BehaviorSubject<PieceJointe[]>=new BehaviorSubject<PieceJointe[]>([]);
+  pjListeTemp: VisitDocument[] = [];
+  // fires after the visit is saved or finished, so the calendar can redraw it
+  @Output() saved = new EventEmitter<void>();
+  visitTimeLabel = "";
+  birthDateLabel = "";
+  exporting = false;
+
+  // a finished visit is a record: shown, exported, but no longer edited
+  get finished(): boolean {
+    return this.currentRdv?.status === 'TRM';
+  }
 
   lastRowOpned: string = "";
   //dataSource:[];
@@ -66,7 +82,6 @@ export class RdvDetailsComponent implements OnInit {
   pat_prenom: string = "";
   pat_mobile: string = "";
   pat_email: string = "";
-  currentImageView:string="";
   pat_date_n: Date = new Date();
   pat_date_rdv: Date = new Date();
   pat_date_rdv_a: Date = new Date();
@@ -92,7 +107,6 @@ export class RdvDetailsComponent implements OnInit {
 
   // data grid data source 
   LstPatients: Pateint[] = [];
-  pjList = new EventEmitter<PieceJointe>()
 
   constructor(
     public readonly PateintService: ServicesPatient,
@@ -103,10 +117,12 @@ export class RdvDetailsComponent implements OnInit {
     this.pjListeTemp=[];
     this.serviceCmnObject.rdvDetail.subscribe(async rdv=>{
       this.currentRdv=rdv;
-      if(rdv.description)
-        this.descText.value=rdv.description;
+      this.pjListeTemp = [];
+      this.visitTimeLabel = this.describeTime(rdv);
+      this.birthDateLabel = rdv.patient?.birthDate ? new Date(rdv.patient.birthDate).toLocaleDateString('fr-FR') : "";
+      if (this.descText)
+        this.descText.value = rdv.description ?? "";
       await this.refreshPj();
-    
     })
      
    
@@ -129,12 +145,33 @@ export class RdvDetailsComponent implements OnInit {
   
   }
 
-  public viewImage(id:any)
-  {
-    let image=this.pjListeTemp.find(x=>x.id==id);
-    this.currentImageView=image.patientDocumentsbase64;
-    this.popupVisible=true;
-  } 
+  private describeTime(rdv: Rdv): string {
+    if (!rdv.startTime) return "";
+    const start = new Date(rdv.startTime);
+    const hhmm = (d: Date) => d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const day = start.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    return rdv.endTime ? `${day}, de ${hhmm(start)} à ${hhmm(new Date(rdv.endTime))}` : `${day}, ${hhmm(start)}`;
+  }
+
+  // Downloads the patient's whole file: details, every visit, notes and documents.
+  public async exportPdf() {
+    const patientId = this.currentRdv.patientId ?? this.currentRdv.patient?.id;
+    if (!patientId) return;
+    this.exporting = true;
+    try {
+      const pdf = await this.PateintService.ExportPatientFile(patientId);
+      const url = URL.createObjectURL(pdf);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Dossier ${this.currentRdv.patient?.firstName ?? ''} ${this.currentRdv.patient?.lastName ?? ''}.pdf`.replace(/\s+/g, ' ');
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      notify("L'export du dossier a échoué. Réessayez.", 'error', 4000);
+    } finally {
+      this.exporting = false;
+    }
+  }
 
   public convertDate(date: string) {
     let shortDate = date.split('T')[0];
@@ -213,23 +250,26 @@ export class RdvDetailsComponent implements OnInit {
   }
 
   public async updateDetailRdv() {
-
-this.currentRdv.description=this.descText.value;
-    await this.RdvService.UpdateRdv(this.currentRdv);
-    notify({ message: "la modification est pris en compte", width: 300, shading: false }, "success", 2000);
-
-
+    await this.saveVisit(this.currentRdv.status, "Visite enregistrée");
   }
 
   public async terminerDetailRdv() {
+    await this.saveVisit('TRM', "Visite terminée");
+  }
 
-    this.currentRdv.description=this.descText.value;
-    this.currentRdv.status='TRM';
-        await this.RdvService.UpdateRdv(this.currentRdv);
-        notify({ message: "la modification est pris en compte", width: 300, shading: false }, "success", 2000);
-    
-    
-      }
+  private async saveVisit(status: string | undefined, done: string) {
+    const previous = this.currentRdv.status;
+    this.currentRdv.description = this.descText.value;
+    this.currentRdv.status = status;
+    try {
+      await this.RdvService.UpdateRdv(this.currentRdv);
+      notify(done, "success", 2500);
+      this.saved.emit();
+    } catch (err: any) {
+      this.currentRdv.status = previous;
+      notify(err?.error?.message ?? "L'enregistrement de la visite a échoué.", "error", 4000);
+    }
+  }
 
 
   public async getAllRdv() {
@@ -329,48 +369,36 @@ this.currentRdv.description=this.descText.value;
   }
 async DeletePj(id:number)
 {
-  await this.RdvService.DeleteDocument(id);
+  try {
+    await this.RdvService.DeleteDocument(id);
+    notify("Document supprimé", "success", 2000);
+  } catch {
+    notify("La suppression du document a échoué.", "error", 4000);
+  }
   await this.refreshPj();
 }
-  public filesUploaded(e:any)
+
+  // Each file is saved as soon as it is picked, then the gallery reloads from the server.
+  public async filesUploaded(e: any)
   {
-    if (e.value.length) {
-      e.value.forEach((file: any) => {
-       
-         
-       
-          let reader = new FileReader();
-          reader.onload = (fr: any) => {
-            let img = new Image();
-            img.src = reader.result?reader.result.toString():"";
-            setTimeout(async () => {
-              let currPJComment: PieceJointe = {
-                visitId: this.currentRdv.id,
-                fileName: encodeURI(file.name.toString()),
-                file64:img.src
-              };
-              
-              this.pjList.emit(currPJComment);
+    const files: File[] = e.value ?? [];
+    if (!files.length || !this.currentRdv.id) return;
 
-              await this.RdvService.AddDocument(currPJComment);
-              await this.refreshPj();
+    let added = 0;
+    for (const file of files) {
+      try {
+        const file64 = await readAsDataUrl(file);
+        await this.RdvService.AddDocument({ visitId: this.currentRdv.id, fileName: encodeURI(file.name), file64 });
+        added++;
+      } catch {
+        notify(`« ${file.name} » n'a pas pu être enregistré.`, "error", 4000);
+      }
+    }
+    if (added)
+      notify(added > 1 ? `${added} documents ajoutés` : "Document ajouté", "success", 2500);
 
-
-            }, 0);
-          };
-          //this.pjListe.next(this.pjListeTemp);
-          this.pjListe.subscribe(v=>{
-            this.pjListeTemp=v;
-          })
-          reader.readAsDataURL(file);
-        
-      
-      
-      });
-    
-      
-    
-  }
+    e.component.reset(); // clears the picker; the change event it fires has no files and returns above
+    await this.refreshPj();
   }
 
 }

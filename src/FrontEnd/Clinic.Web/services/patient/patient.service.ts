@@ -1,9 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { AppConfig } from "../app.config";
 import { Pateint } from "../../models/patient/PatientModel";
-import { Observable } from "rxjs";
+import { firstValueFrom, Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { Rdv } from "../../models/rdv/RdvModel";
+import { VisitDocument } from "../../views/documents/document-info";
 
 @Injectable()
 export class ServicesPatient {
@@ -33,6 +34,20 @@ export class ServicesPatient {
   public SetPatient(patient:Pateint):Observable<Pateint>
   {
     return this.http.put<Pateint>(`${this._apiUrl}/Patients/${patient.id}`,patient);
+  }
+
+  public GetPatient(id: number): Promise<Pateint> {
+    return firstValueFrom(this.http.get<Pateint>(`${this._apiUrl}/Patients/${id}`));
+  }
+
+  // Every document of every visit of the patient.
+  public GetPatientDocuments(id: number): Promise<VisitDocument[]> {
+    return firstValueFrom(this.http.get<VisitDocument[]>(`${this._apiUrl}/Patients/${id}/documents`));
+  }
+
+  // The patient file as a PDF: details, every visit, its notes and documents.
+  public ExportPatientFile(id: number): Promise<Blob> {
+    return firstValueFrom(this.http.get(`${this._apiUrl}/Patients/${id}/documents/export`, { responseType: 'blob' }));
   }
 
   public async DeletePatien(id:number)

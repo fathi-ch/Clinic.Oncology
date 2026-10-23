@@ -123,7 +123,7 @@
 
         <dx-form id="form" [formData]="currentRdv">
 
-            <dxi-item itemType="group" [colCount]="1" caption="Dossier médical">
+            <dxi-item *ngIf="!editOnly" itemType="group" [colCount]="1" caption="Dossier médical">
 
                 <dxi-item itemType="group" [colCount]="1">
 
@@ -135,7 +135,7 @@
                             placeholder="Séléctionnez" [dataSource]="passedRdv">
                         </dx-select-box>
                         <div *ngIf="currentRdv.id" ><a style="cursor: pointer;
-                            color: #8c54ac;" (click)="showRdvDetail()"><u>Modifier</u></a> </div>
+                            color: var(--accent);" (click)="showRdvDetail()"><u>Modifier</u></a> </div>
                         <dxo-label template="Visite de"></dxo-label>
                      
                     </dxi-item>
@@ -149,23 +149,8 @@
 
                     <dxi-item>
 
-                        <span>Pièces Jointes </span>
-
-                        <div style=" background-color: #f5f4f47d;
-                                overflow: auto;
-                                white-space: nowrap;
-                                padding: 5px;
-                                display: flex;
-                            ">
-
-                            <div *ngFor="let img of pjListeTemp ; let index=index "
-                                style=" padding: 5px;float:left;box-shadow:0 1px 4px 1px rgb(0 0 0 / 5%);background-color: white;">
-                                <img src="data:image/png;base64,{{img.patientDocumentsbase64}}" alt="Forest"
-                                    (click)="viewImage(img.id)" width="150px" height="200px">
-                                
-                            </div>
-
-                        </div>
+                        <span class="pj-title">Documents de la visite</span>
+                        <app-document-gallery [documents]="pjListeTemp" [readonly]="true"></app-document-gallery>
 
 
                     </dxi-item>
@@ -195,11 +180,11 @@
     </div>
 </dx-popup>
 
-<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }"  [showTitle]="true"
-    [position]="'top'" [dragEnabled]="false" title="Detail visite" [hideOnOutsideClick]="true"
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [showTitle]="true" [width]="1000" [maxWidth]="'96vw'"
+    [height]="'90vh'" [position]="'top'" [dragEnabled]="false" title="Détail de la visite" [hideOnOutsideClick]="true"
     [(visible)]="popupRdvDetVisible">
 
-    <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
-        <app-rdvDetails></app-rdvDetails>
-    </div>
+    <dx-scroll-view [height]="'100%'">
+        <app-rdvDetails (saved)="getVisitsByPatient()"></app-rdvDetails>
+    </dx-scroll-view>
 </dx-popup>

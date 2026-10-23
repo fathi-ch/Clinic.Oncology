@@ -15,4 +15,5 @@ export class Rdv {
     weight?: number;
     height?: number;
     visitDateTitel?:string;
+    billingType?: 'PAID' | 'PROMO' | 'FREE';
 }

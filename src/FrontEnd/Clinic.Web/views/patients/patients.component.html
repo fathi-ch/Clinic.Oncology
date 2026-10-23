@@ -1,85 +1,36 @@
-<div fxLayout="column" fxFill style="padding:20px;padding-top: 10px;" fxLayoutGap="8px">
-    <div fxFlex="20px" class="titlePage">
-        Pateints > Toutes les patients
+<section class="page-hero page-hero--compact">
+    <img class="hero-mark" src="assets/image/hero-mark.svg" alt="">
+    <div class="hero-inner">
+        <nav class="crumbs" aria-label="Fil d'Ariane">
+            <a routerLink="/accueil">Accueil</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Patients</span>
+        </nav>
+        <span class="accent-bar"></span>
+        <h1 class="hero-title">Patients</h1>
+        <p class="hero-lead">{{ LstPatients.length }} patient{{ LstPatients.length > 1 ? 's' : '' }} dans la liste</p>
+        <div class="hero-actions">
+            <dx-button stylingMode="outlined" text="Retour à l'accueil" type="normal" icon="home"
+                (onClick)="goHome()"></dx-button>
+            <dx-button stylingMode="contained" text="Nouveau patient" type="default" icon="plus"
+                (click)="newPatientPopUp()"></dx-button>
+            <dx-button stylingMode="outlined" text="Actualiser" type="normal" icon="refresh"
+                (click)="GetAllPateintList()"></dx-button>
+        </div>
     </div>
+</section>
 
-    <div fxFlex="62px" class="gridReserveOptions" fxLayout="row" fxLayoutGap="5px">
-
-
-
-        <div class="colored box" style="cursor: pointer; flex-direction: row; box-sizing: border-box; display: flex;">
-            <!-- search -->
-            
-
-
-
-
-                <div style="padding-left: 5px;padding-top: 3px;padding-bottom: 4px;">
-                    <dx-text-box  [class]="'textBoxCssClass'" valueChangeEvent="keyup"
-                        stylingMode="filled" [placeholder]="'Recherchez nom , prénom ... '" mode="search" [(value)]="searchText"
-                        [showClearButton]="true"
-                        (onValueChanged)="searchPatient()">
-                    </dx-text-box>
-                  
-
-                </div>
-               
-            
-            <div fxflex="30" style="flex: 1 1 100%; box-sizing: border-box; max-width: 10%;">
-                
-            </div>
-            <div style=" box-sizing: border-box; ">
-
-                <div style="float: left;
-                font-size: 14px;
-                color: white;
-                padding-top: 5px;">
-
-                    <dx-button stylingMode="outlined" text="Tous" type="normal" [width]="130" [icon]="'group'"
-                        (click)="GetAllPateintList()"></dx-button>
-
-
-
-                </div>
-            </div>
-            <!-- buttons controle -->
-            <div style=" box-sizing: border-box; ">
-
-                <div style="float: left;
-                font-size: 14px;
-                color: white;
-                padding-top: 5px;">
-
-                    <dx-button stylingMode="outlined" text="Nouveau" type="normal" [width]="130" [icon]="'plus'"
-                        (click)="newPatientPopUp()"></dx-button>
-
-
-
-                </div>
-            </div>
-
-            <div style=" box-sizing: border-box; ">
-                <div style="float: left;
-                font-size: 14px;
-                color: white;
-                padding-top: 5px;">
-
-                    <dx-button stylingMode="outlined" text="Recharger" type="normal" [width]="130" [icon]="'refresh'"
-                        (click)="GetAllPateintList()"></dx-button>
-
-
-                </div>
-            </div>
-
+<div class="page">
+    <section class="section-card">
+        <div class="list-search">
+            <dx-text-box class="patient-search" valueChangeEvent="keyup" stylingMode="filled"
+                placeholder="Rechercher par nom" mode="search" [(value)]="searchText" [showClearButton]="true"
+                (onValueChanged)="searchPatient()">
+            </dx-text-box>
         </div>
 
-
-    </div>
-
-    <div fxFlex="calc(100% - 180px)" style="height: 100%;">
-
         <dx-data-grid #dataGrid class="gridContainer" [hoverStateEnabled]="true" [rowAlternationEnabled]="true"
-            [showRowLines]="true" noDataText=""   [dataSource]="LstPatients" [height]="'auto'" [showBorders]="false"
+            [showRowLines]="true" noDataText="Aucun patient pour le moment."   [dataSource]="LstPatients" [height]="'auto'" [showBorders]="false"
             dataRowTemplate="dataRowTemplateName">
 
             <dxi-column caption="id" dataField="id" [visible]="false"></dxi-column>
@@ -115,15 +66,12 @@
                 
             </ng-container>
         </dx-data-grid>
-
-    </div>
-
-
+    </section>
 </div>
 
 <!-- new patinet -->
 
-<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [width]="665" [height]="590" [showTitle]="true"
+<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }" [width]="665" [height]="'auto'" [showTitle]="true"
     [position]="'top'" [dragEnabled]="false" title="Nouveau patient" [hideOnOutsideClick]="true"
     [(visible)]="popupVisible">
 
@@ -203,7 +151,7 @@
 
                 <span class="titreCmt">Prochain Rdv</span>
 
-                <dx-date-box #dateRdv placeholder="Ex : JJ/MM/AAAA" [min]="pat_date_rdv">
+                <dx-date-box #dateRdv placeholder="Ex : JJ/MM/AAAA" [min]="pat_date_rdv" (onValueChanged)="onDateRdvChanged($event)">
                 </dx-date-box>
 
 
@@ -212,18 +160,20 @@
             <div style="padding-left: 5%;">
 
                 <span class="titreCmt">de</span>
-                <dx-date-box #startRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15" [min]="min" [max]="max" [value]="min"
-                    [inputAttr]="{ 'aria-label': 'Time' }">
-                </dx-date-box>
+                <dx-select-box [width]="133" placeholder="HH:mm" [items]="slots.startOptions" valueExpr="value"
+                    displayExpr="text" [(value)]="slots.startValue" (onValueChanged)="slots.onStartChanged($event)"
+                    noDataText="Choisissez d'abord la date" [inputAttr]="{ 'aria-label': 'Heure de début' }">
+                </dx-select-box>
 
             </div>
 
             <div style="padding-left: 5%;">
 
                 <span class="titreCmt">à</span>
-                <dx-date-box #endRdv placeholder="HH:mm" type="time" [width]="133" [interval]="15" [min]="min" [max]="max" [value]="min"
-                    [inputAttr]="{ 'aria-label': 'Time' }">
-                </dx-date-box>
+                <dx-select-box [width]="133" placeholder="HH:mm" [items]="slots.endOptions" valueExpr="value"
+                    displayExpr="text" [(value)]="slots.endValue" noDataText="Choisissez d'abord l'heure de début"
+                    [inputAttr]="{ 'aria-label': 'Heure de fin' }">
+                </dx-select-box>
 
             </div>
 
@@ -303,7 +253,7 @@
                     padding-top: 0px;
                     padding-left: 22px;">
 
-                        <dx-button stylingMode="outlined" text="Ajouter" type="normal" [width]="130" [icon]="'todo'"
+                        <dx-button stylingMode="contained" text="Ajouter" type="default" [icon]="'todo'"
                             (click)="newPatient()"></dx-button>
 
 
@@ -320,14 +270,4 @@
     </div>
 </dx-popup>
 
-
-<dx-popup [wrapperAttr]="{ class: 'searchAmorFiltresPopup' }"  [showTitle]="true"
-    [position]="'top'" [dragEnabled]="false" title="Dossier Médical" [hideOnOutsideClick]="true"
-    [(visible)]="popupDetVisible"
-    (onShowing)="PopUpPatientDetailonShowing()">
-
-    <div fxLayout="column" fxFill fxLayoutGap="5px" fxFill>
-        <app-patientsDetail ></app-patientsDetail>
-    </div>
-</dx-popup>
 

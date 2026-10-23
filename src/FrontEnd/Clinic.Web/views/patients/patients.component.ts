@@ -7,6 +7,10 @@ import { Sexe } from "../../models/patient/SexeModel";
 import { ServiceCmnObject } from "../../services/ServiceCmnObject"
 import { ServicesPatient } from "../../services/patient/patient.service";
 import { Router } from "@angular/router";
+import notify from "devextreme/ui/notify";
+import { Rdv } from "../../models/rdv/RdvModel";
+import { ServicesRdv } from "../../services/rdv/rdv.service";
+import { BookingSlots } from "../rdv/booking-slots";
 
 @Component({
     selector: 'app-patients',
@@ -20,8 +24,8 @@ import { Router } from "@angular/router";
 
     @ViewChild("dateNais", { static: false })dateNais!: DxDateBoxComponent;
     @ViewChild("dateRdv", { static: false }) dateRdv!: DxTextBoxComponent;
-    @ViewChild("startRdv", { static: false })startRdv!: DxDateBoxComponent;
-    @ViewChild("endRdv", { static: false }) endRdv!: DxTextBoxComponent;
+    // the "Prochain Rdv" de / à lists offer only free slots of the chosen day
+    slots = new BookingSlots(day => this.RdvService.GetRdvByDate(day, day));
     
     lastRowOpned:string="";
  
@@ -60,7 +64,8 @@ import { Router } from "@angular/router";
     constructor(
         public readonly PateintService: ServicesPatient,
         private readonly serviceCmnObject:ServiceCmnObject,
-        private readonly router: Router
+        private readonly router: Router,
+        private readonly RdvService: ServicesRdv
       )
       {
         this.sexePteintList=[];
@@ -74,7 +79,7 @@ import { Router } from "@angular/router";
     ngOnInit(): void {
  
 
-      //this.GetAllPateintList();
+      this.GetAllPateintList();
     }
 
     public convertDate(date:string)
@@ -101,8 +106,7 @@ import { Router } from "@angular/router";
 // go to datail 
 public details(pateint:Pateint)
 {
-  this.serviceCmnObject.patientDetail.next(pateint);
-  this.popupDetVisible=true;
+  this.router.navigate(['/patients', pateint.id]);
   //  this.router.navigate(['/patientsDetail']);
 }
 // show patient details 
@@ -163,14 +167,26 @@ public details(pateint:Pateint)
       }
       else
       {
-        this.LstPatients=[];
+        this.GetAllPateintList();
       }
    
     }
 
+    public goHome()
+    {
+      this.router.navigate(['/accueil']);
+    }
+
     public newPatientPopUp()
     {
+      this.slots.load(null, null, null);
       this.popupVisible=true;
+    }
+
+    public onDateRdvChanged(e: any)
+    {
+      const keep = (v: number | null) => (v === null ? null : new Date(v));
+      this.slots.load(e.value ? new Date(e.value) : null, keep(this.slots.startValue), keep(this.slots.endValue));
     }
 
     public newPatienPopUpInit()
@@ -183,6 +199,11 @@ public details(pateint:Pateint)
 
     public newPatient()
     {
+      const booking = this.dateRdv.value ? this.slots.chosen() : null;
+      if (this.dateRdv.value && !booking) {
+        notify("Choisissez l'heure de début et de fin du rdv.", 'warning', 3000);
+        return;
+      }
       this.serviceCmnObject.spinnerLoading.next(true);
       let _patien=new Pateint();
       _patien.firstName=this.pat_nom;
@@ -196,15 +217,35 @@ public details(pateint:Pateint)
       _patien.gender=this.sexePteint;
 
 
-      this.PateintService.NewPateint(_patien).subscribe(pat=>{
+      this.PateintService.NewPateint(_patien).subscribe(async pat=>{
+        if (booking && pat.id) await this.bookFirstVisit(pat.id, booking);
         this.GetAllPateintList();
-        this.serviceCmnObject.spinnerLoading.next(true);
         this.popupVisible=false;
       });
-      
-      
-      
-      
+    }
+
+    // The "Prochain Rdv" fields book the patient's first visit once the patient exists.
+    private async bookFirstVisit(patientId: number, booking: { start: Date; end: Date })
+    {
+      const rdv = new Rdv();
+      rdv.patientId = patientId;
+      rdv.startTime = booking.start;
+      rdv.endTime = booking.end;
+      rdv.price = 0;
+      rdv.status = "PLA";
+      rdv.visitType = "";
+      rdv.description = "";
+      rdv.weight = 0;
+      rdv.height = 0;
+      rdv.visitDateTitel = "";
+      rdv.billingType = "PAID";
+      try {
+        await this.RdvService.NewRdv(rdv);
+      } catch (err: any) {
+        notify(err?.status === 409
+          ? "Patient ajouté, mais ce créneau vient d'être réservé. Réservez le rdv depuis l'agenda."
+          : "Patient ajouté, mais le rdv n'a pas pu être enregistré.", 'error', 5000);
+      }
     }
 
     public PopUpPatientDetailonShowing()

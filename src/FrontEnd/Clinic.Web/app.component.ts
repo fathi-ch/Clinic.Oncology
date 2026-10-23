@@ -1,31 +1,31 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppConfig } from './services/app.config';
 import frMessages from './fr.json';
-import { Router } from '@angular/router';
 import { ServiceCmnObject } from './services/ServiceCmnObject';
 import { loadMessages, locale } from 'devextreme/localization';
+import { delay } from 'rxjs';
+import { CLINIC } from './clinic-info';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
   title = 'ClnqWebSite';
   public spinnerVisible = false;
+  readonly clinic = CLINIC;
   protected urlApi=AppConfig.settings.apiServer.clnqApi;
 
-   lastElement: any;
-
   constructor(
-    private readonly router: Router,
     private readonly serviceCmnObject:ServiceCmnObject
   ) {
 
     loadMessages(frMessages);
     locale("fr-FR");
     
-    this.serviceCmnObject.spinnerLoading.subscribe(spin => this.spinnerVisible = spin);
+    // delay(0): pages toggle the spinner while they are being created, which Angular rejects mid-render
+    this.serviceCmnObject.spinnerLoading.pipe(delay(0)).subscribe(spin => this.spinnerVisible = spin);
   }
   ngOnInit(): void {
     
@@ -33,35 +33,5 @@ export class AppComponent implements OnInit, AfterViewInit {
   helloGoffa() {
     alert(this.urlApi);
 }
-
-ngAfterViewInit(): void {
-  this.router.events.pipe().subscribe((route: any) => {
-    if (route.url && !this.lastElement) {
-      if (route.url.indexOf('patients') >= 0) {
-        this.lastElement = document.getElementById('imgNavigation_patients');
-      } else {
-        this.lastElement = document.getElementById('imgNavigation_' + route.url.replace('/', ''));
-      }
-      if (this.lastElement)
-        this.lastElement.classList.add("imgNavigationActive");
-    }
-
-  });
-}
-
-navigateTo(key: any) {
-  this.router.navigate([key]);
-  if (this.lastElement) {
-    this.lastElement.classList.remove("imgNavigationActive")
-    this.lastElement = document.getElementById('imgNavigation_' + key);
-    this.lastElement.classList.add("imgNavigationActive");
-  } else {
-    this.lastElement = document.getElementById('imgNavigation_' + key);
-    this.lastElement.classList.add("imgNavigationActive");
-    // this.lastElement.classList.remove("imgNavigationActive");
-  }
-}
-
-
 
 }

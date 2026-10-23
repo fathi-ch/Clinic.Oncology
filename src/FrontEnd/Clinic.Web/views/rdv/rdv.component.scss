@@ -2,19 +2,17 @@
 
 .gridReserveOptions {
 
-    border-radius: 5px;
-    background-color: #8c54ac;
-    padding: 5px;
-    margin-bottom: 5px;
+    padding: 0 0 12px;
 
     .dx-button {
-        
-        height: 30px;
-        border-radius: 9px;
+
+        height: 36px;
+        border-radius: 50px;
+        border: 1px solid var(--purple-6);
         box-shadow: none !important;
-        color: #8c54ac;
+        color: var(--accent-strong);
         margin-left: 10px;
-background-color: white;
+        background-color: var(--panel);
         .dx-button-content {
             padding: 1px 6px !important;
    
@@ -28,7 +26,7 @@ background-color: white;
     }
 }
 ::ng-deep.dx-button-mode-outlined .dx-icon {
-    color: #8c54ac;
+    color: var(--accent);
 }
 ::ng-deep.dx-button-mode-outlined .dx-state-hover {
     color: #ffffff !important;
@@ -63,7 +61,7 @@ background-color: white;
 ::ng-deep .textBoxCssClass .dx-texteditor-input{
     margin-left: 16px;
 font-size: 14px !important;
-color: #6F6F6F;
+color: var(--ink-muted);
 margin-top: -3px;
 outline: none;
 border-radius: 9px !important;
@@ -93,7 +91,7 @@ border: none !important;
 
     .dx-placeholder {
         font-size: 12px;
-        color: #6F6F6F;
+        color: var(--ink-muted);
         top: -10px;
         left: 20px;
         white-space: nowrap;
@@ -105,7 +103,7 @@ border: none !important;
     .dx-texteditor-input {
         margin-left: 16px;
         font-size: 12px;
-        color: #6F6F6F;
+        color: var(--ink-muted);
         margin-top: -3px;
         outline: none
     }
@@ -117,7 +115,7 @@ border: none !important;
 }
 
 .rowStyle{
-    color: #00679a !important;
+    color: var(--heading) !important;
 }
 .thing {
     padding: 1rem;
@@ -130,8 +128,8 @@ border: none !important;
     box-shadow: 0 0px 3px 0 rgba(0, 0, 0, 0.11), 0 5px 15px 0 rgba(0, 0, 0, 0.08);
     background-color: #ffffff;
     border-radius: 0.5rem;
-    border-left: 0.3rem solid #de97ff;
-    border-right: 0.3rem solid #de97ff;
+    border-left: 0.3rem solid var(--purple-8);
+    border-right: 0.3rem solid var(--purple-8);
     transition: border-left 300ms ease-in-out, padding-left 300ms ease-in-out;
 
   }
@@ -143,14 +141,14 @@ border: none !important;
 
 ::ng-deep .HeaderCol{  
   
-      color: #1ECC9A !important;
+      color: var(--teal-11) !important;
     
     background-color: #86c3f8b7 !important;  
 }  
 
 .titlePage {
   
-    color: #8c54ac;
+    color: var(--accent);
     font-size: 14px;
     padding-top: 5px;
     padding-bottom: 15px;
@@ -170,7 +168,7 @@ border: none !important;
 
     .infotooltip {
         margin-left: 5px;
-        color: #00679a69;
+        color: var(--ink-muted);
         text-align: center;
         font-size: 10px;
     }
@@ -198,7 +196,7 @@ border: none !important;
         display: inline-block;
         white-space: normal;
         vertical-align: top;
-        color: #8c54ac;
+        color: var(--accent);
         font-size: 12px ;
         text-align: left;
         padding-left: 9px;
@@ -228,19 +226,19 @@ border: none !important;
     }
 
     .dx-datagrid-rowsview .dx-row td {
-        border-bottom: 1px solid #D9D4D4;
-        border-top: 1px solid #D9D4D4;
+        border-bottom: 1px solid var(--line);
+        border-top: 1px solid var(--line);
         padding-bottom: 1px;
         padding-top: 8px;
         padding-left: 12px;
     }
 
     .dx-datagrid-rowsview .dx-row td:first-child {
-        border-left: 1px solid #D9D4D4 !important;
+        border-left: 1px solid var(--line) !important;
     }
 
     .dx-datagrid-rowsview .dx-row td:last-child {
-        border-right: 1px solid #D9D4D4;
+        border-right: 1px solid var(--line);
     }
 
     .dx-datagrid-headers .dx-datagrid-table .dx-header-row>td {
@@ -259,7 +257,7 @@ border: none !important;
     .dx-datagrid .dx-editor-with-menu,
     .dx-datagrid-container .dx-editor-with-menu {
         height: 25px;
-        border-bottom: solid 1px #00679A;
+        border-bottom: solid 1px var(--heading);
     }
 
     .dx-filter-menu.dx-menu .dx-menu-item .dx-menu-item-content {
@@ -283,11 +281,11 @@ border: none !important;
     }
 
     .dx-dropdowneditor-icon {
-        color: #009BCD;
+        color: var(--accent);
     }
 
     .dx-checkbox-icon {
-        border-color: #009BCD;
+        border-color: var(--accent);
 
     }
 
@@ -308,8 +306,8 @@ border: none !important;
 
 
 // ::ng-deep .dx-datagrid-rowsview .dx-row {
-//     border-right: solid 1px #ddd;
-//     border-left: solid 1px #ddd;
+//     border-right: solid 1px var(--line);
+//     border-left: solid 1px var(--line);
 //     border-top: solid 6px white;
 // }
 
@@ -323,7 +321,7 @@ border: none !important;
 
 ::ng-deep.dx-datagrid .dx-row-alt>td,
 .dx-datagrid .dx-row-alt>tr>td {
-    background-color: #F5F5F5;
+    background-color: var(--page);
 }
 .reFilter {
     font-size: 11px;
@@ -337,7 +335,7 @@ border: none !important;
 
 ::ng-deep .gridAuditOptions {
     border-radius: 5px;
-    background-color: #00679A;
+    background-color: var(--heading);
     padding: 15px;
 
     .dx-button {
@@ -357,22 +355,22 @@ border: none !important;
         
         height: 30px;
         padding: 1px;
-        color: #00679A;
+        color: var(--heading);
         background-color: white;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
 
         .dx-icon-warning {
-            color: #F75C55;
+            color: var(--red-11);
             margin-bottom: 2px;
         }
         .dx-icon-file {
-            color: #00679A;
+            color: var(--heading);
             font-size: 16px;
         }
         .dx-icon-download{
-            color: #1ECC9A;
+            color: var(--teal-11);
             font-size: 16px;
         }
     }
@@ -385,7 +383,7 @@ border: none !important;
     .buttonOption:hover {
         
 
-        background-color: #00679A;
+        background-color: var(--heading);
         border: 1px solid white;
         color: white;
 
@@ -413,14 +411,14 @@ border: none !important;
 
     .dx-placeholder {
         font-size: 13px;
-        color: #6F6F6F;
+        color: var(--ink-muted);
         left: 17px;
     }
 
     .dx-texteditor-input {
         margin-left: 16px;
         font-size: 12px;
-        color: #6F6F6F;
+        color: var(--ink-muted);
         margin-top: -3px;
         outline: none;
         width: 100%;
@@ -438,24 +436,24 @@ border: none !important;
 {
     
         background: #fff;
-        border: 1px solid #ddd;
+        border: 1px solid var(--line);
         border-radius: 4px;
         width: 300px;
         height: 40px;
         font-size: 14px !important;
-        border-color: #9b59b6;
+        border-color: var(--accent);
 }
 
 ::ng-deep.dx-texteditor.dx-texteditor.dx-state-focused.dx-editor-outlined
 {
     
         background: #fff;
-        border: 1px solid #ddd;
+        border: 1px solid var(--line);
         border-radius: 4px;
         width: 300px;
         height: 40px;
         font-size: 14px !important;
-        border-color: #9b59b6;
+        border-color: var(--accent);
 }
 
 ::ng-deep.defaultTextBoxCssClass {
@@ -468,14 +466,14 @@ border: none !important;
 
     .dx-placeholder {
         font-size: 13px;
-        color: #6F6F6F;
+        color: var(--ink-muted);
         left: 17px;
     }
 
     .dx-texteditor-input {
         margin-left: 16px;
         font-size: 12px;
-        color: #6F6F6F;
+        color: var(--ink-muted);
         margin-top: 0px;
         outline: none;
         width: 100%;
@@ -497,7 +495,7 @@ border: none !important;
     font-weight: 500;
     left: -8px;
     color: white;
-    background: #00679a;
+    background: var(--heading);
 }
 
 .nbElements {
@@ -569,19 +567,19 @@ border: none !important;
     
             height: 30px;
             padding:1px;
-            color: #00679A;
+            color: var(--heading);
             background-color: white;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
     
             .dx-icon-warning {
-                color: #F75C55;
+                color: var(--red-11);
                 margin-bottom: 2px;
             }
     
             .dx-icon-download {
-                color: #1ECC9A;
+                color: var(--teal-11);
                 font-size: 16px;
             }
         }
@@ -593,7 +591,7 @@ border: none !important;
         .buttonOption:hover {
         
     
-            background-color: #00679A;
+            background-color: var(--heading);
             border: 1px solid white;
             color: white;
     
@@ -622,7 +620,7 @@ border: none !important;
     
 
     // .dx-switch.dx-state-hover .dx-switch-handle::before {
-    //     background-color: #00B050;
+    //     background-color: var(--teal-11);
     // }
     .displayAll {
 
@@ -654,14 +652,14 @@ border: none !important;
     .titleFC {
 
         font-weight: 500;
-        color: #00679a;
+        color: var(--heading);
         font-family: 'BouyguesRead-Medium';
         font-size: 13px;
     }
 
     .gridFcOptions {
         border-radius: 5px;
-        background-color: #00679A;
+        background-color: var(--heading);
         padding: 15px;
     }
 
@@ -677,7 +675,7 @@ border: none !important;
 
         .dx-placeholder {
             font-size: 12px;
-            color: #6F6F6F;
+            color: var(--ink-muted);
             top: -10px;
             left: 20px;
             white-space: nowrap;
@@ -689,7 +687,7 @@ border: none !important;
         .dx-texteditor-input {
             margin-left: 16px;
             font-size: 12px;
-            color: #6F6F6F;
+            color: var(--ink-muted);
             margin-top: -3px;
             outline: none
         }
@@ -723,7 +721,7 @@ border: none !important;
         font-weight: 500;
         left: -8px;
         color: white;
-        background: #00679a;
+        background: var(--heading);
     }
 
     .nbElements {
@@ -738,7 +736,7 @@ border: none !important;
 .textBoxCssClassSearch {
     background-color: white !important;
     height: 32px;
-    border: 1px solid #00679A !important;
+    border: 1px solid var(--heading) !important;
     border-radius: 19px !important;
     width: 430px;
 
@@ -750,6 +748,121 @@ border: none !important;
     font-size: 14px;
     padding-top: 5px;
     font-weight: 500;
-    color:#7d7d7d;
+    color:var(--ink-muted);
 }
 
+
+// Calendar: room above the first hour and below the last one, so 08:00 and 17:00 are not glued to the edges.
+::ng-deep #scheduler_ges {
+    // spacing around the hours sits outside the scroll area, so it never adds inner scrolling
+    .dx-scheduler-work-space {
+        padding: 12px 0 4px;
+    }
+
+    // shorter rows so 08:00-17:00 fits; keep in step with calendarHeight in rdv.component.ts
+    .dx-scheduler-cell-sizes-vertical {
+        height: 36px;
+    }
+
+    .dx-scheduler-header-panel-cell {
+        font-family: var(--font-display);
+        font-weight: 600;
+        color: var(--heading);
+    }
+
+    // the block itself is drawn by .appt below
+    .dx-scheduler-appointment {
+        background: transparent;
+        border-radius: 8px;
+        box-shadow: none;
+        overflow: hidden;
+    }
+
+    .dx-scheduler-appointment-content {
+        padding: 0;
+        height: 100%;
+    }
+
+    .appt {
+        box-sizing: border-box;
+        height: 100%;
+        padding: 2px 8px;
+        border-left: 3px solid var(--accent);
+        border-radius: 8px;
+        background: var(--purple-3);
+        color: var(--heading);
+        overflow: hidden;
+    }
+
+    .appt--done {
+        border-left-color: var(--teal-11);
+        background: var(--teal-3);
+        color: var(--teal-12);
+    }
+
+    .appt-name {
+        overflow: hidden;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .appt-time {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    .appt-tag {
+        margin-left: 4px;
+        padding: 0 6px;
+        border-radius: 50px;
+        background: var(--panel);
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .dx-scheduler-appointment.dx-state-hover .appt,
+    .dx-scheduler-appointment.dx-state-focused .appt {
+        background: var(--purple-4);
+    }
+}
+
+// the main action in a toolbar: filled accent pill
+.gridReserveOptions .dx-button.dx-button-default {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    // DevExtreme renders the label and icon itself, so they inherit this color
+    color: #ffffff;
+}
+
+// Calendar toolbar: no grey box, the selected view in the accent tint.
+::ng-deep #scheduler_ges {
+    .dx-scheduler-header {
+        background: transparent;
+        border: none;
+    }
+
+    .dx-scheduler-work-space {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .dx-buttongroup-item.dx-item-selected {
+        background-color: var(--purple-3);
+        border-color: var(--purple-6);
+        color: var(--accent-strong);
+    }
+}
+
+.billing-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 12px;
+
+    .titreCmt {
+        margin: 0;
+    }
+}

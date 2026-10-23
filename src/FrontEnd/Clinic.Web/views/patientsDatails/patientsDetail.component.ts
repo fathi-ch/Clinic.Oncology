@@ -1,4 +1,4 @@
-import { Component, NgModule, OnInit, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Input, NgModule, OnInit, Output, ViewChild } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { DxBulletModule, DxDataGridComponent, DxDataGridModule, DxDateBoxComponent, DxFormComponent, DxTemplateModule, DxTextBoxComponent } from "devextreme-angular";
 
@@ -10,6 +10,7 @@ import { Rdv } from "../../models/rdv/RdvModel";
 import { ServicesRdv } from "../../services/rdv/rdv.service";
 import { HttpClient, HttpHandler } from "@angular/common/http";
 import notify from 'devextreme/ui/notify';
+import { VisitDocument } from '../documents/document-info';
 import { Router } from "@angular/router";
 
 @Component({
@@ -21,6 +22,9 @@ import { Router } from "@angular/router";
 
 
 export class patientsDetailComponent implements OnInit {
+  // on the patient page this form only edits the patient; visits are shown by the page itself
+  @Input() editOnly = false;
+  @Output() deleted = new EventEmitter<void>();
 
   @ViewChild("dateNais", { static: false }) dateNais!: DxDateBoxComponent;
   @ViewChild("dateRdv", { static: false }) dateRdv!: DxTextBoxComponent;
@@ -42,7 +46,7 @@ export class patientsDetailComponent implements OnInit {
     'Male',
     'Femelle'
   ];
-  pjListeTemp: any[] = [];
+  pjListeTemp: VisitDocument[] = [];
   //pop up new patient
 
   popupVisible = false;
@@ -87,6 +91,11 @@ export class patientsDetailComponent implements OnInit {
       this.editRdv=open;
     })
     this.serviceCmnObject.patientDetail.subscribe(async pateint => {
+      // the subject starts with an empty patient, there is nothing to load until one is picked
+      if (pateint.id === undefined) {
+        this.serviceCmnObject.spinnerLoading.next(false);
+        return;
+      }
       this.currentRdv = new Rdv();
       this.allRdv = [];
       this.currentPatient = pateint;
@@ -112,12 +121,6 @@ export class patientsDetailComponent implements OnInit {
   }
 
 
-
-  public viewImage(id: any) {
-    let image = this.pjListeTemp.find(x => x.id == id);
-    this.currentImageView = image.patientDocumentsbase64;
-    this.popupVisible = true;
-  }
 
   public async getVisitsByPatient() {
     this.serviceCmnObject.spinnerLoading.next(true)
@@ -233,7 +236,7 @@ public showRdvDetail()
   {
     await this.PateintService.DeletePatien(this.currentPatient.id as number);
     notify({ message: "Patient est supprimé", width: 300, shading: false }, "success", 2000);
-    document.location.reload();
+    this.deleted.emit();
   }
 
   public GetAllPateintList() {
