@@ -4,7 +4,7 @@ import { Pateint } from "../../models/patient/PatientModel";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { Rdv } from "../../models/rdv/RdvModel";
-import { PieceJointe } from "../../models/rdv/piecejointe";
+import { PieceJointe } from "../../models/rdv/Piecejointe";
 
 
 @Injectable()

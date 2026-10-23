@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { Rdv } from "../models/rdv/RdvModel";
 import { Pateint } from "../models/patient/PatientModel";
-import { PieceJointe } from "../models/rdv/piecejointe";
+import { PieceJointe } from "../models/rdv/Piecejointe";
 import { ServicesRdv } from "./rdv/rdv.service";
 
 

@@ -7,26 +7,34 @@
       "projectType": "application",
       "schematics": {},
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/clnq-web-site",
-            "index": "src/index.html",
-            "main": "src/main.ts",
+            "index": "index.html",
+            "main": "main.ts",
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              {
+                "glob": "favicon.ico",
+                "input": ".",
+                "output": "."
+              },
+              {
+                "glob": "**/*",
+                "input": "assets",
+                "output": "assets"
+              }
             ],
             "styles": [
               "node_modules/devextreme/dist/css/dx.light.css",
-              "src/styles.css"
+              "styles.css"
             ],
             "scripts": []
           },
@@ -34,8 +42,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/app/environmont/environmont.ts",
-                  "with": "src/app/environmont/environment.prod.ts"
+                  "replace": "environmont/environmont.ts",
+                  "with": "environmont/environment.prod.ts"
                 }
               ],
               "budgets": [
@@ -90,12 +98,20 @@
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              {
+                "glob": "favicon.ico",
+                "input": ".",
+                "output": "."
+              },
+              {
+                "glob": "**/*",
+                "input": "assets",
+                "output": "assets"
+              }
             ],
             "styles": [
               "node_modules/devextreme/dist/css/dx.light.css",
-              "src/styles.css"
+              "styles.css"
             ],
             "scripts": []
           }

@@ -11,7 +11,7 @@ import { BehaviorSubject } from "rxjs";
 import { Pateint } from "../../models/patient/PatientModel";
 import { Rdv } from "../../models/rdv/RdvModel";
 import { RdvType } from "../../models/rdv/RdvTypeModel";
-import { PieceJointe } from "../../models/rdv/piecejointe";
+import { PieceJointe } from "../../models/rdv/Piecejointe";
 import { ServiceCmnObject } from "../../services/ServiceCmnObject";
 import { ServicesPatient } from "../../services/patient/patient.service";
 import { ServicesRdv } from "../../services/rdv/rdv.service";

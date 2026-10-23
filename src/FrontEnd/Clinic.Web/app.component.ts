@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { AppConfig } from './services/app.config';
-import frMessages from '../fr.json';
+import frMessages from './fr.json';
 import { Router } from '@angular/router';
 import { ServiceCmnObject } from './services/ServiceCmnObject';
 import { loadMessages, locale } from 'devextreme/localization';
