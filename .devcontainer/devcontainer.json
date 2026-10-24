@@ -12,7 +12,7 @@
   "postCreateCommand": "dotnet build Clinic.Oncology.sln && cd src/FrontEnd/Clinic.Web && npm ci",
   "postAttachCommand": {
     "api": "dotnet run --no-build --project src/BackEnd/Clinic.Api",
-    "web": "cd src/FrontEnd/Clinic.Web && npx ng serve --disable-host-check"
+    "web": "cd src/FrontEnd/Clinic.Web && npx ng serve --host 0.0.0.0 --disable-host-check"
   },
   "forwardPorts": [4200],
   "portsAttributes": {
