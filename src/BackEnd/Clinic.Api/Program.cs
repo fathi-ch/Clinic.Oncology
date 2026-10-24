@@ -9,7 +9,6 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 var dbConfig = new DatabaseConfigurations();
 builder.Configuration.GetSection(DatabaseConfigurations.DatabaseConfigurationsSection).Bind(dbConfig);
