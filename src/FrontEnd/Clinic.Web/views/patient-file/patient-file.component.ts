@@ -6,9 +6,6 @@ import { Pateint } from '../../models/patient/PatientModel';
 import { Rdv } from '../../models/rdv/RdvModel';
 import { ServiceCmnObject } from '../../services/ServiceCmnObject';
 import { ServicesPatient } from '../../services/patient/patient.service';
-import { ServicesRdv } from '../../services/rdv/rdv.service';
-import { BILLING_OPTIONS, BillingType } from '../rdv/billing';
-import { BookingSlots } from '../rdv/booking-slots';
 import { isPdf, mimeOf, VisitDocument } from '../documents/document-info';
 
 interface VisitRow {
@@ -41,17 +38,6 @@ export class PatientFileComponent implements OnInit, OnDestroy {
   exporting = false;
   editVisible = false;
 
-  // booking from this page, without going through the calendar
-  bookingVisible = false;
-  bookingDay: Date = new Date();
-  bookingBilling: BillingType = 'PAID';
-  bookingPrice = 0;
-  bookingType = 'RDV';
-  booking = false;
-  readonly today = new Date(new Date().setHours(0, 0, 0, 0));
-  readonly billingOptions = BILLING_OPTIONS;
-  readonly visitTypes = [{ code: 'RDV', type: 'Rdv médical' }, { code: 'ABS', type: 'Absent' }];
-  readonly slots: BookingSlots;
   visitVisible = false;
 
   private id = 0;
@@ -62,10 +48,7 @@ export class PatientFileComponent implements OnInit, OnDestroy {
     public readonly router: Router,
     private readonly patients: ServicesPatient,
     private readonly shared: ServiceCmnObject,
-    private readonly visits: ServicesRdv,
-  ) {
-    this.slots = new BookingSlots(day => this.visits.GetRdvByDate(day, day));
-  }
+  ) {}
 
   ngOnInit(): void {
     this.routeSub = this.route.paramMap.subscribe(params => {
@@ -126,54 +109,6 @@ export class PatientFileComponent implements OnInit, OnDestroy {
   onPatientDeleted(): void {
     this.editVisible = false;
     this.router.navigate(['/patients']);
-  }
-
-  openBooking(): void {
-    this.bookingDay = new Date();
-    this.bookingBilling = 'PAID';
-    this.bookingPrice = 0;
-    this.bookingType = 'RDV';
-    this.slots.load(this.bookingDay, new Date(), null); // first free slot from now on
-    this.bookingVisible = true;
-  }
-
-  onBookingDayChanged(e: { value?: Date | string | number | null; event?: unknown }): void {
-    if (!e.event) return;
-    if (e.value) this.bookingDay = new Date(e.value);
-    const keep = (v: number | null) => (v === null ? null : new Date(v));
-    this.slots.load(e.value ? new Date(e.value) : null, keep(this.slots.startValue), keep(this.slots.endValue));
-  }
-
-  async book(): Promise<void> {
-    const chosen = this.slots.chosen();
-    if (!this.patient?.id || !chosen) {
-      notify("Choisissez la date, l'heure de début et de fin.", 'warning', 3000);
-      return;
-    }
-    const visit: Rdv = {
-      patientId: this.patient.id,
-      startTime: chosen.start,
-      endTime: chosen.end,
-      price: this.bookingBilling === 'FREE' ? 0 : this.bookingPrice ?? 0,
-      billingType: this.bookingBilling,
-      status: 'PLA',
-      visitType: this.bookingType,
-      description: '',
-      weight: 0,
-      height: 0,
-      visitDateTitel: '',
-    };
-    this.booking = true;
-    try {
-      await this.visits.NewRdv(visit);
-      notify('Rendez-vous ajouté', 'success', 2500);
-      this.bookingVisible = false;
-      await this.load();
-    } catch (err: any) {
-      notify(err?.status === 409 ? "Ce créneau vient d'être réservé. Choisissez un autre horaire." : err?.error?.message ?? "La réservation a échoué.", 'error', 4000);
-    } finally {
-      this.booking = false;
-    }
   }
 
   openVisit(row: VisitRow): void {

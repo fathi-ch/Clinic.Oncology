@@ -12,6 +12,7 @@ import { firstValueFrom } from "rxjs";
 import { Rdv } from "../../models/rdv/RdvModel";
 import { ServicesRdv } from "../../services/rdv/rdv.service";
 import { BookingSlots } from "../rdv/booking-slots";
+import { BookingDialogComponent } from "../rdv/booking-dialog.component";
 
 @Component({
     selector: 'app-patients',
@@ -25,6 +26,11 @@ import { BookingSlots } from "../rdv/booking-slots";
 
     @ViewChild("dateNais", { static: false })dateNais!: DxDateBoxComponent;
     @ViewChild("dataGrid", { static: false }) dataGrid?: DxDataGridComponent;
+    @ViewChild("bookingDialog", { static: false }) bookingDialog?: BookingDialogComponent;
+
+    // grid button callbacks: arrow functions so `this` is the component
+    readonly bookFromRow = (e: any) => this.bookingDialog?.open(e.row.data);
+    readonly notEditing = (e: any) => !e.row.isEditing;
     @ViewChild("dateRdv", { static: false }) dateRdv!: DxTextBoxComponent;
     // the "Prochain Rdv" de / à lists offer only free slots of the chosen day
     slots = new BookingSlots(day => this.RdvService.GetRdvByDate(day, day));

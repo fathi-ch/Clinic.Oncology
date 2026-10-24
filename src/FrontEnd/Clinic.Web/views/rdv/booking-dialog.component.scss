@@ -1,0 +1,53 @@
+.booking {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 4px 4px 8px;
+}
+
+.booking-for {
+    margin: 0;
+    color: var(--heading);
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+// minmax(0, ...) lets the columns shrink below the fields' built-in minimum width
+.booking-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+}
+
+.booking-grid--two {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.booking-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.booking-label {
+    color: var(--ink-muted);
+    font-size: 13px;
+}
+
+.booking-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+@media (max-width: 640px) {
+    .booking-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .booking-field--date {
+        grid-column: 1 / -1;
+    }
+}

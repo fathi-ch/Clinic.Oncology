@@ -1,0 +1,21 @@
+{
+  "name": "Clinic.Oncology demo",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "18" }
+  },
+  "containerEnv": {
+    "DatabaseConfigurations__DatabasePath": "/home/vscode/clinic-data",
+    "DatabaseConfigurations__DocumentsPath": "Documents",
+    "DatabaseConfigurations__DatabaseConfigFilePath": "Data/SqlLiteScripts/Database.sql"
+  },
+  "postCreateCommand": "dotnet build Clinic.Oncology.sln && cd src/FrontEnd/Clinic.Web && npm ci",
+  "postAttachCommand": {
+    "api": "dotnet run --no-build --project src/BackEnd/Clinic.Api",
+    "web": "cd src/FrontEnd/Clinic.Web && npx ng serve --host 0.0.0.0 --disable-host-check"
+  },
+  "forwardPorts": [4200],
+  "portsAttributes": {
+    "4200": { "label": "Clinic web", "onAutoForward": "openBrowser" }
+  }
+}

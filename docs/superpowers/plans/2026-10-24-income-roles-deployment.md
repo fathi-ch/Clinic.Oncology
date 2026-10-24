@@ -10,6 +10,9 @@
 
 ## Findings that shape the plan
 
+- **F5 "Prochain RDV" is the latest visit, not the next one** (found 2026-10-24). The API sets `Patients.NextAppointment` to the patient's latest visit date, finished ones included, in `VisitRepository.CreateAsync` and `VisitsService` (update and delete). It should be the earliest planned visit from now on, or empty. To fix with Task 2d's backend step, computed in one place and covered by a unit test.
+- **F6 Creating a visit returns `id: 0`** instead of the new id; prescriptions (Task 4b) will need the real id.
+
 - **F1 Finished visits come back to life.** The booking popup offers "Démarer" for a finished visit, and "Modifier" always saves `status = "PLA"` (`rdv.component.ts`, `updateRdvForm`), so editing a finished visit silently reopens it.
 - **F2 Income data exists.** Every visit has `Price` (DA), entered in the booking form. Only one visit has a price today.
 - **F3 No authentication at all.** Every API endpoint is open to anyone on the network.
@@ -23,6 +26,8 @@
 - **D17 Network:** **HTTP on the clinic network only**, with the server's firewall closed to the internet. HTTPS with a self-signed certificate is possible but every browser shows a warning first.
 - **D19 Prescriptions belong to a visit:** **yes**, written from the visit details (a prescription without a visit would need its own place in the app).
 - **D20 Who writes prescriptions:** **the doctor (Admin) only**; the assistant views and prints.
+- **D21 DevExtreme licence:** DevExtreme is commercial; from 24.2 each install needs a licence key or pages show an evaluation banner. **Use the clinic's DevExtreme licence key** if there is one; otherwise stay on 23.1 (the last version without the key check) or plan a move to a free component library, which is a much larger change.
+- **D22 .NET version:** **move to .NET 10 (LTS)**; .NET 8 support ends in November 2026.
 - **D18 Server machine:** **a small Windows or Linux PC that stays on** (mini PC or Raspberry Pi 5 with SSD), as discussed earlier.
 
 ## Task 1: A finished visit cannot be restarted (F1)
@@ -67,6 +72,24 @@ Following DevExtreme's "Advanced Master-Detail View" demo.
 - Expanding a row shows the patient's detail inside the grid: a tab "Visites" (date, status, billing, price) and a tab "Documents" (thumbnails), with "Ouvrir le dossier" going to the patient page.
 - Search covers nom and prénom (today only the first name is searched).
 - **Check:** sort by each column, search by last name, expand a row and see its visits and documents, open the patient page from it.
+
+## Task 2d: Upgrade every package, backend first, then frontend (added 2026-10-24)
+
+Done before Task 3 so accounts, settings, prescriptions and deployment are built on current versions. One commit per step, each with all tests and both builds green; if a step breaks, it is fixed or reverted before the next one.
+
+**Backend (versions checked 2026-10-24):**
+1. Target `net10.0` (current LTS) in every project; the clinic machine then needs no roll-forward setting.
+2. Replace the preview `Microsoft.AspNetCore.Http.Features 6.0.0-preview.4` and the `C:\Program Files\dotnet\...` DLL references in `Clinic.Core.csproj` with `<FrameworkReference Include="Microsoft.AspNetCore.App" />`.
+3. Dapper 2.0.123 -> 2.1.89, Microsoft.Data.Sqlite 6.0.0 -> 10.0.13, QuestPDF 2024.3.6 -> 2026.9.1 (re-check the Community licence terms and re-export a patient file to compare), Newtonsoft.Json 13.0.3 -> 13.0.4 or removed if nothing uses it, Swashbuckle 6.2.3 -> 10.3.1.
+4. Tests: Microsoft.NET.Test.Sdk 17.14.1 -> 18.11.0, xunit 2 -> xunit.v3 with xunit.runner.visualstudio 4.0.1.
+- **Check:** `dotnet test`, the API starts on a copy of the database, every page loads, a patient PDF export looks the same.
+
+**Frontend:**
+1. Delete the unused `*.module.ts` files and `@angular/flex-layout` (abandoned at 15.0.0-beta.42); remove the inert `fx*` attributes.
+2. Angular 16 -> 22 with `ng update`, one major at a time (17, 18, 19, 20, 21, 22): build, unit tests and a browser pass after each. TypeScript, zone.js and rxjs follow what each Angular version requires (not TypeScript 7.0, which Angular may not support yet).
+3. When the Angular version in use drops Karma, move the 21 unit tests to the runner it ships with (Vitest).
+4. DevExtreme 23.1.4 -> 26.1.6 (D21), then re-run `themes/recolor-dx-accent.mjs` and re-check the calendar, grid, gallery, popups and charts against screenshots taken before the upgrade.
+- **Check:** all unit tests, production build, and the main flows in the browser: book from the calendar, the patient page and the grid; finish a visit; upload and view photos; export a PDF; edit a patient; statistics.
 
 ## Task 3: Accounts and roles (F3, D15, D16)
 
